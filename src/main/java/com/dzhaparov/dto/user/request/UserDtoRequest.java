@@ -1,4 +1,4 @@
-package com.dzhaparov.dto.user;
+package com.dzhaparov.dto.user.request;
 
 import com.dzhaparov.entity.roles.Roles;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
