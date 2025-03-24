@@ -1,14 +1,19 @@
 package com.dzhaparov.service.user;
 
 import com.dzhaparov.dto.user.request.UserDtoRequest;
-import com.dzhaparov.service.BaseServiceMethod;
+import com.dzhaparov.dto.user.response.UserDtoCreateResponse;
+import com.dzhaparov.dto.user.response.UserDtoUpdateResponse;
 
-public interface UserService extends BaseServiceMethod<Long, UserDtoRequest> {
-    void createUser(UserDtoRequest userDto);
+import java.util.List;
 
-    void deleteUser(UserDtoRequest userDto);
+public interface UserService {
+    UserDtoCreateResponse createUser(UserDtoRequest userDto);
 
-    void updateUser(Long id, UserDtoRequest userDto);
+    UserDtoUpdateResponse updateUser(Long id, UserDtoRequest userDto);//TODO
 
-    UserDtoRequest getUser(Long id);
+    void deleteUser(Long id);
+
+    UserDtoResponse getUser(Long id);
+
+    List<UserDtoResponse> getAllUsers();
 }
