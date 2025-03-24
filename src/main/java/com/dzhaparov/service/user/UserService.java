@@ -1,6 +1,7 @@
 package com.dzhaparov.service.user;
 
 import com.dzhaparov.dto.user.request.UserDtoRequest;
+import com.dzhaparov.dto.user.response.UserDtoByIdResponse;
 import com.dzhaparov.dto.user.response.UserDtoCreateResponse;
 import com.dzhaparov.dto.user.response.UserDtoUpdateResponse;
 
@@ -13,7 +14,7 @@ public interface UserService {
 
     void deleteUser(Long id);
 
-    UserDtoResponse getUser(Long id);
+    UserDtoByIdResponse getUser(Long id);
 
     List<UserDtoResponse> getAllUsers();
 }
