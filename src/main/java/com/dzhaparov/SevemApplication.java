@@ -1,8 +1,7 @@
-package com.dzhaparov.app;
+package com.dzhaparov;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cache.annotation.EnableCaching;
 
 @SpringBootApplication
 public class SevemApplication {
