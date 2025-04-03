@@ -1,19 +1,19 @@
 package com.dzhaparov.entity.user;
 
-import com.dzhaparov.entity.roles.Roles;
+import com.dzhaparov.entity.role.Role;
 import jakarta.persistence.*;
 
 import java.util.Objects;
 
 @Entity
-@Table(name = "users") //TODO группы учеников
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Roles roles;
+    private Role role;
     @Column(nullable = false)
     private String first_name;
     @Column(nullable = false)
@@ -25,6 +25,14 @@ public class User {
     @Column(nullable = false)
     private Double salaryPerLesson;
 
+    public boolean isTeacher() {
+        return this.role == Role.TEACHER;
+    }
+
+    public boolean isStudent() {
+        return this.role == Role.STUDENT;
+    }
+
     public Long getId() {
         return id;
     }
@@ -33,12 +41,12 @@ public class User {
         this.id = id;
     }
 
-    public Roles getRoles() {
-        return roles;
+    public Role getRoles() {
+        return role;
     }
 
-    public void setRoles(Roles roles) {
-        this.roles = roles;
+    public void setRoles(Role roles) {
+        this.role = roles;
     }
 
     public String getFirst_name() {
@@ -86,19 +94,19 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && roles == user.roles && Objects.equals(first_name, user.first_name) && Objects.equals(last_name, user.last_name) && Objects.equals(email, user.email) && Objects.equals(hashed_password, user.hashed_password) && Objects.equals(salaryPerLesson, user.salaryPerLesson);
+        return Objects.equals(id, user.id) && role == user.role && Objects.equals(first_name, user.first_name) && Objects.equals(last_name, user.last_name) && Objects.equals(email, user.email) && Objects.equals(hashed_password, user.hashed_password) && Objects.equals(salaryPerLesson, user.salaryPerLesson);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, roles, first_name, last_name, email, hashed_password, salaryPerLesson);
+        return Objects.hash(id, role, first_name, last_name, email, hashed_password, salaryPerLesson);
     }
 
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", roles=" + roles +
+                ", roles=" + role +
                 ", first_name='" + first_name + '\'' +
                 ", last_name='" + last_name + '\'' +
                 ", email='" + email + '\'' +
