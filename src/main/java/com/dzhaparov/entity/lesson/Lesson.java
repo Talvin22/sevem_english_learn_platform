@@ -1,10 +1,15 @@
 package com.dzhaparov.entity.lesson;
 
+import com.dzhaparov.entity.group.Group;
+import com.dzhaparov.entity.lesson.attendance.CancelledBy;
+import com.dzhaparov.entity.lesson.attendance.LessonAttendanceStatus;
 import com.dzhaparov.entity.user.User;
 import jakarta.persistence.*;
+
 import java.time.ZonedDateTime;
 import java.time.ZoneId;
 import java.util.Objects;
+
 
 @Entity
 @Table(name = "lessons")
@@ -18,7 +23,7 @@ public class Lesson {
     private User teacher;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id", nullable = false)
+    @JoinColumn(name = "student_id")
     private User student;
 
     @Column(name = "date_utc", nullable = false)
@@ -32,9 +37,34 @@ public class Lesson {
     @Column(name = "canceling_reason")
     private CancelingReasons cancelingReason;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id")
+    private Group group;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "attendance_status")
+    private LessonAttendanceStatus attendanceStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "cancelled_by")
+    private CancelledBy cancelledBy;
 
     public ZonedDateTime getDateForTimeZone(String timeZone) {
         return dateUtc.withZoneSameInstant(ZoneId.of(timeZone));
+    }
+
+    public boolean isGroupLesson() {
+        return group != null;
+    }
+
+    public boolean isCancelled() {
+        return this.status == LessonStatus.CANCELLED;
+    }
+
+    public void cancel(CancelledBy who, CancelingReasons reason) {
+        this.status = LessonStatus.CANCELLED;
+        this.cancelledBy = who;
+        this.cancelingReason = reason;
     }
 
     public Long getId() {
@@ -85,17 +115,41 @@ public class Lesson {
         this.cancelingReason = cancelingReason;
     }
 
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    public LessonAttendanceStatus getAttendanceStatus() {
+        return attendanceStatus;
+    }
+
+    public void setAttendanceStatus(LessonAttendanceStatus attendanceStatus) {
+        this.attendanceStatus = attendanceStatus;
+    }
+
+    public CancelledBy getCancelledBy() {
+        return cancelledBy;
+    }
+
+    public void setCancelledBy(CancelledBy cancelledBy) {
+        this.cancelledBy = cancelledBy;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Lesson lesson = (Lesson) o;
-        return Objects.equals(id, lesson.id) && Objects.equals(teacher, lesson.teacher) && Objects.equals(student, lesson.student) && Objects.equals(dateUtc, lesson.dateUtc) && status == lesson.status && cancelingReason == lesson.cancelingReason;
+        return Objects.equals(id, lesson.id) && Objects.equals(teacher, lesson.teacher) && Objects.equals(student, lesson.student) && Objects.equals(dateUtc, lesson.dateUtc) && status == lesson.status && cancelingReason == lesson.cancelingReason && Objects.equals(group, lesson.group) && attendanceStatus == lesson.attendanceStatus && cancelledBy == lesson.cancelledBy;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, teacher, student, dateUtc, status, cancelingReason);
+        return Objects.hash(id, teacher, student, dateUtc, status, cancelingReason, group, attendanceStatus, cancelledBy);
     }
 
     @Override
@@ -107,6 +161,9 @@ public class Lesson {
                 ", dateUtc=" + dateUtc +
                 ", status=" + status +
                 ", cancelingReason=" + cancelingReason +
+                ", group=" + group +
+                ", attendanceStatus=" + attendanceStatus +
+                ", cancelledBy=" + cancelledBy +
                 '}';
     }
 }
