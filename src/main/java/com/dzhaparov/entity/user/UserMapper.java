@@ -12,7 +12,7 @@ public class UserMapper {
         }
         User user = new User();
         user.setId(dto.id());
-        user.setRoles(dto.roles());
+        user.setRole(dto.roles());
         user.setFirst_name(dto.first_name());
         user.setLast_name(dto.last_name());
         user.setEmail(dto.email());
@@ -27,7 +27,7 @@ public class UserMapper {
         }
         return new UserDtoRequest(
                 user.getId(),
-                user.getRoles(),
+                user.getRole(),
                 user.getFirst_name(),
                 user.getLast_name(),
                 user.getEmail(),

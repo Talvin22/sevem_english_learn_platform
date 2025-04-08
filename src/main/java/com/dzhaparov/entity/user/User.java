@@ -1,5 +1,6 @@
 package com.dzhaparov.entity.user;
 
+import com.dzhaparov.entity.group.Group;
 import com.dzhaparov.entity.role.Role;
 import jakarta.persistence.*;
 
@@ -24,6 +25,9 @@ public class User {
     private String hashed_password;
     @Column(nullable = false)
     private Double salaryPerLesson;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "group_id")
+    private Group group;
 
     public boolean isTeacher() {
         return this.role == Role.TEACHER;
@@ -41,12 +45,12 @@ public class User {
         this.id = id;
     }
 
-    public Role getRoles() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRoles(Role roles) {
-        this.role = roles;
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public String getFirst_name() {
@@ -89,29 +93,38 @@ public class User {
         this.salaryPerLesson = salaryPerLesson;
     }
 
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && role == user.role && Objects.equals(first_name, user.first_name) && Objects.equals(last_name, user.last_name) && Objects.equals(email, user.email) && Objects.equals(hashed_password, user.hashed_password) && Objects.equals(salaryPerLesson, user.salaryPerLesson);
+        return Objects.equals(id, user.id) && role == user.role && Objects.equals(first_name, user.first_name) && Objects.equals(last_name, user.last_name) && Objects.equals(email, user.email) && Objects.equals(hashed_password, user.hashed_password) && Objects.equals(salaryPerLesson, user.salaryPerLesson) && Objects.equals(group, user.group);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, role, first_name, last_name, email, hashed_password, salaryPerLesson);
+        return Objects.hash(id, role, first_name, last_name, email, hashed_password, salaryPerLesson, group);
     }
 
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", roles=" + role +
+                ", role=" + role +
                 ", first_name='" + first_name + '\'' +
                 ", last_name='" + last_name + '\'' +
                 ", email='" + email + '\'' +
                 ", hashed_password='" + hashed_password + '\'' +
                 ", salaryPerLesson=" + salaryPerLesson +
+                ", group=" + group +
                 '}';
     }
 }
