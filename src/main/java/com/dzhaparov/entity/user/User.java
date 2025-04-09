@@ -23,7 +23,7 @@ public class User {
     private String email;
     @Column(nullable = false)
     private String hashed_password;
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Double salaryPerLesson;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")
