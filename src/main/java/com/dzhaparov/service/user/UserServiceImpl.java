@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -51,9 +52,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> readAll() {
-        return List.of();
+    public Optional<List<User>> readAllStudentsOfTeacher() {
+        return Optional.empty();
     }
+
 
     @Override
     public User getById(Long id) {
@@ -67,6 +69,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean deleteById(Long id) {
-        return false;
+        logger.info("Trying to delete user with id: {}", id);
+
+        return userRepository.findById(id).map(user -> {
+            userRepository.deleteById(id);
+            logger.info("User with id {} was deleted", id);
+            return true;
+        }).orElseThrow(() -> {
+            logger.warn("User with id {} not found", id);
+            return new IllegalArgumentException("User with id " + id + " does not exist");
+        });
     }
 }

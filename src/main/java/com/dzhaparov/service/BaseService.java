@@ -1,11 +1,12 @@
 package com.dzhaparov.service;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BaseService<T, S> {
     T create(S request);
 
-    List<T> readAll();
+    Optional<List<T>> readAllStudentsOfTeacher();
 
     T getById(Long id);
 
