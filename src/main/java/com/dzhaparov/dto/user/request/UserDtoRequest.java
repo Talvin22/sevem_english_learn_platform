@@ -1,5 +1,6 @@
 package com.dzhaparov.dto.user.request;
 
+import com.dzhaparov.entity.group.Group;
 import com.dzhaparov.entity.role.Role;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -10,5 +11,6 @@ public record UserDtoRequest(Long id,
                              String last_name,
                              String email,
                              String password,
-                             String salaryPerLesson) {
+                             Double salaryPerLesson,
+                             Group group) {
 }

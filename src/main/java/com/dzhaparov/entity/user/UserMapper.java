@@ -17,7 +17,8 @@ public class UserMapper {
         user.setLast_name(dto.last_name());
         user.setEmail(dto.email());
         user.setHashed_password(dto.password());
-        user.setSalaryPerLesson(Double.parseDouble(dto.salaryPerLesson()));
+        user.setSalaryPerLesson(dto.salaryPerLesson());
+        user.setGroup(dto.group());
         return user;
     }
 
@@ -32,7 +33,8 @@ public class UserMapper {
                 user.getLast_name(),
                 user.getEmail(),
                 user.getHashed_password(),
-                user.getSalaryPerLesson().toString()
+                user.getSalaryPerLesson(),
+                user.getGroup()
         );
     }
 }
