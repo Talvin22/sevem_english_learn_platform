@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.time.ZonedDateTime;
 
+// Teacher/student create a lesson
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record LessonDtoCreateRequest(
         Long teacherId,
