@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 
 import java.time.ZonedDateTime;
 
+// Confirmation of successful lesson creation
 public record LessonDtoCreateResponse(
         int statusCode,
         String reasonPhrase,
