@@ -1,4 +1,4 @@
-package com.dzhaparov.dto.homework;
+package com.dzhaparov.dto.homework.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
