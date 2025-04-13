@@ -19,5 +19,5 @@ public interface StudentService {
 
     GroupDtoResponse getMyGroup(Long studentId);
 
-    UserProfileDtoResponse getProfile(Long studentId);
+    UserProfileDtoResponse getProfile(Long userId);
 }
