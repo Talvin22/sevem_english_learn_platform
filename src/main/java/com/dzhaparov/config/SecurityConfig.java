@@ -23,10 +23,20 @@ public class SecurityConfig {
                         .requestMatchers("/test").authenticated()
                         .anyRequest().permitAll()
                 )
-                .formLogin(Customizer.withDefaults())
-                .logout(logout -> logout.logoutSuccessUrl("/"))
-                .httpBasic(Customizer.withDefaults());
-
+                .formLogin(form ->
+                        form
+                                .loginPage("/auth/login")
+                                .loginProcessingUrl("/login")
+                                .defaultSuccessUrl("/", true)
+                                .failureUrl("/auth/login?error=true")
+                                .permitAll()
+                )
+                .logout(logout ->
+                        logout
+                                .logoutUrl("/logout")
+                                .logoutSuccessUrl("/auth/login?logout=true")
+                                .permitAll()
+                );
         return http.build();
     }
 
