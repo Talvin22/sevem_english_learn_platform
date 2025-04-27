@@ -1,0 +1,96 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #4a90e2, #9013fe);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    color: #333;
+}
+
+.container {
+    background: #ffffff;
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    max-width: 90%;
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 25px;
+    color: #333333;
+    font-weight: 600;
+    font-size: 24px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch; /* растягиваем все элементы формы одинаково */
+    width: 100%;
+    margin-top: 20px;
+}
+
+input, select, button {
+    font-size: 14px;
+    padding: 12px 15px;
+    margin-bottom: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    transition: all 0.3s;
+    width: 100%;
+    box-sizing: border-box; /* чтобы padding не ломал ширину */
+}
+
+input:focus, select:focus {
+    border-color: #4a90e2;
+    outline: none;
+    box-shadow: 0 0 8px rgba(74, 144, 226, 0.2);
+}
+
+button {
+    background: #4a90e2;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #357ab8;
+}
+
+.error {
+    background-color: #fdecea;
+    color: #e74c3c;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.success {
+    background-color: #eafaf1;
+    color: #2ecc71;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+select {
+    appearance: none;
+    background: url('data:image/svg+xml;utf8,<svg fill="gray" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 12px center/18px 18px;
+    background-color: white;
+}
+.form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    margin-top: 20px;
+}
