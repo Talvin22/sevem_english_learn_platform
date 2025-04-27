@@ -11,7 +11,7 @@ public record RegisterResponse(
         Long userId
 ) {
     public static final String SUCCESS_MESSAGE = "Registration successful.";
-    public static final String FAILURE_MESSAGE = "Registration failed.";
+    public static final String FAILURE_MESSAGE = "This email is already registered.";
 
     public static RegisterResponse success(Long userId) {
         return new RegisterResponse(
