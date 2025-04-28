@@ -20,7 +20,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/test").authenticated()
+                        .requestMatchers("/home").authenticated()
                         .anyRequest().permitAll()
                 )
                 .formLogin(form ->
