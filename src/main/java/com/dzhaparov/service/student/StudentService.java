@@ -6,9 +6,11 @@ import com.dzhaparov.dto.homework.response.HomeworkDtoSubmitResponse;
 import com.dzhaparov.dto.lesson.response.LessonDtoListResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoListResponse;
 import com.dzhaparov.dto.user.response.UserProfileDtoResponse;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public interface StudentService {
 
     List<LessonDtoListResponse> getMyLessons(Long studentId);
