@@ -1,13 +1,19 @@
 package com.dzhaparov.service.home;
 
 import com.dzhaparov.dto.group.response.GroupDtoResponse;
+import com.dzhaparov.dto.home.response.HomePageDataResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoListResponse;
 import com.dzhaparov.dto.lesson.response.LessonDtoListResponse;
 import com.dzhaparov.dto.user.response.UserDtoListResponse;
 
 import java.util.List;
+
+import com.dzhaparov.entity.role.Role;
+import com.dzhaparov.entity.user.User;
+import com.dzhaparov.repository.user.UserRepository;
 import com.dzhaparov.service.student.StudentService;
 import com.dzhaparov.service.teacher.TeacherService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 
@@ -16,10 +22,38 @@ public class HomeServiceImpl implements HomeService {
 
     private final StudentService studentService;
     private final TeacherService teacherService;
+    private final UserRepository userRepository;
 
-    public HomeServiceImpl(StudentService studentService, TeacherService teacherService) {
+    public HomeServiceImpl(StudentService studentService, TeacherService teacherService, UserRepository userRepository) {
         this.studentService = studentService;
         this.teacherService = teacherService;
+        this.userRepository = userRepository;
+    }
+
+    @Override
+    public HomePageDataResponse getHomePageData(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        if (user.getRole() == Role.STUDENT) {
+            return new HomePageDataResponse(
+                    studentService.getMyLessons(user.getId()),
+                    studentService.getMyHomeworks(user.getId()),
+                    studentService.getMyGroup(user.getId()),
+                    null,
+                    null
+            );
+        } else if (user.getRole() == Role.TEACHER) {
+            return new HomePageDataResponse(
+                    teacherService.getMyLessons(user.getId()),
+                    teacherService.getHomeworksToCheck(user.getId()),
+                    null,
+                    teacherService.getMyStudents(user.getId()),
+                    teacherService.getGroupsForTeacher(user.getId())
+            );
+        } else {
+            throw new IllegalStateException("Unknown role: " + user.getRole());
+        }
     }
 
     @Override

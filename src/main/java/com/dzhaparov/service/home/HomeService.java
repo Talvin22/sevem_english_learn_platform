@@ -2,6 +2,7 @@ package com.dzhaparov.service.home;
 
 
 import com.dzhaparov.dto.group.response.GroupDtoResponse;
+import com.dzhaparov.dto.home.response.HomePageDataResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoListResponse;
 import com.dzhaparov.dto.lesson.response.LessonDtoListResponse;
 import com.dzhaparov.dto.user.response.UserDtoListResponse;

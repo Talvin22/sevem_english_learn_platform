@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Home Page</title>
+    <link rel="stylesheet" th:href="@{/home.css}">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Welcome to Your Dashboard!</h1>
+
+    <section>
+        <h2>Lessons</h2>
+        <ul th:if="${homePageData.lessons != null}" th:each="lesson : ${homePageData.lessons.lessons}">
+            <li>
+                <strong th:text="${lesson.dateUtc}"></strong> -
+                <span th:text="${lesson.teacherName}"></span> /
+                <span th:text="${lesson.studentName}"></span> /
+                <span th:text="${lesson.groupName}"></span> /
+                <em th:text="${lesson.status}"></em>
+            </li>
+        </ul>
+        <p th:if="${homePageData.lessons == null}">No lessons found.</p>
+    </section>
+
+    <section>
+        <h2>Homeworks</h2>
+        <ul th:if="${homePageData.homeworks != null}" th:each="homework : ${homePageData.homeworks.homeworks}">
+            <li>
+                <span th:text="${homework.content}"></span> /
+                <em th:text="${homework.status}"></em>
+            </li>
+        </ul>
+        <p th:if="${homePageData.homeworks == null}">No homeworks found.</p>
+    </section>
+
+    <section th:if="${homePageData.studentGroup != null}">
+        <h2>My Group</h2>
+        <p th:text="${homePageData.studentGroup.name}"></p>
+    </section>
+
+    <section th:if="${homePageData.teacherStudents != null}">
+        <h2>My Students</h2>
+        <ul th:each="student : ${homePageData.teacherStudents}">
+            <li th:text="${student.firstName + ' ' + student.lastName}"></li>
+        </ul>
+    </section>
+
+    <section th:if="${homePageData.teacherGroups != null}">
+        <h2>My Groups</h2>
+        <ul th:each="group : ${homePageData.teacherGroups}">
+            <li th:text="${group.name}"></li>
+        </ul>
+    </section>
+
+</div>
+
+</body>
+</html>
