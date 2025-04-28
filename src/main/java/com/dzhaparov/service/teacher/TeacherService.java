@@ -14,6 +14,8 @@ import java.util.List;
 @Service
 public interface TeacherService {
 
+    List<GroupDtoResponse> getGroupsForTeacher(Long teacherId);
+
     List<UserDtoListResponse> getMyStudents(Long teacherId);
 
     List<LessonDtoListResponse> getMyLessons(Long teacherId);
