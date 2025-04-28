@@ -18,9 +18,9 @@ public interface TeacherService {
 
     List<UserDtoListResponse> getMyStudents(Long teacherId);
 
-    List<LessonDtoListResponse> getMyLessons(Long teacherId);
+    LessonDtoListResponse getMyLessons(Long teacherId);
 
-    List<HomeworkDtoListResponse> getHomeworksToCheck(Long teacherId);
+    HomeworkDtoListResponse getHomeworksToCheck(Long teacherId);
 
     HomeworkDtoGradeResponse gradeHomework(HomeworkDtoGradeRequest request);
 

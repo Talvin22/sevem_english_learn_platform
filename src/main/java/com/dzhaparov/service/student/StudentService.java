@@ -13,9 +13,9 @@ import java.util.List;
 @Service
 public interface StudentService {
 
-    List<LessonDtoListResponse> getMyLessons(Long studentId);
+    LessonDtoListResponse getMyLessons(Long studentId);
 
-    List<HomeworkDtoListResponse> getMyHomeworks(Long studentId);
+    HomeworkDtoListResponse getMyHomeworks(Long studentId);
 
     HomeworkDtoSubmitResponse submitHomework(Long studentId, HomeworkDtoSubmitRequest request);
 

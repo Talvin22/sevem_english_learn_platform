@@ -10,6 +10,8 @@ import java.util.List;
 
 public interface HomeService {
 
+    HomePageDataResponse getHomePageData(String email);
+
     LessonDtoListResponse getLessonsForStudent(Long studentId);
 
     LessonDtoListResponse getLessonsForTeacher(Long teacherId);
