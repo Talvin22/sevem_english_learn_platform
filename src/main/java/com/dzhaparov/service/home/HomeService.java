@@ -6,6 +6,7 @@ import com.dzhaparov.dto.home.response.HomePageDataResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoListResponse;
 import com.dzhaparov.dto.lesson.response.LessonDtoListResponse;
 import com.dzhaparov.dto.user.response.UserDtoListResponse;
+import com.dzhaparov.dto.user.response.UserProfileDtoResponse;
 
 import java.util.List;
 
@@ -25,5 +26,5 @@ public interface HomeService {
 
     HomeworkDtoListResponse getHomeworkSummaryForTeacher(Long teacherId);
 
-    List<UserDtoListResponse> getStudentsForTeacher(Long teacherId);
+    List<UserProfileDtoResponse> getStudentsForTeacher(Long teacherId);
 }

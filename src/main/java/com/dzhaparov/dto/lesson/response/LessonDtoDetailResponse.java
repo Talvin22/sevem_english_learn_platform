@@ -1,7 +1,7 @@
 package com.dzhaparov.dto.lesson.response;
 
-import com.dzhaparov.entity.lesson.LessonStatus;
 import com.dzhaparov.entity.lesson.CancelingReasons;
+import com.dzhaparov.entity.lesson.LessonStatus;
 
 import java.time.ZonedDateTime;
 

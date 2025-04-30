@@ -5,7 +5,6 @@ import com.dzhaparov.dto.homework.request.HomeworkDtoGradeRequest;
 import com.dzhaparov.dto.homework.response.HomeworkDtoGradeResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoListResponse;
 import com.dzhaparov.dto.lesson.response.LessonDtoListResponse;
-import com.dzhaparov.dto.user.response.UserDtoListResponse;
 import com.dzhaparov.dto.user.response.UserProfileDtoResponse;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +15,7 @@ public interface TeacherService {
 
     List<GroupDtoResponse> getGroupsForTeacher(Long teacherId);
 
-    List<UserDtoListResponse> getMyStudents(Long teacherId);
+    List<UserProfileDtoResponse> getMyStudents(Long teacherId);
 
     LessonDtoListResponse getMyLessons(Long teacherId);
 

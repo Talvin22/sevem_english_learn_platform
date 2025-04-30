@@ -47,7 +47,7 @@ public class StudentServiceImpl implements StudentService {
                         lesson.getCancelledBy()
                 )).collect(Collectors.toList());
 
-        return new LessonDtoListResponse(dtoList);
+        return LessonDtoListResponse.of(dtoList);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class StudentServiceImpl implements StudentService {
                         hw.getGrade()
                 )).collect(Collectors.toList());
 
-        return new HomeworkDtoListResponse(dtoList);
+        return HomeworkDtoListResponse.of(dtoList);
     }
 
     @Override

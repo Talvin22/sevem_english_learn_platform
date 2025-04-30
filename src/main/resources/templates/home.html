@@ -16,8 +16,8 @@
         <ul th:if="${homePageData.lessons != null}" th:each="lesson : ${homePageData.lessons.lessons}">
             <li>
                 <strong th:text="${lesson.dateUtc}"></strong> -
-                <span th:text="${lesson.teacherName}"></span> /
-                <span th:text="${lesson.studentName}"></span> /
+                <span th:text="${lesson.teacherFullName}"></span> /
+                <span th:text="${lesson.studentFullName}"></span> /
                 <span th:text="${lesson.groupName}"></span> /
                 <em th:text="${lesson.status}"></em>
             </li>
@@ -29,7 +29,7 @@
         <h2>Homeworks</h2>
         <ul th:if="${homePageData.homeworks != null}" th:each="homework : ${homePageData.homeworks.homeworks}">
             <li>
-                <span th:text="${homework.content}"></span> /
+                <span th:text="'Lesson ID: ' + ${homework.lessonId}"></span> /
                 <em th:text="${homework.status}"></em>
             </li>
         </ul>

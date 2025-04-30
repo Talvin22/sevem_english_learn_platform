@@ -7,8 +7,8 @@ import com.dzhaparov.dto.homework.response.HomeworkDtoGradeResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoListResponse;
 import com.dzhaparov.dto.lesson.response.LessonDtoDetailResponse;
 import com.dzhaparov.dto.lesson.response.LessonDtoListResponse;
-import com.dzhaparov.dto.user.response.UserDtoListResponse;
 import com.dzhaparov.dto.user.response.UserProfileDtoResponse;
+import com.dzhaparov.entity.user.User;
 import com.dzhaparov.repository.group.GroupRepository;
 import com.dzhaparov.repository.homework.HomeworkRepository;
 import com.dzhaparov.repository.lesson.LessonRepository;
@@ -38,9 +38,18 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public UserDtoListResponse getMyStudents(Long teacherId) {
+    public List<UserProfileDtoResponse> getMyStudents(Long teacherId) {
         var students = userRepository.findAllByGroup_Teacher_Id(teacherId);
-        return UserDtoListResponse.of(students.isEmpty(), students);
+        return students.stream()
+                .map(user -> new UserProfileDtoResponse(
+                        user.getId(),
+                        user.getFirst_name(),
+                        user.getLast_name(),
+                        user.getEmail(),
+                        user.getRole(),
+                        user.getGroup(),
+                        user.getSalaryPerLesson()
+                )).collect(Collectors.toList());
     }
 
     @Override
@@ -58,7 +67,7 @@ public class TeacherServiceImpl implements TeacherService {
                         lesson.getCancelledBy()
                 )).collect(Collectors.toList());
 
-        return new LessonDtoListResponse(dtoList);
+        return LessonDtoListResponse.of(dtoList);
     }
 
     @Override
@@ -73,7 +82,7 @@ public class TeacherServiceImpl implements TeacherService {
                         hw.getGrade()
                 )).collect(Collectors.toList());
 
-        return new HomeworkDtoListResponse(dtoList);
+        return HomeworkDtoListResponse.of(dtoList);
     }
 
     @Override

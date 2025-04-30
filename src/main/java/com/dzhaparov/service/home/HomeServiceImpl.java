@@ -4,10 +4,7 @@ import com.dzhaparov.dto.group.response.GroupDtoResponse;
 import com.dzhaparov.dto.home.response.HomePageDataResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoListResponse;
 import com.dzhaparov.dto.lesson.response.LessonDtoListResponse;
-import com.dzhaparov.dto.user.response.UserDtoListResponse;
-
-import java.util.List;
-
+import com.dzhaparov.dto.user.response.UserProfileDtoResponse;
 import com.dzhaparov.entity.role.Role;
 import com.dzhaparov.entity.user.User;
 import com.dzhaparov.repository.user.UserRepository;
@@ -15,6 +12,8 @@ import com.dzhaparov.service.student.StudentService;
 import com.dzhaparov.service.teacher.TeacherService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 @Service
@@ -54,8 +53,7 @@ public class HomeServiceImpl implements HomeService {
 
         } else if (user.getRole() == Role.ADMIN) {
             throw new UnsupportedOperationException("Admin home page not implemented yet");
-        }
-        else {
+        } else {
             throw new IllegalStateException("Unknown role: " + user.getRole());
         }
     }
@@ -91,7 +89,7 @@ public class HomeServiceImpl implements HomeService {
     }
 
     @Override
-    public List<UserDtoListResponse> getStudentsForTeacher(Long teacherId) {
+    public List<UserProfileDtoResponse> getStudentsForTeacher(Long teacherId) {
         return teacherService.getMyStudents(teacherId);
     }
 }
