@@ -38,11 +38,9 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public List<UserDtoListResponse> getMyStudents(Long teacherId) {
+    public UserDtoListResponse getMyStudents(Long teacherId) {
         var students = userRepository.findAllByGroup_Teacher_Id(teacherId);
-        return students.stream()
-                .map(user -> new UserDtoListResponse(user.getId(), user.getFirst_name(), user.getLast_name(), user.getEmail()))
-                .collect(Collectors.toList());
+        return UserDtoListResponse.of(students.isEmpty(), students);
     }
 
     @Override
