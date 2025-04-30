@@ -32,11 +32,7 @@ public class TeacherServiceImpl implements TeacherService {
     public HomeworkDtoListResponse getHomeworksToCheck(Long teacherId) {
 
         return new HomeworkDtoListResponse(
-                null, // id
-                null, // lessonId
-                null, // lessonDate
-                null, // статус
-                null  // оценка
+                null
         );
     }
 

@@ -13,5 +13,5 @@ public record LessonDtoDetailResponse(
         ZonedDateTime dateUtc,
         LessonStatus status,
         CancelingReasons cancelingReason,
-        String cancelledBy
+        com.dzhaparov.entity.lesson.attendance.CancelledBy cancelledBy
 ) {}

@@ -10,11 +10,19 @@ import java.util.Objects;
 @Entity
 @Table(name = "groups")
 public class Group {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
+
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive = true;
+
+    @ManyToOne
+    @JoinColumn(name = "teacher_id")
+    private User teacher;
 
     @OneToMany(mappedBy = "group")
     private List<User> students;
@@ -22,49 +30,67 @@ public class Group {
     @OneToMany(mappedBy = "group")
     private List<Lesson> lessons;
 
+    // --- Геттеры ---
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public Boolean getIsActive() {
+        return isActive;
+    }
+
+    public User getTeacher() {
+        return teacher;
     }
 
     public List<User> getStudents() {
         return students;
     }
 
-    public void setStudents(List<User> students) {
-        this.students = students;
-    }
-
     public List<Lesson> getLessons() {
         return lessons;
+    }
+
+    // --- Сеттеры ---
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public void setTeacher(User teacher) {
+        this.teacher = teacher;
+    }
+
+    public void setStudents(List<User> students) {
+        this.students = students;
     }
 
     public void setLessons(List<Lesson> lessons) {
         this.lessons = lessons;
     }
 
+    // --- equals / hashCode / toString ---
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Group group = (Group) o;
-        return Objects.equals(id, group.id) && Objects.equals(name, group.name) && Objects.equals(students, group.students) && Objects.equals(lessons, group.lessons);
+        if (!(o instanceof Group group)) return false;
+        return Objects.equals(id, group.id) && Objects.equals(name, group.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, students, lessons);
+        return Objects.hash(id, name);
     }
 
     @Override
@@ -72,8 +98,8 @@ public class Group {
         return "Group{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", students=" + students +
-                ", lessons=" + lessons +
+                ", isActive=" + isActive +
+                ", teacher=" + (teacher != null ? teacher.getId() : null) +
                 '}';
     }
 }

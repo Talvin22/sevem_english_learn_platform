@@ -51,7 +51,11 @@ public class HomeServiceImpl implements HomeService {
                     teacherService.getMyStudents(user.getId()),
                     teacherService.getGroupsForTeacher(user.getId())
             );
-        } else {
+
+        } else if (user.getRole() == Role.ADMIN) {
+            throw new UnsupportedOperationException("Admin home page not implemented yet");
+        }
+        else {
             throw new IllegalStateException("Unknown role: " + user.getRole());
         }
     }

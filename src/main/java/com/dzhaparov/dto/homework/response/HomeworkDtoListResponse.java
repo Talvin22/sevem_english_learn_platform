@@ -1,13 +1,7 @@
 package com.dzhaparov.dto.homework.response;
 
-import com.dzhaparov.entity.homework.HomeworkStatus;
-
-import java.time.LocalDateTime;
+import java.util.List;
 
 public record HomeworkDtoListResponse(
-        Long id,
-        Long lessonId,
-        LocalDateTime lessonDate,
-        HomeworkStatus status,
-        Integer grade
+        List<HomeworkDtoDetailResponse> homeworks
 ) {}
