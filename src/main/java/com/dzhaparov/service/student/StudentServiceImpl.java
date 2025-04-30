@@ -12,6 +12,7 @@ import com.dzhaparov.repository.group.GroupRepository;
 import com.dzhaparov.repository.homework.HomeworkRepository;
 import com.dzhaparov.repository.lesson.LessonRepository;
 import com.dzhaparov.repository.user.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
@@ -75,12 +76,16 @@ public class StudentServiceImpl implements StudentService {
         var group = user.getGroup();
 
         return new GroupDtoResponse(
+                HttpStatus.OK.value(),
+                HttpStatus.OK.getReasonPhrase(),
+                true,
+                "Group fetched successfully.",
                 group.getId(),
                 group.getName(),
-                group.isActive(),
+                group.getIsActive(),
                 group.getTeacher().getFirst_name() + " " + group.getTeacher().getLast_name(),
-                null, // groupSchedule
-                null // students
+                null,
+                null
         );
     }
 
