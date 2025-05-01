@@ -4,4 +4,5 @@ public enum LessonStatus {
     COMPLETED,
     CANCELLED,
     IN_PROGRESS,
+    PLANNED
 }
