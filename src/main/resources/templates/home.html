@@ -4,6 +4,62 @@
     <meta charset="UTF-8">
     <title>Home Page</title>
     <link rel="stylesheet" th:href="@{/home.css}">
+    <script th:inline="javascript">
+        function toggleSection(id) {
+            const section = document.getElementById(id);
+            section.style.display = section.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right, #a2ded0, #dff9fb);
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #333;
+        }
+
+        .card {
+            background-color: #f8f9fc;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #3366cc;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .lesson-item, .homework-item, .group-item, .student-item {
+            background-color: white;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
 <body>
 
@@ -11,49 +67,68 @@
 
     <h1>Welcome to Your Dashboard!</h1>
 
-    <section>
-        <h2>Lessons</h2>
-        <ul th:if="${homePageData.lessons != null}" th:each="lesson : ${homePageData.lessons.lessons}">
-            <li>
-                <strong th:text="${lesson.dateUtc}"></strong> -
+    <!-- LESSONS -->
+    <div class="card">
+        <div class="section-title" onclick="toggleSection('lessonsSection')">
+            Lessons
+        </div>
+        <div id="lessonsSection" style="display: none;">
+            <div th:each="lesson : ${homePageData.lessons.lessons}" class="lesson-item">
+                <strong th:text="${lesson.dateUtc}"></strong><br/>
                 <span th:text="${lesson.teacherFullName}"></span> /
-                <span th:text="${lesson.studentFullName}"></span> /
-                <span th:text="${lesson.groupName}"></span> /
+                <span th:text="${lesson.studentFullName}"></span><br/>
+                <span th:text="${lesson.groupName}"></span><br/>
                 <em th:text="${lesson.status}"></em>
-            </li>
-        </ul>
-        <p th:if="${homePageData.lessons == null}">No lessons found.</p>
-    </section>
+            </div>
+            <p th:if="${homePageData.lessons == null}">No lessons found.</p>
+        </div>
+    </div>
 
-    <section>
-        <h2>Homeworks</h2>
-        <ul th:if="${homePageData.homeworks != null}" th:each="homework : ${homePageData.homeworks.homeworks}">
-            <li>
-                <span th:text="'Lesson ID: ' + ${homework.lessonId}"></span> /
+    <!-- HOMEWORKS -->
+    <div class="card">
+        <div class="section-title" onclick="toggleSection('homeworksSection')">
+            Homeworks
+        </div>
+        <div id="homeworksSection" style="display: none;">
+            <div th:each="homework : ${homePageData.homeworks.homeworks}" class="homework-item">
+                <strong>Lesson ID:</strong> <span th:text="${homework.lessonId}"></span><br/>
                 <em th:text="${homework.status}"></em>
-            </li>
-        </ul>
-        <p th:if="${homePageData.homeworks == null}">No homeworks found.</p>
-    </section>
+            </div>
+            <p th:if="${homePageData.homeworks == null}">No homeworks found.</p>
+        </div>
+    </div>
 
-    <section th:if="${homePageData.studentGroup != null}">
-        <h2>My Group</h2>
-        <p th:text="${homePageData.studentGroup.name}"></p>
-    </section>
+    <!-- MY GROUP -->
+    <div class="card" th:if="${homePageData.studentGroup != null}">
+        <div class="section-title" onclick="toggleSection('groupSection')">
+            My Group
+        </div>
+        <div id="groupSection" style="display: none;">
+            <div class="group-item" th:text="${homePageData.studentGroup.name}"></div>
+        </div>
+    </div>
 
-    <section th:if="${homePageData.teacherStudents != null}">
-        <h2>My Students</h2>
-        <ul th:each="student : ${homePageData.teacherStudents}">
-            <li th:text="${student.firstName + ' ' + student.lastName}"></li>
-        </ul>
-    </section>
+    <!-- MY STUDENTS -->
+    <div class="card" th:if="${homePageData.teacherStudents != null}">
+        <div class="section-title" onclick="toggleSection('studentsSection')">
+            My Students
+        </div>
+        <div id="studentsSection" style="display: none;">
+            <div th:each="student : ${homePageData.teacherStudents}" class="student-item"
+                 th:text="${student.firstName + ' ' + student.lastName}"></div>
+        </div>
+    </div>
 
-    <section th:if="${homePageData.teacherGroups != null}">
-        <h2>My Groups</h2>
-        <ul th:each="group : ${homePageData.teacherGroups}">
-            <li th:text="${group.name}"></li>
-        </ul>
-    </section>
+    <!-- MY GROUPS -->
+    <div class="card" th:if="${homePageData.teacherGroups != null}">
+        <div class="section-title" onclick="toggleSection('teacherGroupsSection')">
+            My Groups
+        </div>
+        <div id="teacherGroupsSection" style="display: none;">
+            <div th:each="group : ${homePageData.teacherGroups}" class="group-item"
+                 th:text="${group.name}"></div>
+        </div>
+    </div>
 
 </div>
 
