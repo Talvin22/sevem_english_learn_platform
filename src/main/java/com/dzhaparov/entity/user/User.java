@@ -28,6 +28,9 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")
     private Group group;
+    @ManyToOne
+    @JoinColumn(name = "teacher_id")
+    private User teacher;
 
     public boolean isTeacher() {
         return this.role == Role.TEACHER;

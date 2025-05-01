@@ -1,6 +1,7 @@
 package com.dzhaparov.service.lesson;
 
 import com.dzhaparov.dto.lesson.request.CreateLessonRequest;
+import com.dzhaparov.dto.user.response.UserDtoDetailResponse;
 import com.dzhaparov.entity.lesson.Lesson;
 import com.dzhaparov.entity.lesson.LessonStatus;
 import com.dzhaparov.entity.user.User;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Service
 public class LessonService {
@@ -36,5 +38,15 @@ public class LessonService {
         lesson.setStatus(LessonStatus.PLANNED);
 
         lessonRepository.save(lesson);
+    }
+    public List<UserDtoDetailResponse> getAllStudentsForTeacher(String email) {
+        User teacher = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Teacher not found"));
+
+        List<User> students = userRepository.findAllByTeacherId(teacher.getId());
+
+        return students.stream()
+                .map(student -> new UserDtoDetailResponse(student.getId(), student.getFirst_name(), student.getLast_name(), student.getEmail()))
+                .toList();
     }
 }
