@@ -2,6 +2,7 @@ package com.dzhaparov.service.lesson;
 
 import com.dzhaparov.dto.lesson.request.CreateLessonRequest;
 import com.dzhaparov.entity.lesson.Lesson;
+import com.dzhaparov.entity.lesson.LessonStatus;
 import com.dzhaparov.entity.user.User;
 import com.dzhaparov.repository.lesson.LessonRepository;
 import com.dzhaparov.repository.user.UserRepository;
@@ -32,7 +33,7 @@ public class LessonService {
         lesson.setTeacher(teacher);
         lesson.setStudent(student);
         lesson.setDateUtc(ZonedDateTime.from(LocalDateTime.parse(request.getDateTime())));
-        lesson.setStatus("PLANNED");
+        lesson.setStatus(LessonStatus.PLANNED);
 
         lessonRepository.save(lesson);
     }
