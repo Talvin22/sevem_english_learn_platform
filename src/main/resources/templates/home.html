@@ -4,65 +4,54 @@
     <meta charset="UTF-8">
     <title>Home Page</title>
     <link rel="stylesheet" th:href="@{/home.css}">
-    <script th:inline="javascript">
-        function toggleSection(id) {
-            const section = document.getElementById(id);
-            section.style.display = section.style.display === 'none' ? 'block' : 'none';
-        }
-    </script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(to bottom right, #a2ded0, #dff9fb);
+            background: linear-gradient(to right, #a1c4fd, #c2e9fb);
             margin: 0;
-            padding: 40px;
+            padding: 2rem;
         }
-
         .container {
+            background-color: white;
+            border-radius: 12px;
+            padding: 2rem;
             max-width: 800px;
             margin: 0 auto;
-            background-color: white;
-            border-radius: 16px;
-            padding: 30px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
-
         h1 {
             text-align: center;
-            margin-bottom: 40px;
             color: #333;
         }
-
         .card {
-            background-color: #f8f9fc;
-            border-radius: 12px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            padding: 20px;
-            margin-bottom: 20px;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background-color: #f7f9fc;
+            border: 1px solid #d9e2ec;
+            border-radius: 10px;
         }
-
         .section-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             font-size: 1.25rem;
             font-weight: bold;
-            color: #3366cc;
+            margin-bottom: 0.5rem;
             cursor: pointer;
-            margin-bottom: 10px;
+            color: #2f80ed;
+            border-bottom: 2px solid #2f80ed;
+            padding-bottom: 0.3rem;
         }
-
         .lesson-item, .homework-item, .group-item, .student-item {
-            background-color: white;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+            background-color: #ffffff;
             border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+        em {
+            color: #6c757d;
         }
     </style>
 </head>
 <body>
-
 <div class="container">
 
     <h1>Welcome to Your Dashboard!</h1>
@@ -73,14 +62,17 @@
             Lessons
         </div>
         <div id="lessonsSection" style="display: none;">
-            <div th:each="lesson : ${homePageData.lessons.lessons}" class="lesson-item">
+            <div th:if="${homePageData.lessons != null and #lists.isEmpty(homePageData.lessons.lessons)}">
+                <p><em>No lessons found.</em></p>
+            </div>
+            <div th:if="${homePageData.lessons != null and !#lists.isEmpty(homePageData.lessons.lessons)}"
+                 th:each="lesson : ${homePageData.lessons.lessons}" class="lesson-item">
                 <strong th:text="${lesson.dateUtc}"></strong><br/>
                 <span th:text="${lesson.teacherFullName}"></span> /
                 <span th:text="${lesson.studentFullName}"></span><br/>
                 <span th:text="${lesson.groupName}"></span><br/>
                 <em th:text="${lesson.status}"></em>
             </div>
-            <p th:if="${homePageData.lessons == null}">No lessons found.</p>
         </div>
     </div>
 
@@ -90,47 +82,67 @@
             Homeworks
         </div>
         <div id="homeworksSection" style="display: none;">
-            <div th:each="homework : ${homePageData.homeworks.homeworks}" class="homework-item">
+            <div th:if="${homePageData.homeworks != null and #lists.isEmpty(homePageData.homeworks.homeworks)}">
+                <p><em>No homeworks found.</em></p>
+            </div>
+            <div th:if="${homePageData.homeworks != null and !#lists.isEmpty(homePageData.homeworks.homeworks)}"
+                 th:each="homework : ${homePageData.homeworks.homeworks}" class="homework-item">
                 <strong>Lesson ID:</strong> <span th:text="${homework.lessonId}"></span><br/>
                 <em th:text="${homework.status}"></em>
             </div>
-            <p th:if="${homePageData.homeworks == null}">No homeworks found.</p>
         </div>
     </div>
 
     <!-- MY GROUP -->
-    <div class="card" th:if="${homePageData.studentGroup != null}">
+    <div class="card">
         <div class="section-title" onclick="toggleSection('groupSection')">
             My Group
         </div>
         <div id="groupSection" style="display: none;">
-            <div class="group-item" th:text="${homePageData.studentGroup.name}"></div>
+            <div th:if="${homePageData.studentGroup == null}">
+                <p><em>No group assigned.</em></p>
+            </div>
+            <div th:if="${homePageData.studentGroup != null}" class="group-item"
+                 th:text="${homePageData.studentGroup.name}"></div>
         </div>
     </div>
 
     <!-- MY STUDENTS -->
-    <div class="card" th:if="${homePageData.teacherStudents != null}">
+    <div class="card">
         <div class="section-title" onclick="toggleSection('studentsSection')">
             My Students
         </div>
         <div id="studentsSection" style="display: none;">
+            <div th:if="${homePageData.teacherStudents == null or #lists.isEmpty(homePageData.teacherStudents)}">
+                <p><em>No students found.</em></p>
+            </div>
             <div th:each="student : ${homePageData.teacherStudents}" class="student-item"
                  th:text="${student.firstName + ' ' + student.lastName}"></div>
         </div>
     </div>
 
     <!-- MY GROUPS -->
-    <div class="card" th:if="${homePageData.teacherGroups != null}">
+    <div class="card">
         <div class="section-title" onclick="toggleSection('teacherGroupsSection')">
             My Groups
         </div>
         <div id="teacherGroupsSection" style="display: none;">
+            <div th:if="${homePageData.teacherGroups == null or #lists.isEmpty(homePageData.teacherGroups)}">
+                <p><em>No groups found.</em></p>
+            </div>
             <div th:each="group : ${homePageData.teacherGroups}" class="group-item"
                  th:text="${group.name}"></div>
         </div>
     </div>
 
 </div>
+
+<script>
+    function toggleSection(id) {
+        const section = document.getElementById(id);
+        section.style.display = section.style.display === 'none' ? 'block' : 'none';
+    }
+</script>
 
 </body>
 </html>
