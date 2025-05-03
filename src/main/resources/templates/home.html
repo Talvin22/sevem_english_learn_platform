@@ -4,170 +4,66 @@
     <meta charset="UTF-8">
     <title>Home Page</title>
     <link rel="stylesheet" th:href="@{/home.css}">
-    <style>
-        .card {
-            border: 1px solid #ccc;
-            border-radius: 12px;
-            padding: 16px;
-            margin: 10px 0;
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .card h2 {
-            margin-top: 0;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 16px;
-        }
-
-        .lesson, .homework {
-            padding: 6px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .empty-message {
-            color: #999;
-            font-style: italic;
-        }
-
-        .btn {
-            padding: 8px 14px;
-            margin: 8px 0;
-            background: #007bff;
-            border: none;
-            color: white;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            border: 1px solid #ccc;
-            padding: 20px;
-            z-index: 1000;
-            border-radius: 10px;
-        }
-
-        .modal.active {
-            display: block;
-        }
-
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-        }
-
-        .modal-overlay.active {
-            display: block;
-        }
-    </style>
 </head>
 <body>
 
 <div class="container">
+
     <h1>Welcome to Your Dashboard!</h1>
 
-    <div class="grid">
+    <div class="card" style="margin-bottom: 20px;">
+        <h2>Lessons</h2>
+        <a th:href="@{/lessons/create}" class="btn">+ Create Lesson</a>
 
-        <!-- Lessons -->
-        <div class="card">
-            <h2>Lessons</h2>
-            <div th:if="${homePageData.lessons != null and #lists.isNotEmpty(homePageData.lessons.lessons)}">
-                <div th:each="lesson : ${homePageData.lessons.lessons}" class="lesson">
-                    <strong th:text="${lesson.dateUtc}"></strong><br>
-                    <span th:text="${lesson.teacherFullName}"></span> /
-                    <span th:text="${lesson.studentFullName}"></span> /
-                    <span th:text="${lesson.groupName}"></span><br>
-                    <em th:text="${lesson.status}"></em>
-                </div>
+        <div th:if="${homePageData.lessons != null and homePageData.lessons.lessons.size() > 0}">
+            <div th:each="lesson : ${homePageData.lessons.lessons}" class="card-content">
+                <strong th:text="${lesson.dateUtc}"></strong><br>
+                <span th:text="${lesson.teacherFullName}"></span> /
+                <span th:text="${lesson.studentFullName}"></span> /
+                <span th:text="${lesson.groupName}"></span> /
+                <em th:text="${lesson.status}"></em>
             </div>
-            <p th:if="${homePageData.lessons == null or #lists.isEmpty(homePageData.lessons.lessons)}" class="empty-message">No lessons found.</p>
         </div>
+        <p th:if="${homePageData.lessons == null or homePageData.lessons.lessons.size() == 0}">No lessons found.</p>
+    </div>
 
-        <!-- Homeworks -->
-        <div class="card">
-            <h2>Homeworks</h2>
-            <div th:if="${homePageData.homeworks != null and #lists.isNotEmpty(homePageData.homeworks.homeworks)}">
-                <div th:each="homework : ${homePageData.homeworks.homeworks}" class="homework">
-                    <span th:text="'Lesson ID: ' + ${homework.lessonId}"></span> /
-                    <em th:text="${homework.status}"></em>
-                </div>
+    <div class="card" style="margin-bottom: 20px;">
+        <h2>Homeworks</h2>
+        <div th:if="${homePageData.homeworks != null and homePageData.homeworks.homeworks.size() > 0}">
+            <div th:each="homework : ${homePageData.homeworks.homeworks}" class="card-content">
+                <span th:text="'Lesson ID: ' + ${homework.lessonId}"></span> /
+                <em th:text="${homework.status}"></em>
             </div>
-            <p th:if="${homePageData.homeworks == null or #lists.isEmpty(homePageData.homeworks.homeworks)}" class="empty-message">No homeworks found.</p>
         </div>
+        <p th:if="${homePageData.homeworks == null or homePageData.homeworks.homeworks.size() == 0}">No homeworks found.</p>
+    </div>
 
-        <!-- Student's Group -->
-        <div class="card" th:if="${homePageData.studentGroup != null}">
-            <h2>My Group</h2>
-            <p th:text="${homePageData.studentGroup.name}"></p>
-        </div>
+    <div class="card" th:if="${homePageData.studentGroup != null}" style="margin-bottom: 20px;">
+        <h2>My Group</h2>
+        <p th:text="${homePageData.studentGroup.name}"></p>
+    </div>
 
-        <!-- Teacher's Students -->
-        <div class="card" th:if="${homePageData.teacherStudents != null}">
-            <h2>My Students</h2>
+    <div class="card" style="margin-bottom: 20px;">
+        <h2>My Students</h2>
+        <div th:if="${homePageData.teacherStudents != null and homePageData.teacherStudents.size() > 0}">
             <ul>
                 <li th:each="student : ${homePageData.teacherStudents}" th:text="${student.firstName + ' ' + student.lastName}"></li>
             </ul>
-            <button class="btn" onclick="openModal()">Создать занятие</button>
         </div>
+        <p th:if="${homePageData.teacherStudents == null or homePageData.teacherStudents.size() == 0}">No students found.</p>
+    </div>
 
-        <!-- Teacher's Groups -->
-        <div class="card" th:if="${homePageData.teacherGroups != null}">
-            <h2>My Groups</h2>
+    <div class="card" style="margin-bottom: 20px;">
+        <h2>My Groups</h2>
+        <div th:if="${homePageData.teacherGroups != null and homePageData.teacherGroups.size() > 0}">
             <ul>
                 <li th:each="group : ${homePageData.teacherGroups}" th:text="${group.name}"></li>
             </ul>
         </div>
-
+        <p th:if="${homePageData.teacherGroups == null or homePageData.teacherGroups.size() == 0}">No groups found.</p>
     </div>
+
 </div>
-
-<!-- Modal Overlay -->
-<div class="modal-overlay" id="overlay" onclick="closeModal()"></div>
-
-<!-- Modal -->
-<div class="modal" id="lessonModal">
-    <h2>Новое занятие</h2>
-    <form th:action="@{/lessons/create}" method="post">
-        <label>Выберите ученика:</label>
-        <select name="studentId" required>
-            <option th:each="student : ${homePageData.teacherStudents}"
-                    th:value="${student.id}"
-                    th:text="${student.firstName + ' ' + student.lastName}">
-            </option>
-        </select>
-        <br><br>
-        <label>Дата и время:</label>
-        <input type="datetime-local" name="dateTime" required/>
-        <br><br>
-        <button type="submit" class="btn">Создать</button>
-        <button type="button" class="btn" onclick="closeModal()">Отмена</button>
-    </form>
-</div>
-
-<script>
-    function openModal() {
-        document.getElementById("lessonModal").classList.add("active");
-        document.getElementById("overlay").classList.add("active");
-    }
-
-    function closeModal() {
-        document.getElementById("lessonModal").classList.remove("active");
-        document.getElementById("overlay").classList.remove("active");
-    }
-</script>
 
 </body>
 </html>

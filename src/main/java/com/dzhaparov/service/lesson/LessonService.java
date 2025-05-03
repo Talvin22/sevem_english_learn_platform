@@ -2,15 +2,17 @@ package com.dzhaparov.service.lesson;
 
 import com.dzhaparov.dto.lesson.request.CreateLessonRequest;
 import com.dzhaparov.dto.user.response.UserDtoDetailResponse;
+import com.dzhaparov.entity.group.Group;
 import com.dzhaparov.entity.lesson.Lesson;
 import com.dzhaparov.entity.lesson.LessonStatus;
+import com.dzhaparov.entity.lesson.attendance.LessonAttendanceStatus;
 import com.dzhaparov.entity.user.User;
+import com.dzhaparov.repository.group.GroupRepository;
 import com.dzhaparov.repository.lesson.LessonRepository;
 import com.dzhaparov.repository.user.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -18,15 +20,21 @@ public class LessonService {
 
     private final LessonRepository lessonRepository;
     private final UserRepository userRepository;
+    private final GroupRepository groupRepository;
 
-    public LessonService(LessonRepository lessonRepository, UserRepository userRepository) {
+    public LessonService(LessonRepository lessonRepository, UserRepository userRepository, GroupRepository groupRepository) {
         this.lessonRepository = lessonRepository;
         this.userRepository = userRepository;
+        this.groupRepository = groupRepository;
     }
 
     public void createLesson(CreateLessonRequest request, String teacherEmail) {
         User teacher = userRepository.findByEmail(teacherEmail)
                 .orElseThrow(() -> new RuntimeException("Teacher not found"));
+
+        if (request.getStudentId() == null) {
+            throw new IllegalArgumentException("Student must be selected");
+        }
 
         User student = userRepository.findById(request.getStudentId())
                 .orElseThrow(() -> new RuntimeException("Student not found"));
@@ -34,8 +42,16 @@ public class LessonService {
         Lesson lesson = new Lesson();
         lesson.setTeacher(teacher);
         lesson.setStudent(student);
-        lesson.setDateUtc(ZonedDateTime.from(LocalDateTime.parse(request.getDateTime())));
+        lesson.setDateUtc(request.getDateUtc().atZone(ZoneId.of("UTC")));
         lesson.setStatus(LessonStatus.PLANNED);
+        lesson.setAttendanceStatus(LessonAttendanceStatus.PLANNED);
+
+
+        if (request.getGroupName() != null && !request.getGroupName().isBlank()) {
+            Group group = groupRepository.findByName(request.getGroupName())
+                    .orElseThrow(() -> new RuntimeException("Group not found"));
+            lesson.setGroup(group);
+        }
 
         lessonRepository.save(lesson);
     }
