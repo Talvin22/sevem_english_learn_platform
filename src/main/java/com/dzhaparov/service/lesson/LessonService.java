@@ -2,6 +2,7 @@ package com.dzhaparov.service.lesson;
 
 import com.dzhaparov.dto.lesson.request.CreateLessonRequest;
 import com.dzhaparov.dto.lesson.request.UpdateLessonStatusRequest;
+import com.dzhaparov.dto.lesson.response.LessonEditDtoResponse;
 import com.dzhaparov.dto.user.response.UserDtoDetailResponse;
 import com.dzhaparov.entity.group.Group;
 import com.dzhaparov.entity.lesson.Lesson;
@@ -89,5 +90,21 @@ public class LessonService {
         }
 
         lessonRepository.save(lesson);
+    }
+    public LessonEditDtoResponse getLessonForEdit(Long lessonId) {
+        Lesson lesson = lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new RuntimeException("Lesson not found"));
+
+        return new LessonEditDtoResponse(
+                lesson.getId(),
+                lesson.getTeacher().getFirst_name() + " " + lesson.getTeacher().getLast_name(),
+                lesson.getStudent().getFirst_name() + " " + lesson.getStudent().getLast_name(),
+                lesson.getGroup() != null ? lesson.getGroup().getName() : null,
+                lesson.getDateUtc(),
+                lesson.getStatus(),
+                lesson.getAttendanceStatus(),
+                lesson.getCancelingReason(),
+                lesson.getCancelledBy()
+        );
     }
 }
