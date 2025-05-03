@@ -1,6 +1,7 @@
 package com.dzhaparov.service.lesson;
 
 import com.dzhaparov.dto.lesson.request.CreateLessonRequest;
+import com.dzhaparov.dto.lesson.request.UpdateLessonStatusRequest;
 import com.dzhaparov.dto.user.response.UserDtoDetailResponse;
 import com.dzhaparov.entity.group.Group;
 import com.dzhaparov.entity.lesson.Lesson;
@@ -11,6 +12,7 @@ import com.dzhaparov.repository.group.GroupRepository;
 import com.dzhaparov.repository.lesson.LessonRepository;
 import com.dzhaparov.repository.user.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZoneId;
 import java.util.List;
@@ -64,5 +66,28 @@ public class LessonService {
         return students.stream()
                 .map(student -> new UserDtoDetailResponse(student.getId(), student.getFirst_name(), student.getLast_name(), student.getEmail()))
                 .toList();
+    }
+
+    @Transactional
+    public void updateLessonStatus(UpdateLessonStatusRequest request) {
+        Lesson lesson = lessonRepository.findById(request.lessonId())
+                .orElseThrow(() -> new RuntimeException("Lesson not found"));
+
+        lesson.setStatus(request.status());
+
+        lesson.setAttendanceStatus(request.attendanceStatus());
+
+        if (request.status() == LessonStatus.CANCELLED) {
+            if (request.cancelledBy() == null || request.cancelingReason() == null) {
+                throw new IllegalArgumentException("Cancel reason and who cancelled must be provided for cancelled lessons.");
+            }
+            lesson.setCancelledBy(request.cancelledBy());
+            lesson.setCancelingReason(request.cancelingReason());
+        } else {
+            lesson.setCancelledBy(null);
+            lesson.setCancelingReason(null);
+        }
+
+        lessonRepository.save(lesson);
     }
 }
