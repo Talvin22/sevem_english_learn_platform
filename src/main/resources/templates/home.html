@@ -64,6 +64,116 @@
     </div>
 
 </div>
+<!-- Фрагмент шаблона home.html с модалкой и обновлением статуса урока -->
+<div class="modal" id="lessonModal" style="display:none">
+    <div class="modal-content">
+        <span id="closeModal" style="cursor:pointer">&times;</span>
+        <h3>Lesson Info</h3>
+        <p><strong>Teacher:</strong> <span id="modal-teacher"></span></p>
+        <p><strong>Student:</strong> <span id="modal-student"></span></p>
+        <p><strong>Group:</strong> <span id="modal-group"></span></p>
+        <p><strong>Status:</strong> <span id="modal-status"></span></p>
+
+        <form id="lessonStatusForm">
+            <input type="hidden" name="lessonId" id="modal-lesson-id">
+
+            <label for="status">Update Status:</label>
+            <select name="status" id="status">
+                <option value="PLANNED">PLANNED</option>
+                <option value="ATTENDED">ATTENDED</option>
+                <option value="CANCELLED">CANCELLED</option>
+            </select>
+
+            <div id="cancelReasonContainer" style="display:none">
+                <label for="cancelingReason">Reason:</label>
+                <select name="cancelingReason" id="cancelingReason">
+                    <option value="NO_SHOW">No Show</option>
+                    <option value="SICK">Sick</option>
+                    <option value="TECHNICAL">Technical Issue</option>
+                </select>
+
+                <label for="cancelledBy">Cancelled By:</label>
+                <select name="cancelledBy" id="cancelledBy">
+                    <option value="TEACHER">Teacher</option>
+                    <option value="STUDENT">Student</option>
+                </select>
+            </div>
+
+            <button type="submit">Update</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.card-content').forEach(el => {
+        el.addEventListener('click', () => {
+            const lessonId = el.getAttribute('data-id');
+
+            fetch(`/lessons/edit-data?lessonId=${lessonId}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('modal-teacher').innerText = data.teacherName;
+                    document.getElementById('modal-student').innerText = data.studentName;
+                    document.getElementById('modal-group').innerText = data.groupName || '–';
+                    document.getElementById('modal-status').innerText = data.status;
+                    document.getElementById('modal-lesson-id').value = data.id;
+
+                    document.getElementById('lessonModal').style.display = 'block';
+                });
+        });
+    });
+
+    document.getElementById('closeModal').onclick = () => {
+        document.getElementById('lessonModal').style.display = 'none';
+    };
+
+    document.getElementById('status').addEventListener('change', function () {
+        document.getElementById('cancelReasonContainer').style.display = this.value === 'CANCELLED' ? 'block' : 'none';
+    });
+
+    document.getElementById('lessonStatusForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const json = JSON.stringify(Object.fromEntries(formData.entries()));
+
+        fetch('/lessons/update-status', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: json
+        })
+            .then(res => {
+                if (res.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to update lesson');
+                }
+            });
+    });
+</script>
+
+<style>
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .modal-content {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        width: 300px;
+    }
+</style>
+
 
 </body>
 </html>

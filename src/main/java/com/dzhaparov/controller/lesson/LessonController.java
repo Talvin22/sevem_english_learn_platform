@@ -58,4 +58,5 @@ public class LessonController {
     public String updateLesson(@ModelAttribute @Valid UpdateLessonStatusRequest request) {
         lessonService.updateLessonStatus(request);
         return "redirect:/";
+    }
 }
