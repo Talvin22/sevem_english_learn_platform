@@ -60,7 +60,7 @@ public class TeacherServiceImpl implements TeacherService {
                         lesson.getId(),
                         lesson.getTeacher().getFirst_name() + " " + lesson.getTeacher().getLast_name(),
                         lesson.getStudent().getFirst_name() + " " + lesson.getStudent().getLast_name(),
-                        lesson.getGroup().getName(),
+                        lesson.getGroup() != null ? lesson.getGroup().getName() : null,
                         lesson.getDateUtc(),
                         lesson.getStatus(),
                         lesson.getCancelingReason(),

@@ -8,7 +8,6 @@
 <body>
 
 <div class="container">
-
     <h1>Welcome to Your Dashboard!</h1>
 
     <div class="card" style="margin-bottom: 20px;">
@@ -16,7 +15,10 @@
         <a th:href="@{/lessons/create}" class="btn">+ Create Lesson</a>
 
         <div th:if="${homePageData.lessons != null and homePageData.lessons.lessons.size() > 0}">
-            <div th:each="lesson : ${homePageData.lessons.lessons}" class="card-content">
+            <div th:each="lesson : ${homePageData.lessons.lessons}"
+                 class="card-content"
+                 th:onclick="'openLessonModal(' + ${lesson.id} + ')'"
+                 style="cursor:pointer;">
                 <strong th:text="${lesson.dateUtc}"></strong><br>
                 <span th:text="${lesson.teacherFullName}"></span> /
                 <span th:text="${lesson.studentFullName}"></span> /
@@ -62,118 +64,101 @@
         </div>
         <p th:if="${homePageData.teacherGroups == null or homePageData.teacherGroups.size() == 0}">No groups found.</p>
     </div>
-
 </div>
-<!-- Фрагмент шаблона home.html с модалкой и обновлением статуса урока -->
-<div class="modal" id="lessonModal" style="display:none">
-    <div class="modal-content">
-        <span id="closeModal" style="cursor:pointer">&times;</span>
-        <h3>Lesson Info</h3>
-        <p><strong>Teacher:</strong> <span id="modal-teacher"></span></p>
-        <p><strong>Student:</strong> <span id="modal-student"></span></p>
-        <p><strong>Group:</strong> <span id="modal-group"></span></p>
-        <p><strong>Status:</strong> <span id="modal-status"></span></p>
 
-        <form id="lessonStatusForm">
-            <input type="hidden" name="lessonId" id="modal-lesson-id">
+<!-- Lesson Modal -->
+<div id="lessonModal" style="display:none; position:fixed; top:20%; left:50%; transform:translate(-50%, -20%); background:white; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.3); z-index:1000">
+    <button onclick="closeModal()" style="float:right;">✖</button>
+    <h2>Lesson Info</h2>
+    <p><strong>Teacher:</strong> <span id="modal-teacher"></span></p>
+    <p><strong>Student:</strong> <span id="modal-student"></span></p>
+    <p><strong>Group:</strong> <span id="modal-group"></span></p>
+    <p><strong>Status:</strong> <span id="modal-status"></span></p>
 
-            <label for="status">Update Status:</label>
-            <select name="status" id="status">
-                <option value="PLANNED">PLANNED</option>
-                <option value="ATTENDED">ATTENDED</option>
-                <option value="CANCELLED">CANCELLED</option>
-            </select>
+    <label for="statusSelect">Update Status:</label>
+    <select id="statusSelect">
+        <option value="PLANNED">PLANNED</option>
+        <option value="ATTENDED">ATTENDED</option>
+        <option value="CANCELLED">CANCELLED</option>
+    </select>
 
-            <div id="cancelReasonContainer" style="display:none">
-                <label for="cancelingReason">Reason:</label>
-                <select name="cancelingReason" id="cancelingReason">
-                    <option value="NO_SHOW">No Show</option>
-                    <option value="SICK">Sick</option>
-                    <option value="TECHNICAL">Technical Issue</option>
-                </select>
+    <div id="cancelFields" style="margin-top:10px; display:none;">
+        <label for="cancelledBySelect">Cancelled By:</label>
+        <select id="cancelledBySelect">
+            <option value="TEACHER">TEACHER</option>
+            <option value="STUDENT">STUDENT</option>
+        </select>
 
-                <label for="cancelledBy">Cancelled By:</label>
-                <select name="cancelledBy" id="cancelledBy">
-                    <option value="TEACHER">Teacher</option>
-                    <option value="STUDENT">Student</option>
-                </select>
-            </div>
-
-            <button type="submit">Update</button>
-        </form>
+        <label for="cancelReasonSelect">Reason:</label>
+        <select id="cancelReasonSelect">
+            <option value="VALID_REASON">VALID_REASON</option>
+            <option value="INVALID_REASON">INVALID_REASON</option>
+        </select>
     </div>
+
+    <button onclick="updateLesson()" style="margin-top:10px;">Update</button>
 </div>
+
+<div id="modalOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5); z-index:999;" onclick="closeModal()"></div>
 
 <script>
-    document.querySelectorAll('.card-content').forEach(el => {
-        el.addEventListener('click', () => {
-            const lessonId = el.getAttribute('data-id');
+    let selectedLessonId = null;
 
-            fetch(`/lessons/edit-data?lessonId=${lessonId}`)
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('modal-teacher').innerText = data.teacherName;
-                    document.getElementById('modal-student').innerText = data.studentName;
-                    document.getElementById('modal-group').innerText = data.groupName || '–';
-                    document.getElementById('modal-status').innerText = data.status;
-                    document.getElementById('modal-lesson-id').value = data.id;
+    function openLessonModal(lessonId) {
+        fetch(`/lessons/api/lesson?id=${lessonId}`)
+            .then(res => res.json())
+            .then(data => {
+                selectedLessonId = data.id;
+                document.getElementById("modal-teacher").textContent = data.teacherName || "–";
+                document.getElementById("modal-student").textContent = data.studentName || "–";
+                document.getElementById("modal-group").textContent = data.groupName || "–";
+                document.getElementById("modal-status").textContent = data.status || "–";
+                document.getElementById("statusSelect").value = data.status || "PLANNED";
+                document.getElementById("cancelledBySelect").value = data.cancelledBy || "TEACHER";
+                document.getElementById("cancelReasonSelect").value = data.cancelingReason || "VALID_REASON";
+                toggleCancelFields(data.status === "CANCELLED");
 
-                    document.getElementById('lessonModal').style.display = 'block';
-                });
-        });
-    });
-
-    document.getElementById('closeModal').onclick = () => {
-        document.getElementById('lessonModal').style.display = 'none';
-    };
-
-    document.getElementById('status').addEventListener('change', function () {
-        document.getElementById('cancelReasonContainer').style.display = this.value === 'CANCELLED' ? 'block' : 'none';
-    });
-
-    document.getElementById('lessonStatusForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-
-        const formData = new FormData(this);
-        const json = JSON.stringify(Object.fromEntries(formData.entries()));
-
-        fetch('/lessons/update-status', {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: json
-        })
-            .then(res => {
-                if (res.ok) {
-                    window.location.reload();
-                } else {
-                    alert('Failed to update lesson');
-                }
+                document.getElementById("lessonModal").style.display = "block";
+                document.getElementById("modalOverlay").style.display = "block";
             });
+    }
+
+    function closeModal() {
+        document.getElementById("lessonModal").style.display = "none";
+        document.getElementById("modalOverlay").style.display = "none";
+    }
+
+    function toggleCancelFields(show) {
+        document.getElementById("cancelFields").style.display = show ? "block" : "none";
+    }
+
+    document.getElementById("statusSelect").addEventListener("change", function () {
+        toggleCancelFields(this.value === "CANCELLED");
     });
+
+    function updateLesson() {
+        const status = document.getElementById("statusSelect").value;
+        const payload = {
+            lessonId: selectedLessonId,
+            status: status,
+            attendanceStatus: status // можно заменить на отдельное поле при необходимости
+        };
+
+        if (status === "CANCELLED") {
+            payload.cancelledBy = document.getElementById("cancelledBySelect").value;
+            payload.cancelingReason = document.getElementById("cancelReasonSelect").value;
+        }
+
+        fetch("/lessons/api/lesson/update", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(payload)
+        }).then(() => {
+            closeModal();
+            location.reload();
+        });
+    }
 </script>
-
-<style>
-    .modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.6);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .modal-content {
-        background: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        width: 300px;
-    }
-</style>
-
 
 </body>
 </html>
