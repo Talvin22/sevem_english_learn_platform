@@ -75,6 +75,15 @@
     <p><strong>Group:</strong> <span id="modal-group"></span></p>
     <p><strong>Status:</strong> <span id="modal-status"></span></p>
 
+    <p><strong>Attendance Status:</strong> <span id="modal-attendance-status"></span></p>
+
+    <label for="attendanceStatusSelect">Update Attendance Status:</label>
+    <select id="attendanceStatusSelect">
+        <option value="PLANNED">PLANNED</option>
+        <option value="ATTENDED">ATTENDED</option>
+        <option value="CANCELLED">CANCELLED</option>
+    </select>
+
     <label for="statusSelect">Update Status:</label>
     <select id="statusSelect">
         <option value="PLANNED">PLANNED</option>
@@ -109,10 +118,12 @@
             .then(res => res.json())
             .then(data => {
                 selectedLessonId = data.id;
+                document.getElementById("modal-attendance-status").textContent = data.attendanceStatus || "–";
                 document.getElementById("modal-teacher").textContent = data.teacherName || "–";
                 document.getElementById("modal-student").textContent = data.studentName || "–";
                 document.getElementById("modal-group").textContent = data.groupName || "–";
                 document.getElementById("modal-status").textContent = data.status || "–";
+                document.getElementById("attendanceStatusSelect").value = data.attendanceStatus || "PLANNED";
                 document.getElementById("statusSelect").value = data.status || "PLANNED";
                 document.getElementById("cancelledBySelect").value = data.cancelledBy || "TEACHER";
                 document.getElementById("cancelReasonSelect").value = data.cancelingReason || "VALID_REASON";
@@ -138,9 +149,12 @@
 
     function updateLesson() {
         const status = document.getElementById("statusSelect").value;
+        const attendanceStatus = document.getElementById("attendanceStatusSelect").value;
+
         const payload = {
             lessonId: selectedLessonId,
-            status: status
+            status: status,
+            attendanceStatus: attendanceStatus
         };
 
         if (status === "CANCELLED") {
