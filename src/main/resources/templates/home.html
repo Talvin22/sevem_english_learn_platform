@@ -78,7 +78,7 @@
     <label for="statusSelect">Update Status:</label>
     <select id="statusSelect">
         <option value="PLANNED">PLANNED</option>
-        <option value="ATTENDED">ATTENDED</option>
+        <option value="COMPLETED">COMPLETED</option>
         <option value="CANCELLED">CANCELLED</option>
     </select>
 
@@ -140,8 +140,7 @@
         const status = document.getElementById("statusSelect").value;
         const payload = {
             lessonId: selectedLessonId,
-            status: status,
-            attendanceStatus: status // можно заменить на отдельное поле при необходимости
+            status: status
         };
 
         if (status === "CANCELLED") {
