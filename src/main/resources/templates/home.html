@@ -6,11 +6,11 @@
     <link rel="stylesheet" th:href="@{/home.css}">
 </head>
 <body>
-
 <div class="container">
     <h1>Welcome to Your Dashboard!</h1>
 
-    <div class="card" style="margin-bottom: 20px;">
+    <!-- LESSONS -->
+    <div class="card">
         <h2>Lessons</h2>
         <a th:href="@{/lessons/create}" class="btn">+ Create Lesson</a>
 
@@ -19,20 +19,28 @@
                  class="card-content"
                  th:onclick="'openLessonModal(' + ${lesson.id} + ')'"
                  style="cursor:pointer;">
-                <strong th:text="${lesson.dateUtc}"></strong><br>
-                <span th:text="${lesson.teacherFullName}"></span> /
-                <span th:text="${lesson.studentFullName}"></span> /
-                <span th:text="${lesson.groupName}"></span><br>
-                <span th:text="${lesson.status}"
-                      th:class="'badge badge-' + ${lesson.status.name().toLowerCase()}"></span>
-                <span th:text="${lesson.attendanceStatus}"
-                      th:class="'badge badge-' + ${lesson.attendanceStatus.name().toLowerCase()}"></span>
+                <div>
+                    <strong th:text="${lesson.dateUtc}"></strong><br>
+                    <span th:text="${lesson.teacherFullName}"></span> /
+                    <span th:text="${lesson.studentFullName}"></span> /
+                    <span th:text="${lesson.groupName}"></span>
+                </div>
+                <div style="margin-top: 5px;">
+                    <span class="badge status"
+                          th:text="${lesson.status}"
+                          th:classappend="' status-' + ${lesson.status}">Status</span>
+                    <span class="badge attendance"
+                          th:if="${lesson.attendanceStatus != null}"
+                          th:text="${lesson.attendanceStatus}"
+                          th:classappend="' attendance-' + ${lesson.attendanceStatus}">Attendance</span>
+                </div>
             </div>
         </div>
         <p th:if="${homePageData.lessons == null or homePageData.lessons.lessons.size() == 0}">No lessons found.</p>
     </div>
 
-    <div class="card" style="margin-bottom: 20px;">
+    <!-- HOMEWORKS -->
+    <div class="card">
         <h2>Homeworks</h2>
         <div th:if="${homePageData.homeworks != null and homePageData.homeworks.homeworks.size() > 0}">
             <div th:each="homework : ${homePageData.homeworks.homeworks}" class="card-content">
@@ -43,22 +51,26 @@
         <p th:if="${homePageData.homeworks == null or homePageData.homeworks.homeworks.size() == 0}">No homeworks found.</p>
     </div>
 
-    <div class="card" th:if="${homePageData.studentGroup != null}" style="margin-bottom: 20px;">
+    <!-- STUDENT GROUP -->
+    <div class="card" th:if="${homePageData.studentGroup != null}">
         <h2>My Group</h2>
         <p th:text="${homePageData.studentGroup.name}"></p>
     </div>
 
-    <div class="card" style="margin-bottom: 20px;">
+    <!-- TEACHER STUDENTS -->
+    <div class="card">
         <h2>My Students</h2>
         <div th:if="${homePageData.teacherStudents != null and homePageData.teacherStudents.size() > 0}">
             <ul>
-                <li th:each="student : ${homePageData.teacherStudents}" th:text="${student.firstName + ' ' + student.lastName}"></li>
+                <li th:each="student : ${homePageData.teacherStudents}"
+                    th:text="${student.firstName + ' ' + student.lastName}"></li>
             </ul>
         </div>
         <p th:if="${homePageData.teacherStudents == null or homePageData.teacherStudents.size() == 0}">No students found.</p>
     </div>
 
-    <div class="card" style="margin-bottom: 20px;">
+    <!-- TEACHER GROUPS -->
+    <div class="card">
         <h2>My Groups</h2>
         <div th:if="${homePageData.teacherGroups != null and homePageData.teacherGroups.size() > 0}">
             <ul>
@@ -69,9 +81,9 @@
     </div>
 </div>
 
-<!-- Lesson Modal -->
-<div id="lessonModal" style="display:none; position:fixed; top:20%; left:50%; transform:translate(-50%, -20%); background:white; padding:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.3); z-index:1000">
-    <button onclick="closeModal()" style="float:right;">✖</button>
+<!-- MODAL FOR LESSON -->
+<div id="lessonModal" style="display:none;" class="modal">
+    <button onclick="closeModal()" class="close-button">✖</button>
     <h2>Lesson Info</h2>
     <p><strong>Teacher:</strong> <span id="modal-teacher"></span></p>
     <p><strong>Student:</strong> <span id="modal-student"></span></p>
@@ -92,7 +104,7 @@
         <option value="CANCELLED">CANCELLED</option>
     </select>
 
-    <div id="cancelFields" style="margin-top:10px; display:none;">
+    <div id="cancelFields" style="display:none;">
         <label for="cancelledBySelect">Cancelled By:</label>
         <select id="cancelledBySelect">
             <option value="TEACHER">TEACHER</option>
@@ -106,10 +118,9 @@
         </select>
     </div>
 
-    <button onclick="updateLesson()" style="margin-top:10px;">Update</button>
+    <button onclick="updateLesson()">Update</button>
 </div>
-
-<div id="modalOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.5); z-index:999;" onclick="closeModal()"></div>
+<div id="modalOverlay" class="modal-overlay" onclick="closeModal()"></div>
 
 <script>
     let selectedLessonId = null;
@@ -127,6 +138,7 @@
                 document.getElementById("statusSelect").value = data.status || "PLANNED";
                 document.getElementById("cancelledBySelect").value = data.cancelledBy || "TEACHER";
                 document.getElementById("cancelReasonSelect").value = data.cancelingReason || "VALID_REASON";
+
                 toggleCancelFields(data.status === "CANCELLED");
 
                 document.getElementById("lessonModal").style.display = "block";
@@ -149,12 +161,10 @@
 
     function updateLesson() {
         const status = document.getElementById("statusSelect").value;
-        const attendanceStatus = document.getElementById("attendanceStatusSelect").value;
-
         const payload = {
             lessonId: selectedLessonId,
             status: status,
-            attendanceStatus: attendanceStatus
+            attendanceStatus: document.getElementById("attendanceStatusSelect").value
         };
 
         if (status === "CANCELLED") {
@@ -172,6 +182,5 @@
         });
     }
 </script>
-
 </body>
 </html>

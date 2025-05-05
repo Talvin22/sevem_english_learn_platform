@@ -64,6 +64,7 @@ public class TeacherServiceImpl implements TeacherService {
                         lesson.getDateUtc(),
                         lesson.getStatus(),
                         lesson.getCancelingReason(),
+                        lesson.getAttendanceStatus(),
                         lesson.getCancelledBy()
                 )).collect(Collectors.toList());
 
