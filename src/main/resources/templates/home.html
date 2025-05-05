@@ -22,8 +22,11 @@
                 <strong th:text="${lesson.dateUtc}"></strong><br>
                 <span th:text="${lesson.teacherFullName}"></span> /
                 <span th:text="${lesson.studentFullName}"></span> /
-                <span th:text="${lesson.groupName}"></span> /
-                <em th:text="${lesson.status}"></em>
+                <span th:text="${lesson.groupName}"></span><br>
+                <span th:text="${lesson.status}"
+                      th:class="'badge badge-' + ${lesson.status.name().toLowerCase()}"></span>
+                <span th:text="${lesson.attendanceStatus}"
+                      th:class="'badge badge-' + ${lesson.attendanceStatus.name().toLowerCase()}"></span>
             </div>
         </div>
         <p th:if="${homePageData.lessons == null or homePageData.lessons.lessons.size() == 0}">No lessons found.</p>
@@ -75,9 +78,7 @@
     <p><strong>Group:</strong> <span id="modal-group"></span></p>
     <p><strong>Status:</strong> <span id="modal-status"></span></p>
 
-    <p><strong>Attendance Status:</strong> <span id="modal-attendance-status"></span></p>
-
-    <label for="attendanceStatusSelect">Update Attendance Status:</label>
+    <label for="attendanceStatusSelect">Attendance Status:</label>
     <select id="attendanceStatusSelect">
         <option value="PLANNED">PLANNED</option>
         <option value="ATTENDED">ATTENDED</option>
@@ -118,7 +119,6 @@
             .then(res => res.json())
             .then(data => {
                 selectedLessonId = data.id;
-                document.getElementById("modal-attendance-status").textContent = data.attendanceStatus || "–";
                 document.getElementById("modal-teacher").textContent = data.teacherName || "–";
                 document.getElementById("modal-student").textContent = data.studentName || "–";
                 document.getElementById("modal-group").textContent = data.groupName || "–";
