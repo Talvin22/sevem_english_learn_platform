@@ -3,34 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <title>Create Lesson</title>
+    <link rel="stylesheet" th:href="@{/home.css}">
 </head>
 <body>
-<h1>Create a New Lesson</h1>
 
-<form th:action="@{/lessons/create}" th:object="${lessonRequest}" method="post">
+<div class="container">
+    <h1>Create a New Lesson</h1>
 
-    <!-- Student selection -->
-    <label for="studentId">Select Student:</label>
-    <select th:field="*{studentId}" id="studentId" required>
-        <option value="" disabled selected>Select a student</option>
-        <option th:each="student : ${students}"
-                th:value="${student.id}"
-                th:text="${student.firstName + ' ' + student.lastName}"></option>
-    </select>
-    <br/><br/>
+    <form th:action="@{/lessons/create}" th:object="${lessonRequest}" method="post" class="card">
 
-    <!-- Date and time selection -->
-    <label for="dateUtc">Date & Time:</label>
-    <input type="datetime-local" th:field="*{dateUtc}" id="dateUtc" required/>
-    <br/><br/>
+        <div class="form-group">
+            <label for="studentId"><strong>Select Student:</strong></label>
+            <select th:field="*{studentId}" id="studentId" required>
+                <option value="" disabled selected>Select a student</option>
+                <option th:each="student : ${students}"
+                        th:value="${student.id}"
+                        th:text="${student.firstName + ' ' + student.lastName}"></option>
+            </select>
+        </div>
 
-    <!-- Group name -->
-    <label for="groupName">Group Name:</label>
-    <input type="text" th:field="*{groupName}" id="groupName"/>
-    <br/><br/>
+        <div class="form-group">
+            <label for="dateUtc"><strong>Date & Time:</strong></label>
+            <input type="datetime-local" th:field="*{dateUtc}" id="dateUtc" required/>
+        </div>
 
-    <button type="submit">Create Lesson</button>
-</form>
+        <div class="form-group">
+            <label for="groupName"><strong>Group Name:</strong></label>
+            <input type="text" th:field="*{groupName}" id="groupName"/>
+        </div>
+
+        <button type="submit" class="btn">Create Lesson</button>
+    </form>
+</div>
 
 </body>
 </html>
