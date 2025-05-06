@@ -2,6 +2,7 @@ package com.dzhaparov.repository.user;
 
 import com.dzhaparov.entity.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
     List<User> findAllByGroup_Teacher_Id(Long teacherId);
     List<User> findAllByTeacherId(Long teacherId);
+    @Query("SELECT u FROM User u WHERE u.group.name = :groupName")
+    List<User> findAllByGroupName(String groupName);
 }

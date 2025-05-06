@@ -43,7 +43,6 @@ public class LessonController {
         lessonService.createLesson(request, authentication.getName());
         return "redirect:/";
     }
-
     @GetMapping("/edit")
     public String showEditLessonForm(@RequestParam("id") Long lessonId, Model model) {
         LessonEditDtoResponse lesson = lessonService.getLessonForEdit(lessonId);
