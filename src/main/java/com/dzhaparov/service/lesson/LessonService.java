@@ -22,6 +22,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class LessonService {
@@ -39,40 +40,50 @@ public class LessonService {
 
     }
 
-    public void createLesson(CreateLessonRequest request, String teacherEmail) {
-        User teacher = userRepository.findByEmail(teacherEmail)
-                .orElseThrow(() -> new RuntimeException("Teacher not found"));
+    @Transactional
+    public void createLesson(CreateLessonRequest request, String email) {
+        User teacher = authHelper.getCurrentUser();
 
-        List<Lesson> lessonsToSave = new ArrayList<>();
 
-        boolean hasGroup = request.getGroupName() != null && !request.getGroupName().isBlank();
-        boolean hasStudent = request.getStudentId() != null;
+        ZonedDateTime inputDate = ZonedDateTime.from(request.getDateUtc());
+        String timeZone = request.getTimeZone();
+        ZonedDateTime utcDate = inputDate.withZoneSameInstant(ZoneId.of(timeZone)).withZoneSameInstant(ZoneId.of("UTC"));
 
-        if (hasGroup && hasStudent) {
-            throw new IllegalArgumentException("Specify either group or student, not both.");
-        }
-
-        if (hasGroup) {
-            Group group = groupRepository.findByName(request.getGroupName())
-                    .orElseThrow(() -> new RuntimeException("Group not found: " + request.getGroupName()));
-
-            for (User student : group.getStudents()) {
-                Lesson lesson = buildLesson(request, teacher, student, group);
-                lessonsToSave.add(lesson);
+        if (request.getGroupName() != null && !request.getGroupName().isBlank()) {
+            Optional<Group> groupOpt = groupRepository.findByNameAndTeacherEmail(request.getGroupName(), email);
+            if (groupOpt.isEmpty()) {
+                throw new IllegalArgumentException("Group not found: " + request.getGroupName());
             }
 
-        } else if (hasStudent) {
-            User student = userRepository.findById(request.getStudentId())
-                    .orElseThrow(() -> new RuntimeException("Student not found with ID: " + request.getStudentId()));
+            Group group = groupOpt.get();
+            List<User> students = group.getStudents();
 
-            Lesson lesson = buildLesson(request, teacher, student, null);
-            lessonsToSave.add(lesson);
-
-        } else {
-            throw new IllegalArgumentException("Either student or group must be provided.");
+            for (User student : students) {
+                Lesson lesson = new Lesson();
+                lesson.setTeacher(teacher);
+                lesson.setStudent(student);
+                lesson.setDateUtc(utcDate);
+                lesson.setStatus(LessonStatus.PLANNED);
+                lesson.setGroup(group);
+                lesson.setAttendanceStatus(LessonAttendanceStatus.PLANNED);
+                lessonRepository.save(lesson);
+            }
         }
+        else if (request.getStudentId() != null) {
+            User student = userRepository.findById(request.getStudentId())
+                    .orElseThrow(() -> new IllegalArgumentException("Student not found"));
 
-        lessonRepository.saveAll(lessonsToSave);
+            Lesson lesson = new Lesson();
+            lesson.setTeacher(teacher);
+            lesson.setStudent(student);
+            lesson.setDateUtc(utcDate);
+            lesson.setStatus(LessonStatus.PLANNED);
+            lesson.setAttendanceStatus(LessonAttendanceStatus.PLANNED);
+            lessonRepository.save(lesson);
+        }
+        else {
+            throw new IllegalArgumentException("Either group name or student must be specified");
+        }
     }
 
     private Lesson buildLesson(CreateLessonRequest request, User teacher, User student, Group group) {
