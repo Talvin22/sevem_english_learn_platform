@@ -12,7 +12,9 @@
     <!-- LESSONS -->
     <div class="card">
         <h2>Lessons</h2>
-        <a th:href="@{/lessons/create}" class="btn">+ Create Lesson</a>
+        <a th:href="@{/lessons/create}" class="btn create-lesson">
+            ➕ Create Lesson
+        </a>
 
         <div th:if="${homePageData.lessons != null and homePageData.lessons.lessons.size() > 0}">
             <div th:each="lesson : ${homePageData.lessons.lessons}"
