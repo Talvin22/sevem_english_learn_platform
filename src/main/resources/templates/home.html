@@ -19,21 +19,13 @@
                  class="card-content"
                  th:onclick="'openLessonModal(' + ${lesson.id} + ')'"
                  style="cursor:pointer;">
-                <div>
-                    <strong th:text="${lesson.dateUtc}"></strong><br>
-                    <span th:text="${lesson.teacherFullName}"></span> /
-                    <span th:text="${lesson.studentFullName}"></span> /
-                    <span th:text="${lesson.groupName}"></span>
-                </div>
-                <div style="margin-top: 5px;">
-                    <span class="badge status"
-                          th:text="${lesson.status}"
-                          th:classappend="' status-' + ${lesson.status}">Status</span>
-                    <span class="badge attendance"
-                          th:if="${lesson.attendanceStatus != null}"
-                          th:text="${lesson.attendanceStatus}"
-                          th:classappend="' attendance-' + ${lesson.attendanceStatus}">Attendance</span>
-                </div>
+                <strong th:text="${lesson.dateUtc}"></strong><br>
+                <span th:text="${lesson.teacherFullName}"></span> /
+                <span th:text="${lesson.studentFullName}"></span> /
+                <span th:text="${lesson.groupName} ?: '–'"></span> /
+                <span th:text="${lesson.status}"
+                      th:class="'badge badge-' + ${lesson.status.name().toLowerCase()}">
+                </span>
             </div>
         </div>
         <p th:if="${homePageData.lessons == null or homePageData.lessons.lessons.size() == 0}">No lessons found.</p>
@@ -43,52 +35,27 @@
     <div class="card">
         <h2>Homeworks</h2>
         <div th:if="${homePageData.homeworks != null and homePageData.homeworks.homeworks.size() > 0}">
-            <div th:each="homework : ${homePageData.homeworks.homeworks}" class="card-content">
+            <div th:each="homework : ${homePageData.homeworks.homeworks}"
+                 class="card-content">
                 <span th:text="'Lesson ID: ' + ${homework.lessonId}"></span> /
-                <em th:text="${homework.status}"></em>
+                <span th:text="${homework.status}"
+                      th:class="'badge badge-' + ${homework.status.name().toLowerCase()}">
+                </span>
             </div>
         </div>
         <p th:if="${homePageData.homeworks == null or homePageData.homeworks.homeworks.size() == 0}">No homeworks found.</p>
     </div>
-
-    <!-- STUDENT GROUP -->
-    <div class="card" th:if="${homePageData.studentGroup != null}">
-        <h2>My Group</h2>
-        <p th:text="${homePageData.studentGroup.name}"></p>
-    </div>
-
-    <!-- TEACHER STUDENTS -->
-    <div class="card">
-        <h2>My Students</h2>
-        <div th:if="${homePageData.teacherStudents != null and homePageData.teacherStudents.size() > 0}">
-            <ul>
-                <li th:each="student : ${homePageData.teacherStudents}"
-                    th:text="${student.firstName + ' ' + student.lastName}"></li>
-            </ul>
-        </div>
-        <p th:if="${homePageData.teacherStudents == null or homePageData.teacherStudents.size() == 0}">No students found.</p>
-    </div>
-
-    <!-- TEACHER GROUPS -->
-    <div class="card">
-        <h2>My Groups</h2>
-        <div th:if="${homePageData.teacherGroups != null and homePageData.teacherGroups.size() > 0}">
-            <ul>
-                <li th:each="group : ${homePageData.teacherGroups}" th:text="${group.name}"></li>
-            </ul>
-        </div>
-        <p th:if="${homePageData.teacherGroups == null or homePageData.teacherGroups.size() == 0}">No groups found.</p>
-    </div>
 </div>
 
-<!-- MODAL FOR LESSON -->
-<div id="lessonModal" style="display:none;" class="modal">
-    <button onclick="closeModal()" class="close-button">✖</button>
+<!-- MODAL -->
+<div id="lessonModal" class="modal">
+    <button onclick="closeModal()" class="close-btn">✖</button>
     <h2>Lesson Info</h2>
     <p><strong>Teacher:</strong> <span id="modal-teacher"></span></p>
     <p><strong>Student:</strong> <span id="modal-student"></span></p>
     <p><strong>Group:</strong> <span id="modal-group"></span></p>
-    <p><strong>Status:</strong> <span id="modal-status"></span></p>
+    <p><strong>Status:</strong> <span id="modal-status" class="badge"></span></p>
+    <p><strong>Attendance:</strong> <span id="modal-attendance" class="badge"></span></p>
 
     <label for="attendanceStatusSelect">Attendance Status:</label>
     <select id="attendanceStatusSelect">
@@ -104,7 +71,7 @@
         <option value="CANCELLED">CANCELLED</option>
     </select>
 
-    <div id="cancelFields" style="display:none;">
+    <div id="cancelFields" style="margin-top:10px; display:none;">
         <label for="cancelledBySelect">Cancelled By:</label>
         <select id="cancelledBySelect">
             <option value="TEACHER">TEACHER</option>
@@ -118,10 +85,12 @@
         </select>
     </div>
 
-    <button onclick="updateLesson()">Update</button>
+    <button onclick="updateLesson()" style="margin-top:10px;">Update</button>
 </div>
+
 <div id="modalOverlay" class="modal-overlay" onclick="closeModal()"></div>
 
+<!-- JS -->
 <script>
     let selectedLessonId = null;
 
@@ -133,12 +102,19 @@
                 document.getElementById("modal-teacher").textContent = data.teacherName || "–";
                 document.getElementById("modal-student").textContent = data.studentName || "–";
                 document.getElementById("modal-group").textContent = data.groupName || "–";
-                document.getElementById("modal-status").textContent = data.status || "–";
+
+                const statusElem = document.getElementById("modal-status");
+                statusElem.textContent = data.status;
+                statusElem.className = "badge badge-" + data.status.toLowerCase();
+
+                const attendanceElem = document.getElementById("modal-attendance");
+                attendanceElem.textContent = data.attendanceStatus;
+                attendanceElem.className = "badge badge-" + data.attendanceStatus.toLowerCase();
+
                 document.getElementById("attendanceStatusSelect").value = data.attendanceStatus || "PLANNED";
                 document.getElementById("statusSelect").value = data.status || "PLANNED";
                 document.getElementById("cancelledBySelect").value = data.cancelledBy || "TEACHER";
                 document.getElementById("cancelReasonSelect").value = data.cancelingReason || "VALID_REASON";
-
                 toggleCancelFields(data.status === "CANCELLED");
 
                 document.getElementById("lessonModal").style.display = "block";
