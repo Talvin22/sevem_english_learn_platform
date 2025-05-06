@@ -20,12 +20,13 @@
                  th:onclick="'openLessonModal(' + ${lesson.id} + ')'"
                  style="cursor:pointer;">
                 <strong th:text="${lesson.dateUtc}"></strong><br>
-                <span th:text="${lesson.teacherFullName}"></span> /
-                <span th:text="${lesson.studentFullName}"></span> /
-                <span th:text="${lesson.groupName} ?: '–'"></span> /
+
+                <span th:if="${lesson.groupName != null}" th:text="${lesson.groupName}"></span>
+                <span th:if="${lesson.groupName == null}" th:text="${lesson.studentFullName}"></span>
+
                 <span th:text="${lesson.status}"
                       th:class="'badge badge-' + ${lesson.status.name().toLowerCase()}">
-                </span>
+    </span>
             </div>
         </div>
         <p th:if="${homePageData.lessons == null or homePageData.lessons.lessons.size() == 0}">No lessons found.</p>
@@ -43,7 +44,8 @@
                 </span>
             </div>
         </div>
-        <p th:if="${homePageData.homeworks == null or homePageData.homeworks.homeworks.size() == 0}">No homeworks found.</p>
+        <p th:if="${homePageData.homeworks == null or homePageData.homeworks.homeworks.size() == 0}">No homeworks
+            found.</p>
     </div>
 </div>
 
