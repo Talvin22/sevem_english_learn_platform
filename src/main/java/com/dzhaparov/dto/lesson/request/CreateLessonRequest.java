@@ -10,6 +10,7 @@ public class CreateLessonRequest {
 
     private Long studentId;
     private String groupName;
+    private String timeZone;
 
     public LocalDateTime getDateUtc() {
         return dateUtc;
@@ -33,5 +34,13 @@ public class CreateLessonRequest {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    public String getTimeZone() {
+        return timeZone;
+    }
+
+    public void setTimeZone(String timeZone) {
+        this.timeZone = timeZone;
     }
 }
