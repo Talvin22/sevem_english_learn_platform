@@ -5,16 +5,16 @@ import com.dzhaparov.entity.lesson.LessonStatus;
 import org.springframework.http.HttpStatus;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
-// Confirmation of successful lesson creation
 public record LessonDtoCreateResponse(
         int statusCode,
         String reasonPhrase,
         boolean success,
         String message,
-        Long id,
+        Long lessonId,
         Long teacherId,
-        Long studentId,
+        List<Long> studentIds,
         Long groupId,
         ZonedDateTime dateUtc,
         LessonStatus status
@@ -22,7 +22,7 @@ public record LessonDtoCreateResponse(
     public static final String SUCCESS_MESSAGE = "Lesson created successfully.";
     public static final String FAILURE_MESSAGE = "Lesson creation failed.";
 
-    public static LessonDtoCreateResponse of(boolean success, Lesson lesson) {
+    public static LessonDtoCreateResponse of(boolean success, Lesson lesson, List<Long> studentIds) {
         if (success) {
             return new LessonDtoCreateResponse(
                     HttpStatus.CREATED.value(),
@@ -31,7 +31,7 @@ public record LessonDtoCreateResponse(
                     SUCCESS_MESSAGE,
                     lesson.getId(),
                     lesson.getTeacher().getId(),
-                    lesson.getStudent() != null ? lesson.getStudent().getId() : null,
+                    studentIds,
                     lesson.getGroup() != null ? lesson.getGroup().getId() : null,
                     lesson.getDateUtc(),
                     lesson.getStatus()
