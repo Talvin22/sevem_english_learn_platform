@@ -8,6 +8,7 @@ import com.dzhaparov.dto.homework.response.HomeworkDtoSubmitResponse;
 import com.dzhaparov.dto.lesson.response.LessonDtoDetailResponse;
 import com.dzhaparov.dto.lesson.response.LessonDtoListResponse;
 import com.dzhaparov.dto.user.response.UserProfileDtoResponse;
+import com.dzhaparov.entity.lesson.Lesson;
 import com.dzhaparov.entity.lesson.LessonParticipant;
 import com.dzhaparov.repository.group.GroupRepository;
 import com.dzhaparov.repository.homework.HomeworkRepository;

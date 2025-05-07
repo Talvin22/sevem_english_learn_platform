@@ -1,5 +1,6 @@
 package com.dzhaparov.entity.lesson;
 
+import com.dzhaparov.entity.lesson.attendance.CancelledBy;
 import com.dzhaparov.entity.lesson.attendance.LessonAttendanceStatus;
 import com.dzhaparov.entity.user.User;
 import jakarta.persistence.*;
@@ -24,6 +25,10 @@ public class LessonParticipant {
     @Enumerated(EnumType.STRING)
     @Column(name = "attendance_status")
     private LessonAttendanceStatus attendanceStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "cancelled_by")
+    private CancelledBy cancelledBy;
 
     public LessonAttendanceStatus getAttendanceStatus() {
         return attendanceStatus;
@@ -55,5 +60,13 @@ public class LessonParticipant {
 
     public void setId(LessonParticipantId id) {
         this.id = id;
+    }
+
+    public CancelledBy getCancelledBy() {
+        return cancelledBy;
+    }
+
+    public void setCancelledBy(CancelledBy cancelledBy) {
+        this.cancelledBy = cancelledBy;
     }
 }
