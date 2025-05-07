@@ -2,6 +2,7 @@ package com.dzhaparov.service.lesson;
 
 import com.dzhaparov.dto.lesson.request.CreateLessonRequest;
 import com.dzhaparov.dto.lesson.request.UpdateLessonStatusRequest;
+import com.dzhaparov.dto.lesson.response.LessonDtoCreateResponse;
 import com.dzhaparov.dto.lesson.response.LessonEditDtoResponse;
 import com.dzhaparov.dto.user.response.UserDtoDetailResponse;
 import com.dzhaparov.entity.group.Group;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,7 +45,7 @@ public class LessonService {
     }
 
     @Transactional
-    public void createLesson(CreateLessonRequest request, String email) {
+    public LessonDtoCreateResponse createLesson(CreateLessonRequest request, String email) {
         User teacher = authHelper.getCurrentUser();
 
         LocalDateTime localDateTime = request.getDateUtc();
@@ -56,6 +58,8 @@ public class LessonService {
         lesson.setTeacher(teacher);
         lesson.setDateUtc(utcDate);
         lesson.setStatus(LessonStatus.PLANNED);
+
+        List<Long> studentIds = new ArrayList<>();
 
         if (request.getGroupName() != null && !request.getGroupName().isBlank()) {
             Group group = groupRepository.findByNameAndTeacherEmail(request.getGroupName(), email)
@@ -70,6 +74,7 @@ public class LessonService {
                 participant.setStudent(student);
                 participant.setAttendanceStatus(LessonAttendanceStatus.PLANNED);
                 lessonParticipantRepository.save(participant);
+                studentIds.add(student.getId());
             }
         } else if (request.getStudentId() != null) {
             User student = userRepository.findById(request.getStudentId())
@@ -82,9 +87,12 @@ public class LessonService {
             participant.setStudent(student);
             participant.setAttendanceStatus(LessonAttendanceStatus.PLANNED);
             lessonParticipantRepository.save(participant);
+            studentIds.add(student.getId());
         } else {
             throw new IllegalArgumentException("Either group name or student must be specified");
         }
+
+        return LessonDtoCreateResponse.of(true, lesson, studentIds);
     }
 
 

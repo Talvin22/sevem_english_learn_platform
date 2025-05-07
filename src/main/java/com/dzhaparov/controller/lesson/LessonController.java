@@ -3,11 +3,14 @@ package com.dzhaparov.controller.lesson;
 
 import com.dzhaparov.dto.lesson.request.CreateLessonRequest;
 import com.dzhaparov.dto.lesson.request.UpdateLessonStatusRequest;
+import com.dzhaparov.dto.lesson.response.LessonDtoCreateResponse;
 import com.dzhaparov.dto.lesson.response.LessonEditDtoResponse;
 import com.dzhaparov.dto.user.response.UserDtoDetailResponse;
 import com.dzhaparov.service.lesson.LessonService;
 
+import com.dzhaparov.util.AuthHelper;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,9 +23,11 @@ import java.util.List;
 public class LessonController {
 
     private final LessonService lessonService;
+    private final AuthHelper authHelper;
 
-    public LessonController(LessonService lessonService) {
+    public LessonController(LessonService lessonService, AuthHelper authHelper) {
         this.lessonService = lessonService;
+        this.authHelper = authHelper;
     }
 
     @GetMapping("/create")
@@ -38,10 +43,9 @@ public class LessonController {
     }
 
     @PostMapping("/create")
-    public String createLesson(@ModelAttribute @Valid CreateLessonRequest request,
-                               Authentication authentication) {
-        lessonService.createLesson(request, authentication.getName());
-        return "redirect:/";
+    public ResponseEntity<LessonDtoCreateResponse> createLesson(@RequestBody @Valid CreateLessonRequest request) {
+        LessonDtoCreateResponse response = lessonService.createLesson(request, authHelper.getCurrentUser().getEmail());
+        return ResponseEntity.status(response.statusCode()).body(response);
     }
     @GetMapping("/edit")
     public String showEditLessonForm(@RequestParam("id") Long lessonId, Model model) {
