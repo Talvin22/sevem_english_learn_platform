@@ -6,6 +6,7 @@ import com.dzhaparov.dto.lesson.response.LessonEditDtoResponse;
 import com.dzhaparov.dto.user.response.UserDtoDetailResponse;
 import com.dzhaparov.entity.group.Group;
 import com.dzhaparov.entity.lesson.Lesson;
+import com.dzhaparov.entity.lesson.LessonParticipant;
 import com.dzhaparov.entity.lesson.LessonStatus;
 import com.dzhaparov.entity.lesson.attendance.LessonAttendanceStatus;
 import com.dzhaparov.entity.user.User;
@@ -48,39 +49,37 @@ public class LessonService {
                 .atZone(ZoneId.of(timeZone))
                 .withZoneSameInstant(ZoneId.of("UTC"));
 
+        Lesson lesson = new Lesson();
+        lesson.setTeacher(teacher);
+        lesson.setDateUtc(utcDate);
+        lesson.setStatus(LessonStatus.PLANNED);
+
         if (request.getGroupName() != null && !request.getGroupName().isBlank()) {
-            Optional<Group> groupOpt = groupRepository.findByNameAndTeacherEmail(request.getGroupName(), email);
-            if (groupOpt.isEmpty()) {
-                throw new IllegalArgumentException("Group not found: " + request.getGroupName());
-            }
+            Group group = groupRepository.findByNameAndTeacherEmail(request.getGroupName(), email)
+                    .orElseThrow(() -> new IllegalArgumentException("Group not found: " + request.getGroupName()));
 
-            Group group = groupOpt.get();
-            List<User> students = group.getStudents();
+            lesson.setGroup(group);
+            lessonRepository.save(lesson);
 
-            for (User student : students) {
-                Lesson lesson = new Lesson();
-                lesson.setTeacher(teacher);
-                lesson.setStudent(student);
-                lesson.setDateUtc(utcDate);
-                lesson.setStatus(LessonStatus.PLANNED);
-                lesson.setGroup(group);
-                lesson.setAttendanceStatus(LessonAttendanceStatus.PLANNED);
-                lessonRepository.save(lesson);
+            for (User student : group.getStudents()) {
+                LessonParticipant participant = new LessonParticipant();
+                participant.setLesson(lesson);
+                participant.setStudent(student);
+                participant.setAttendanceStatus(LessonAttendanceStatus.PLANNED);
+                lessonParticipantRepository.save(participant);
             }
-        }
-        else if (request.getStudentId() != null) {
+        } else if (request.getStudentId() != null) {
             User student = userRepository.findById(request.getStudentId())
                     .orElseThrow(() -> new IllegalArgumentException("Student not found"));
 
-            Lesson lesson = new Lesson();
-            lesson.setTeacher(teacher);
-            lesson.setStudent(student);
-            lesson.setDateUtc(utcDate);
-            lesson.setStatus(LessonStatus.PLANNED);
-            lesson.setAttendanceStatus(LessonAttendanceStatus.PLANNED);
             lessonRepository.save(lesson);
-        }
-        else {
+
+            LessonParticipant participant = new LessonParticipant();
+            participant.setLesson(lesson);
+            participant.setStudent(student);
+            participant.setAttendanceStatus(LessonAttendanceStatus.PLANNED);
+            lessonParticipantRepository.save(participant);
+        } else {
             throw new IllegalArgumentException("Either group name or student must be specified");
         }
     }
