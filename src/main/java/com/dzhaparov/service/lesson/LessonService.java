@@ -11,6 +11,7 @@ import com.dzhaparov.entity.lesson.LessonStatus;
 import com.dzhaparov.entity.lesson.attendance.LessonAttendanceStatus;
 import com.dzhaparov.entity.user.User;
 import com.dzhaparov.repository.group.GroupRepository;
+import com.dzhaparov.repository.lesson.LessonParticipantRepository;
 import com.dzhaparov.repository.lesson.LessonRepository;
 import com.dzhaparov.repository.user.UserRepository;
 import com.dzhaparov.util.AuthHelper;
@@ -30,12 +31,14 @@ public class LessonService {
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
     private final AuthHelper authHelper;
+    private final LessonParticipantRepository lessonParticipantRepository;
 
-    public LessonService(LessonRepository lessonRepository, UserRepository userRepository, GroupRepository groupRepository, AuthHelper authHelper) {
+    public LessonService(LessonRepository lessonRepository, UserRepository userRepository, GroupRepository groupRepository, AuthHelper authHelper, LessonParticipantRepository lessonParticipantRepository) {
         this.lessonRepository = lessonRepository;
         this.userRepository = userRepository;
         this.groupRepository = groupRepository;
         this.authHelper = authHelper;
+        this.lessonParticipantRepository = lessonParticipantRepository;
 
     }
 
@@ -123,14 +126,19 @@ public class LessonService {
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new RuntimeException("Lesson not found"));
 
+        List<String> studentNames = lessonParticipantRepository.findByLessonId(lessonId).stream()
+                .map(lp -> lp.getStudent().getFirst_name() + " " + lp.getStudent().getLast_name())
+                .toList();
+
         return new LessonEditDtoResponse(
                 lesson.getId(),
                 lesson.getTeacher().getFirst_name() + " " + lesson.getTeacher().getLast_name(),
-                lesson.getStudent().getFirst_name() + " " + lesson.getStudent().getLast_name(),
+                String.join(", ", studentNames),
                 lesson.getGroup() != null ? lesson.getGroup().getName() : null,
                 lesson.getDateUtc(),
                 lesson.getStatus(),
-                lesson.getAttendanceStatus(),
+                null,
+
                 lesson.getCancelingReason(),
                 lesson.getCancelledBy()
         );
