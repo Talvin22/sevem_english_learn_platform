@@ -24,11 +24,11 @@
                 <strong th:text="${lesson.dateUtc}"></strong><br>
 
                 <span th:if="${lesson.groupName != null}" th:text="${lesson.groupName}"></span>
-                <span th:if="${lesson.groupName == null}" th:text="${lesson.studentFullName}"></span>
+                <span th:if="${lesson.groupName == null}" th:text="${#strings.arrayJoin(lesson.studentNames.toArray(), ', ')}"></span>
 
                 <span th:text="${lesson.status}"
                       th:class="'badge badge-' + ${lesson.status.name().toLowerCase()}">
-    </span>
+                </span>
             </div>
         </div>
         <p th:if="${homePageData.lessons == null or homePageData.lessons.lessons.size() == 0}">No lessons found.</p>
@@ -38,16 +38,12 @@
     <div class="card">
         <h2>Homeworks</h2>
         <div th:if="${homePageData.homeworks != null and homePageData.homeworks.homeworks.size() > 0}">
-            <div th:each="homework : ${homePageData.homeworks.homeworks}"
-                 class="card-content">
+            <div th:each="homework : ${homePageData.homeworks.homeworks}" class="card-content">
                 <span th:text="'Lesson ID: ' + ${homework.lessonId}"></span> /
-                <span th:text="${homework.status}"
-                      th:class="'badge badge-' + ${homework.status.name().toLowerCase()}">
-                </span>
+                <span th:text="${homework.status}" th:class="'badge badge-' + ${homework.status.name().toLowerCase()}"></span>
             </div>
         </div>
-        <p th:if="${homePageData.homeworks == null or homePageData.homeworks.homeworks.size() == 0}">No homeworks
-            found.</p>
+        <p th:if="${homePageData.homeworks == null or homePageData.homeworks.homeworks.size() == 0}">No homeworks found.</p>
     </div>
 </div>
 
@@ -56,17 +52,9 @@
     <button onclick="closeModal()" class="close-btn">✖</button>
     <h2>Lesson Info</h2>
     <p><strong>Teacher:</strong> <span id="modal-teacher"></span></p>
-    <p><strong>Student:</strong> <span id="modal-student"></span></p>
     <p><strong>Group:</strong> <span id="modal-group"></span></p>
+    <p><strong>Students:</strong> <span id="modal-students"></span></p>
     <p><strong>Status:</strong> <span id="modal-status" class="badge"></span></p>
-    <p><strong>Attendance:</strong> <span id="modal-attendance" class="badge"></span></p>
-
-    <label for="attendanceStatusSelect">Attendance Status:</label>
-    <select id="attendanceStatusSelect">
-        <option value="PLANNED">PLANNED</option>
-        <option value="ATTENDED">ATTENDED</option>
-        <option value="CANCELLED">CANCELLED</option>
-    </select>
 
     <label for="statusSelect">Update Status:</label>
     <select id="statusSelect">
@@ -94,7 +82,6 @@
 
 <div id="modalOverlay" class="modal-overlay" onclick="closeModal()"></div>
 
-<!-- JS -->
 <script>
     let selectedLessonId = null;
 
@@ -104,18 +91,13 @@
             .then(data => {
                 selectedLessonId = data.id;
                 document.getElementById("modal-teacher").textContent = data.teacherName || "–";
-                document.getElementById("modal-student").textContent = data.studentName || "–";
                 document.getElementById("modal-group").textContent = data.groupName || "–";
+                document.getElementById("modal-students").textContent = data.studentNames?.join(", ") || "–";
 
                 const statusElem = document.getElementById("modal-status");
                 statusElem.textContent = data.status;
                 statusElem.className = "badge badge-" + data.status.toLowerCase();
 
-                const attendanceElem = document.getElementById("modal-attendance");
-                attendanceElem.textContent = data.attendanceStatus;
-                attendanceElem.className = "badge badge-" + data.attendanceStatus.toLowerCase();
-
-                document.getElementById("attendanceStatusSelect").value = data.attendanceStatus || "PLANNED";
                 document.getElementById("statusSelect").value = data.status || "PLANNED";
                 document.getElementById("cancelledBySelect").value = data.cancelledBy || "TEACHER";
                 document.getElementById("cancelReasonSelect").value = data.cancelingReason || "VALID_REASON";
@@ -144,13 +126,9 @@
         const payload = {
             lessonId: selectedLessonId,
             status: status,
-            attendanceStatus: document.getElementById("attendanceStatusSelect").value
+            cancelledBy: document.getElementById("cancelledBySelect").value,
+            cancelingReason: document.getElementById("cancelReasonSelect").value
         };
-
-        if (status === "CANCELLED") {
-            payload.cancelledBy = document.getElementById("cancelledBySelect").value;
-            payload.cancelingReason = document.getElementById("cancelReasonSelect").value;
-        }
 
         fetch("/lessons/api/lesson/update", {
             method: "POST",
