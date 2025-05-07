@@ -1,7 +1,6 @@
 package com.dzhaparov.service.lesson;
 
 import com.dzhaparov.dto.lesson.request.CreateLessonRequest;
-import com.dzhaparov.dto.lesson.request.LessonRequestDto;
 import com.dzhaparov.dto.lesson.request.UpdateLessonStatusRequest;
 import com.dzhaparov.dto.lesson.response.LessonEditDtoResponse;
 import com.dzhaparov.dto.user.response.UserDtoDetailResponse;
@@ -14,13 +13,12 @@ import com.dzhaparov.repository.group.GroupRepository;
 import com.dzhaparov.repository.lesson.LessonRepository;
 import com.dzhaparov.repository.user.UserRepository;
 import com.dzhaparov.util.AuthHelper;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,10 +42,11 @@ public class LessonService {
     public void createLesson(CreateLessonRequest request, String email) {
         User teacher = authHelper.getCurrentUser();
 
-
-        ZonedDateTime inputDate = ZonedDateTime.from(request.getDateUtc());
+        LocalDateTime localDateTime = request.getDateUtc();
         String timeZone = request.getTimeZone();
-        ZonedDateTime utcDate = inputDate.withZoneSameInstant(ZoneId.of(timeZone)).withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime utcDate = localDateTime
+                .atZone(ZoneId.of(timeZone))
+                .withZoneSameInstant(ZoneId.of("UTC"));
 
         if (request.getGroupName() != null && !request.getGroupName().isBlank()) {
             Optional<Group> groupOpt = groupRepository.findByNameAndTeacherEmail(request.getGroupName(), email);
@@ -86,16 +85,6 @@ public class LessonService {
         }
     }
 
-    private Lesson buildLesson(CreateLessonRequest request, User teacher, User student, Group group) {
-        Lesson lesson = new Lesson();
-        lesson.setTeacher(teacher);
-        lesson.setStudent(student);
-        lesson.setGroup(group);
-        lesson.setDateUtc(request.getDateUtc().atZone(ZoneId.of("UTC")));
-        lesson.setStatus(LessonStatus.PLANNED);
-        lesson.setAttendanceStatus(LessonAttendanceStatus.PLANNED);
-        return lesson;
-    }
 
     public List<UserDtoDetailResponse> getAllStudentsForTeacher(String email) {
         User teacher = userRepository.findByEmail(email)

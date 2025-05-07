@@ -4,50 +4,17 @@
     <meta charset="UTF-8">
     <title>Create Lesson</title>
     <link rel="stylesheet" th:href="@{/home.css}">
-    <style>
-        .tooltip {
-            position: relative;
-            display: inline-block;
-        }
-
-        .tooltip:hover::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: #333;
-            color: #fff;
-            padding: 5px 10px;
-            font-size: 12px;
-            border-radius: 4px;
-            white-space: nowrap;
-            z-index: 100;
-            margin-top: 5px;
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 10px;
-            }
-            form.card {
-                padding: 15px;
-            }
-            h1 {
-                font-size: 22px;
-            }
-        }
-    </style>
 </head>
 <body>
 
 <div class="container">
     <h1>Create a New Lesson</h1>
 
-    <form th:action="@{/lessons/create}" th:object="${lessonRequest}" method="post" class="card" onsubmit="return validateForm();">
+    <form th:action="@{/lessons/create}" th:object="${lessonRequest}" method="post" class="card">
 
-        <div class="form-group tooltip" id="studentTooltip">
+        <div class="form-group">
             <label for="studentId"><strong>Select Student:</strong></label>
-            <select th:field="*{studentId}" id="studentId">
+            <select th:field="*{studentId}" id="studentId" onchange="onStudentChange()">
                 <option value="" disabled selected>Select a student</option>
                 <option th:each="student : ${students}"
                         th:value="${student.id}"
@@ -56,69 +23,51 @@
         </div>
 
         <div class="form-group">
+            <label for="groupName"><strong>Group Name:</strong></label>
+            <input type="text" th:field="*{groupName}" id="groupName" oninput="onGroupInput()" />
+        </div>
+
+        <div class="form-group">
             <label for="dateUtc"><strong>Date & Time:</strong></label>
             <input type="datetime-local" th:field="*{dateUtc}" id="dateUtc" required/>
         </div>
 
-        <div class="form-group">
-            <label for="timezone"><strong>Timezone:</strong></label>
-            <select name="timezone" id="timezone" required>
-                <option value="Europe/Berlin">Europe/Berlin</option>
-                <option value="Europe/Kiev">Europe/Kiev</option>
-                <option value="Europe/Moscow">Europe/Moscow</option>
-                <option value="UTC">UTC</option>
-                <!-- Add more as needed -->
-            </select>
-        </div>
+        <input type="hidden" id="timeZone" th:field="*{timeZone}" />
 
-        <div class="form-group tooltip" id="groupTooltip">
-            <label for="groupName"><strong>Group Name:</strong></label>
-            <input type="text" th:field="*{groupName}" id="groupName"/>
-        </div>
-
-        <button type="submit" class="btn">Create Lesson</button>
+        <button type="submit" class="btn" id="submitBtn" disabled>Create Lesson</button>
     </form>
 </div>
 
 <script>
-    const studentSelect = document.getElementById("studentId");
-    const groupInput = document.getElementById("groupName");
-
-    const studentTooltip = document.getElementById("studentTooltip");
-    const groupTooltip = document.getElementById("groupTooltip");
-
-    studentSelect.addEventListener("change", function () {
-        if (this.value) {
-            groupInput.value = "";
-            groupInput.disabled = true;
-            groupTooltip.setAttribute("data-tooltip", "Disabled: Student selected");
-        } else {
-            groupInput.disabled = false;
-            groupTooltip.removeAttribute("data-tooltip");
-        }
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("timeZone").value = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        toggleSubmitButton();
     });
 
-    groupInput.addEventListener("input", function () {
-        if (this.value.trim() !== "") {
-            studentSelect.value = "";
-            studentSelect.disabled = true;
-            studentTooltip.setAttribute("data-tooltip", "Disabled: Group entered");
+    function onStudentChange() {
+        const student = document.getElementById("studentId").value;
+        if (student) {
+            document.getElementById("groupName").disabled = true;
         } else {
-            studentSelect.disabled = false;
-            studentTooltip.removeAttribute("data-tooltip");
+            document.getElementById("groupName").disabled = false;
         }
-    });
+        toggleSubmitButton();
+    }
 
-    function validateForm() {
-        const studentValue = studentSelect.value;
-        const groupValue = groupInput.value.trim();
-
-        if (!studentValue && groupValue === "") {
-            alert("Please select a student or enter a group name.");
-            return false;
+    function onGroupInput() {
+        const group = document.getElementById("groupName").value.trim();
+        if (group.length > 0) {
+            document.getElementById("studentId").disabled = true;
+        } else {
+            document.getElementById("studentId").disabled = false;
         }
+        toggleSubmitButton();
+    }
 
-        return true;
+    function toggleSubmitButton() {
+        const student = document.getElementById("studentId").value;
+        const group = document.getElementById("groupName").value.trim();
+        document.getElementById("submitBtn").disabled = !(student || group);
     }
 </script>
 
