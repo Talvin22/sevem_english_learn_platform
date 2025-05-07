@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface LessonParticipantRepository extends JpaRepository<LessonParticipant, Long> {
     List<LessonParticipant> findByLessonId(Long lessonId);
+    List<LessonParticipant> findByStudentId(Long studentId);
 }
