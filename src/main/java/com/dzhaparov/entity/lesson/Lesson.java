@@ -7,7 +7,8 @@ import com.dzhaparov.entity.user.User;
 import jakarta.persistence.*;
 
 import java.time.ZonedDateTime;
-import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -22,9 +23,8 @@ public class Lesson {
     @JoinColumn(name = "teacher_id", nullable = false)
     private User teacher;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id")
-    private User student;
+    @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LessonParticipant> participants = new ArrayList<>();
 
     @Column(name = "date_utc", nullable = false)
     private ZonedDateTime dateUtc;
@@ -49,24 +49,6 @@ public class Lesson {
     @Column(name = "cancelled_by")
     private CancelledBy cancelledBy;
 
-    public ZonedDateTime getDateForTimeZone(String timeZone) {
-        return dateUtc.withZoneSameInstant(ZoneId.of(timeZone));
-    }
-
-    public boolean isGroupLesson() {
-        return group != null;
-    }
-
-    public boolean isCancelled() {
-        return this.status == LessonStatus.CANCELLED;
-    }
-
-    public void cancel(CancelledBy who, CancelingReasons reason) {
-        this.status = LessonStatus.CANCELLED;
-        this.cancelledBy = who;
-        this.cancelingReason = reason;
-    }
-
     public Long getId() {
         return id;
     }
@@ -83,12 +65,12 @@ public class Lesson {
         this.teacher = teacher;
     }
 
-    public User getStudent() {
-        return student;
+    public List<LessonParticipant> getParticipants() {
+        return participants;
     }
 
-    public void setStudent(User student) {
-        this.student = student;
+    public void setParticipants(List<LessonParticipant> participants) {
+        this.participants = participants;
     }
 
     public ZonedDateTime getDateUtc() {
@@ -144,12 +126,12 @@ public class Lesson {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Lesson lesson = (Lesson) o;
-        return Objects.equals(id, lesson.id) && Objects.equals(teacher, lesson.teacher) && Objects.equals(student, lesson.student) && Objects.equals(dateUtc, lesson.dateUtc) && status == lesson.status && cancelingReason == lesson.cancelingReason && Objects.equals(group, lesson.group) && attendanceStatus == lesson.attendanceStatus && cancelledBy == lesson.cancelledBy;
+        return Objects.equals(id, lesson.id) && Objects.equals(teacher, lesson.teacher) && Objects.equals(participants, lesson.participants) && Objects.equals(dateUtc, lesson.dateUtc) && status == lesson.status && cancelingReason == lesson.cancelingReason && Objects.equals(group, lesson.group) && attendanceStatus == lesson.attendanceStatus && cancelledBy == lesson.cancelledBy;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, teacher, student, dateUtc, status, cancelingReason, group, attendanceStatus, cancelledBy);
+        return Objects.hash(id, teacher, participants, dateUtc, status, cancelingReason, group, attendanceStatus, cancelledBy);
     }
 
     @Override
@@ -157,7 +139,7 @@ public class Lesson {
         return "Lesson{" +
                 "id=" + id +
                 ", teacher=" + teacher +
-                ", student=" + student +
+                ", participants=" + participants +
                 ", dateUtc=" + dateUtc +
                 ", status=" + status +
                 ", cancelingReason=" + cancelingReason +
