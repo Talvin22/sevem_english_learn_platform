@@ -8,9 +8,12 @@ import com.dzhaparov.dto.homework.response.HomeworkDtoListResponse;
 import com.dzhaparov.dto.lesson.response.LessonDtoDetailResponse;
 import com.dzhaparov.dto.lesson.response.LessonDtoListResponse;
 import com.dzhaparov.dto.user.response.UserProfileDtoResponse;
+import com.dzhaparov.entity.lesson.Lesson;
+import com.dzhaparov.entity.lesson.LessonParticipant;
 import com.dzhaparov.entity.user.User;
 import com.dzhaparov.repository.group.GroupRepository;
 import com.dzhaparov.repository.homework.HomeworkRepository;
+import com.dzhaparov.repository.lesson.LessonParticipantRepository;
 import com.dzhaparov.repository.lesson.LessonRepository;
 import com.dzhaparov.repository.user.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -26,15 +29,19 @@ public class TeacherServiceImpl implements TeacherService {
     private final LessonRepository lessonRepository;
     private final HomeworkRepository homeworkRepository;
     private final GroupRepository groupRepository;
+    private final LessonParticipantRepository lessonParticipantRepository;
 
     public TeacherServiceImpl(UserRepository userRepository,
                               LessonRepository lessonRepository,
                               HomeworkRepository homeworkRepository,
-                              GroupRepository groupRepository) {
+                              GroupRepository groupRepository,
+                              LessonParticipantRepository lessonParticipantRepository
+                              ) {
         this.userRepository = userRepository;
         this.lessonRepository = lessonRepository;
         this.homeworkRepository = homeworkRepository;
         this.groupRepository = groupRepository;
+        this.lessonParticipantRepository = lessonParticipantRepository;
     }
 
     @Override
@@ -54,19 +61,26 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public LessonDtoListResponse getMyLessons(Long teacherId) {
-        var lessons = lessonRepository.findByTeacherId(teacherId);
-        var dtoList = lessons.stream()
-                .map(lesson -> new LessonDtoDetailResponse(
-                        lesson.getId(),
-                        lesson.getTeacher().getFirst_name() + " " + lesson.getTeacher().getLast_name(),
-                        lesson.getStudent().getFirst_name() + " " + lesson.getStudent().getLast_name(),
-                        lesson.getGroup() != null ? lesson.getGroup().getName() : null,
-                        lesson.getDateUtc(),
-                        lesson.getStatus(),
-                        lesson.getCancelingReason(),
-                        lesson.getAttendanceStatus(),
-                        lesson.getCancelledBy()
-                )).collect(Collectors.toList());
+        List<Lesson> lessons = lessonRepository.findByTeacherId(teacherId);
+
+        List<LessonParticipant> participants = lessonParticipantRepository.findAllByLessonIn(lessons);
+
+        List<LessonDtoDetailResponse> dtoList = participants.stream()
+                .map(lp -> {
+                    Lesson lesson = lp.getLesson();
+                    return new LessonDtoDetailResponse(
+                            lesson.getId(),
+                            lesson.getTeacher().getFirst_name() + " " + lesson.getTeacher().getLast_name(),
+                            lp.getStudent().getFirst_name() + " " + lp.getStudent().getLast_name(),
+                            lesson.getGroup() != null ? lesson.getGroup().getName() : null,
+                            lesson.getDateUtc(),
+                            lesson.getStatus(),
+                            lesson.getCancelingReason(),
+                            lp.getAttendanceStatus(),
+                            lp.getCancelledBy()
+                    );
+                })
+                .collect(Collectors.toList());
 
         return LessonDtoListResponse.of(dtoList);
     }
