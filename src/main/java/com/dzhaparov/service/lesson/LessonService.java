@@ -134,19 +134,14 @@ public class LessonService {
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new RuntimeException("Lesson not found"));
 
-        List<String> studentNames = lessonParticipantRepository.findByLessonId(lessonId).stream()
-                .map(lp -> lp.getStudent().getFirst_name() + " " + lp.getStudent().getLast_name())
-                .toList();
-
         return new LessonEditDtoResponse(
                 lesson.getId(),
                 lesson.getTeacher().getFirst_name() + " " + lesson.getTeacher().getLast_name(),
-                String.join(", ", studentNames),
+                lesson.getGroup() != null ? null : "–",
                 lesson.getGroup() != null ? lesson.getGroup().getName() : null,
                 lesson.getDateUtc(),
                 lesson.getStatus(),
                 null,
-
                 lesson.getCancelingReason(),
                 lesson.getCancelledBy()
         );
