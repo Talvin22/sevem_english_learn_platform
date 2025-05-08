@@ -17,5 +17,5 @@ public record LessonEditDtoResponse(
         LessonStatus status,
         CancelingReasons cancelingReason,
         CancelledBy cancelledBy,
-        List<StudentAttendanceDto> studentAttendanceList
+        List<LessonParticipantInfo> participants
 ) {}

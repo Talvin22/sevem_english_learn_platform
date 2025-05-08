@@ -3,14 +3,11 @@ package com.dzhaparov.controller.lesson;
 
 import com.dzhaparov.dto.lesson.request.CreateLessonRequest;
 import com.dzhaparov.dto.lesson.request.UpdateLessonStatusRequest;
-import com.dzhaparov.dto.lesson.response.LessonDtoCreateResponse;
 import com.dzhaparov.dto.lesson.response.LessonEditDtoResponse;
 import com.dzhaparov.dto.user.response.UserDtoDetailResponse;
 import com.dzhaparov.service.lesson.LessonService;
-
 import com.dzhaparov.util.AuthHelper;
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -51,10 +48,19 @@ public class LessonController {
     @GetMapping("/edit")
     public String showEditLessonForm(@RequestParam("id") Long lessonId, Model model) {
         LessonEditDtoResponse lesson = lessonService.getLessonForEdit(lessonId);
+
+        UpdateLessonStatusRequest updateRequest = new UpdateLessonStatusRequest(
+                lesson.id(),
+                lesson.status(),
+                lesson.cancelingReason(),
+                lesson.cancelledBy(),
+                lesson.participants().stream()
+                        .map(p -> new UpdateLessonStatusRequest.ParticipantUpdate(p.studentId(), p.attendanceStatus()))
+                        .toList()
+        );
+
         model.addAttribute("lesson", lesson);
-        model.addAttribute("updateRequest", new UpdateLessonStatusRequest(
-                lesson.id(), lesson.status(), lesson.cancelingReason(), lesson.cancelledBy(), lesson.attendanceStatus()
-        ));
+        model.addAttribute("updateRequest", updateRequest);
         return "lesson/edit-lesson";
     }
 
