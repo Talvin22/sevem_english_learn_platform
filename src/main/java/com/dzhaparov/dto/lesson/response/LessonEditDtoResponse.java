@@ -1,5 +1,6 @@
 package com.dzhaparov.dto.lesson.response;
 
+import com.dzhaparov.dto.lesson.request.LessonParticipantInfo;
 import com.dzhaparov.dto.student.StudentAttendanceDto;
 import com.dzhaparov.entity.lesson.CancelingReasons;
 import com.dzhaparov.entity.lesson.LessonStatus;
@@ -17,5 +18,5 @@ public record LessonEditDtoResponse(
         LessonStatus status,
         CancelingReasons cancelingReason,
         CancelledBy cancelledBy,
-        List<LessonParticipantInfo> participants
+        List<StudentAttendanceDto> studentAttendanceList
 ) {}

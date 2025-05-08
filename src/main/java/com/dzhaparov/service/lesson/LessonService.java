@@ -25,7 +25,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class LessonService {
@@ -115,8 +116,6 @@ public class LessonService {
 
         lesson.setStatus(request.status());
 
-        lesson.setAttendanceStatus(request.attendanceStatus());
-
         if (request.status() == LessonStatus.CANCELLED) {
             if (request.cancelledBy() == null || request.cancelingReason() == null) {
                 throw new IllegalArgumentException("Cancel reason and who cancelled must be provided for cancelled lessons.");
@@ -128,7 +127,19 @@ public class LessonService {
             lesson.setCancelingReason(null);
         }
 
+        List<LessonParticipant> participants = lessonParticipantRepository.findAllByLesson(lesson);
+        Map<Long, LessonAttendanceStatus> statusMap = request.participants().stream()
+                .collect(Collectors.toMap(UpdateLessonStatusRequest.ParticipantUpdate::studentId,
+                        UpdateLessonStatusRequest.ParticipantUpdate::attendanceStatus));
+
+        for (LessonParticipant participant : participants) {
+            if (statusMap.containsKey(participant.getStudent().getId())) {
+                participant.setAttendanceStatus(statusMap.get(participant.getStudent().getId()));
+            }
+        }
+
         lessonRepository.save(lesson);
+        lessonParticipantRepository.saveAll(participants);
     }
 
     public LessonEditDtoResponse getLessonForEdit(Long lessonId) {
