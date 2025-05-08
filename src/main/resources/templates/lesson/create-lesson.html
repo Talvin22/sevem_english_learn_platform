@@ -9,13 +9,14 @@
 
 <div class="container">
     <h1>Create a New Lesson</h1>
+    <p><em>Выберите <strong>одного ученика</strong> или введите <strong>название группы</strong> — не оба сразу.</em></p>
 
     <form th:action="@{/lessons/create}" th:object="${lessonRequest}" method="post" class="card">
 
         <div class="form-group">
             <label for="studentId"><strong>Select Student:</strong></label>
             <select th:field="*{studentId}" id="studentId" onchange="onStudentChange()">
-                <option value="" disabled selected>Select a student</option>
+                <option value="" disabled selected>-- Выберите ученика --</option>
                 <option th:each="student : ${students}"
                         th:value="${student.id}"
                         th:text="${student.firstName + ' ' + student.lastName}"></option>
@@ -24,7 +25,11 @@
 
         <div class="form-group">
             <label for="groupName"><strong>Group Name:</strong></label>
-            <input type="text" th:field="*{groupName}" id="groupName" oninput="onGroupInput()" />
+            <input type="text"
+                   th:field="*{groupName}"
+                   id="groupName"
+                   placeholder="Например: Group A"
+                   oninput="onGroupInput()"/>
         </div>
 
         <div class="form-group">
@@ -39,28 +44,20 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("timeZone").value = Intl.DateTimeFormat().resolvedOptions().timeZone;
         toggleSubmitButton();
     });
 
     function onStudentChange() {
-        const student = document.getElementById("studentId").value;
-        if (student) {
-            document.getElementById("groupName").disabled = true;
-        } else {
-            document.getElementById("groupName").disabled = false;
-        }
+        const studentSelected = !!document.getElementById("studentId").value;
+        document.getElementById("groupName").disabled = studentSelected;
         toggleSubmitButton();
     }
 
     function onGroupInput() {
-        const group = document.getElementById("groupName").value.trim();
-        if (group.length > 0) {
-            document.getElementById("studentId").disabled = true;
-        } else {
-            document.getElementById("studentId").disabled = false;
-        }
+        const groupValue = document.getElementById("groupName").value.trim();
+        document.getElementById("studentId").disabled = groupValue.length > 0;
         toggleSubmitButton();
     }
 
