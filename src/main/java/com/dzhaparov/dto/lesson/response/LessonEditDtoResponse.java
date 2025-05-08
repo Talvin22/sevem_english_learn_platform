@@ -6,16 +6,16 @@ import com.dzhaparov.entity.lesson.attendance.CancelledBy;
 import com.dzhaparov.entity.lesson.attendance.LessonAttendanceStatus;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 public record LessonEditDtoResponse(
         Long id,
         String teacherName,
-        String studentName,
+        List<String> studentNames,
         String groupName,
         ZonedDateTime dateUtc,
         LessonStatus status,
-        LessonAttendanceStatus attendanceStatus,
         CancelingReasons cancelingReason,
-        CancelledBy cancelledBy
-) {
-}
+        CancelledBy cancelledBy,
+        LessonAttendanceStatus attendanceStatus
+) {}
