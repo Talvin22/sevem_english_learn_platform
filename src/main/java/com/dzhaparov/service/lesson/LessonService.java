@@ -134,15 +134,13 @@ public class LessonService {
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new RuntimeException("Lesson not found"));
 
-        // Получаем всех участников урока
         List<LessonParticipant> participants = lessonParticipantRepository.findAllByLesson(lesson);
 
-        // Получаем список имён студентов
         List<String> studentNames = participants.stream()
                 .map(p -> p.getStudent().getFirst_name() + " " + p.getStudent().getLast_name())
                 .toList();
 
-        // Берем статус посещения первого участника, если он есть
+
         LessonAttendanceStatus attendanceStatus = participants.isEmpty() ? null : participants.get(0).getAttendanceStatus();
 
         return new LessonEditDtoResponse(
