@@ -54,7 +54,7 @@ public class LessonController {
                 lesson.status(),
                 lesson.cancelingReason(),
                 lesson.cancelledBy(),
-                lesson.studentAttendanceList().stream()
+                lesson.participants().stream()
                         .map(p -> new UpdateLessonStatusRequest.ParticipantUpdate(p.studentId(), p.attendanceStatus()))
                         .toList()
         );

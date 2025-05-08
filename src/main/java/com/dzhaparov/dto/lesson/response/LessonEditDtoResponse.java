@@ -1,10 +1,10 @@
 package com.dzhaparov.dto.lesson.response;
 
-import com.dzhaparov.dto.lesson.request.LessonParticipantInfo;
 import com.dzhaparov.dto.student.StudentAttendanceDto;
 import com.dzhaparov.entity.lesson.CancelingReasons;
 import com.dzhaparov.entity.lesson.LessonStatus;
 import com.dzhaparov.entity.lesson.attendance.CancelledBy;
+
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -18,5 +18,5 @@ public record LessonEditDtoResponse(
         LessonStatus status,
         CancelingReasons cancelingReason,
         CancelledBy cancelledBy,
-        List<StudentAttendanceDto> studentAttendanceList
+        List<StudentAttendanceDto> participants
 ) {}

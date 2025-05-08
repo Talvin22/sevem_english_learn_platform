@@ -56,7 +56,7 @@
     <p><strong>Students:</strong> <span id="modal-students"></span></p>
     <p><strong>Status:</strong> <span id="modal-status" class="badge"></span></p>
 
-    <label for="statusSelect">Update Status:</label>
+    <label for="statusSelect">Update Lesson Status:</label>
     <select id="statusSelect">
         <option value="PLANNED">PLANNED</option>
         <option value="COMPLETED">COMPLETED</option>
@@ -77,68 +77,15 @@
         </select>
     </div>
 
+    <h3>Attendance</h3>
+    <div id="attendanceFields"></div>
+
     <button onclick="updateLesson()" style="margin-top:10px;">Update</button>
 </div>
 
 <div id="modalOverlay" class="modal-overlay" onclick="closeModal()"></div>
 
-<script>
-    let selectedLessonId = null;
-
-    function openLessonModal(lessonId) {
-        fetch(`/lessons/api/lesson?id=${lessonId}`)
-            .then(res => res.json())
-            .then(data => {
-                selectedLessonId = data.id;
-                document.getElementById("modal-teacher").textContent = data.teacherName || "–";
-                document.getElementById("modal-group").textContent = data.groupName || "–";
-                document.getElementById("modal-students").textContent = data.studentNames?.join(", ") || "–";
-
-                const statusElem = document.getElementById("modal-status");
-                statusElem.textContent = data.status;
-                statusElem.className = "badge badge-" + data.status.toLowerCase();
-
-                document.getElementById("statusSelect").value = data.status || "PLANNED";
-                document.getElementById("cancelledBySelect").value = data.cancelledBy || "TEACHER";
-                document.getElementById("cancelReasonSelect").value = data.cancelingReason || "VALID_REASON";
-                toggleCancelFields(data.status === "CANCELLED");
-
-                document.getElementById("lessonModal").style.display = "block";
-                document.getElementById("modalOverlay").style.display = "block";
-            });
-    }
-
-    function closeModal() {
-        document.getElementById("lessonModal").style.display = "none";
-        document.getElementById("modalOverlay").style.display = "none";
-    }
-
-    function toggleCancelFields(show) {
-        document.getElementById("cancelFields").style.display = show ? "block" : "none";
-    }
-
-    document.getElementById("statusSelect").addEventListener("change", function () {
-        toggleCancelFields(this.value === "CANCELLED");
-    });
-
-    function updateLesson() {
-        const status = document.getElementById("statusSelect").value;
-        const payload = {
-            lessonId: selectedLessonId,
-            status: status,
-            cancelledBy: document.getElementById("cancelledBySelect").value,
-            cancelingReason: document.getElementById("cancelReasonSelect").value
-        };
-
-        fetch("/lessons/api/lesson/update", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(payload)
-        }).then(() => {
-            closeModal();
-            location.reload();
-        });
-    }
-</script>
+<!-- External JS -->
+<script th:src="@{/lesson-modal.js}"></script>
 </body>
 </html>
