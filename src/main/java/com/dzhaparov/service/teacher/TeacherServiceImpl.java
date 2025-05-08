@@ -63,33 +63,32 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public LessonDtoListResponse getMyLessons(Long teacherId) {
         List<Lesson> lessons = lessonRepository.findByTeacherId(teacherId);
-        List<LessonParticipant> participants = lessonParticipantRepository.findAllByLessonIn(lessons);
+        List<LessonParticipant> allParticipants = lessonParticipantRepository.findAllByLessonIn(lessons);
 
-        Map<Lesson, List<LessonParticipant>> grouped = participants.stream()
-                .collect(Collectors.groupingBy(LessonParticipant::getLesson));
+        Map<Long, List<LessonParticipant>> participantsByLessonId = allParticipants.stream()
+                .collect(Collectors.groupingBy(p -> p.getLesson().getId()));
 
-        List<LessonDtoDetailResponse> dtoList = grouped.entrySet().stream()
-                .map(entry -> {
-                    Lesson lesson = entry.getKey();
-                    List<LessonParticipant> lessonParticipants = entry.getValue();
+        List<LessonDtoDetailResponse> dtoList = lessons.stream().map(lesson -> {
+            List<LessonParticipant> participants = participantsByLessonId.getOrDefault(lesson.getId(), List.of());
 
-                    String studentSummary = (lessonParticipants.size() == 1)
-                            ? lessonParticipants.get(0).getStudent().getFirst_name() + " " + lessonParticipants.get(0).getStudent().getLast_name()
-                            : "Group of " + lessonParticipants.size() + " students";
+            List<String> studentNames = participants.stream()
+                    .map(p -> p.getStudent().getFirst_name() + " " + p.getStudent().getLast_name())
+                    .collect(Collectors.toList());
 
-                    return new LessonDtoDetailResponse(
-                            lesson.getId(),
-                            lesson.getTeacher().getFirst_name() + " " + lesson.getTeacher().getLast_name(),
-                            studentSummary,
-                            lesson.getGroup() != null ? lesson.getGroup().getName() : null,
-                            lesson.getDateUtc(),
-                            lesson.getStatus(),
-                            lesson.getCancelingReason(),
-                            null,
-                            lesson.getCancelledBy()
-                    );
-                })
-                .collect(Collectors.toList());
+            LessonParticipant firstParticipant = participants.isEmpty() ? null : participants.get(0);
+
+            return new LessonDtoDetailResponse(
+                    lesson.getId(),
+                    lesson.getTeacher().getFirst_name() + " " + lesson.getTeacher().getLast_name(),
+                    studentNames,
+                    lesson.getGroup() != null ? lesson.getGroup().getName() : null,
+                    lesson.getDateUtc(),
+                    lesson.getStatus(),
+                    lesson.getCancelingReason(),
+                    firstParticipant != null ? firstParticipant.getAttendanceStatus() : null,
+                    lesson.getCancelledBy()
+            );
+        }).toList();
 
         return LessonDtoListResponse.of(dtoList);
     }

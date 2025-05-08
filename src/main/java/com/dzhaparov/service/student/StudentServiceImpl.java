@@ -19,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,34 +39,25 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public LessonDtoListResponse getMyLessons(Long teacherId) {
-        List<Lesson> lessons = lessonRepository.findByTeacherId(teacherId);
-        List<LessonParticipant> allParticipants = lessonParticipantRepository.findAllByLessonIn(lessons);
+    public LessonDtoListResponse getMyLessons(Long studentId) {
+        var participants = lessonParticipantRepository.findByStudentId(studentId);
 
-        Map<Long, List<LessonParticipant>> participantsByLessonId = allParticipants.stream()
-                .collect(Collectors.groupingBy(p -> p.getLesson().getId()));
-
-        List<LessonDtoDetailResponse> dtoList = lessons.stream().map(lesson -> {
-            List<LessonParticipant> participants = participantsByLessonId.getOrDefault(lesson.getId(), List.of());
-
-            List<String> studentNames = participants.stream()
-                    .map(p -> p.getStudent().getFirst_name() + " " + p.getStudent().getLast_name())
-                    .collect(Collectors.toList());
-
-            LessonParticipant firstParticipant = participants.isEmpty() ? null : participants.get(0);
-
-            return new LessonDtoDetailResponse(
-                    lesson.getId(),
-                    lesson.getTeacher().getFirst_name() + " " + lesson.getTeacher().getLast_name(),
-                    studentNames,
-                    lesson.getGroup() != null ? lesson.getGroup().getName() : null,
-                    lesson.getDateUtc(),
-                    lesson.getStatus(),
-                    lesson.getCancelingReason(),
-                    firstParticipant != null ? firstParticipant.getAttendanceStatus() : null,
-                    lesson.getCancelledBy()
-            );
-        }).toList();
+        var dtoList = participants.stream()
+                .map(participant -> {
+                    Lesson lesson = participant.getLesson();
+                    return new LessonDtoDetailResponse(
+                            lesson.getId(),
+                            lesson.getTeacher().getFirst_name() + " " + lesson.getTeacher().getLast_name(),
+                            participant.getStudent().getFirst_name() + " " + participant.getStudent().getLast_name(),
+                            lesson.getGroup() != null ? lesson.getGroup().getName() : null,
+                            lesson.getDateUtc(),
+                            lesson.getStatus(),
+                            lesson.getCancelingReason(),
+                            participant.getAttendanceStatus(),
+                            lesson.getCancelledBy()
+                    );
+                })
+                .collect(Collectors.toList());
 
         return LessonDtoListResponse.of(dtoList);
     }
