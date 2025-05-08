@@ -43,9 +43,10 @@ public class LessonController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<LessonDtoCreateResponse> createLesson(@RequestBody @Valid CreateLessonRequest request) {
-        LessonDtoCreateResponse response = lessonService.createLesson(request, authHelper.getCurrentUser().getEmail());
-        return ResponseEntity.status(response.statusCode()).body(response);
+    public String createLesson(@ModelAttribute @Valid CreateLessonRequest request,
+                               Authentication auth) {
+        lessonService.createLesson(request, auth.getName());
+        return "redirect:/";
     }
     @GetMapping("/edit")
     public String showEditLessonForm(@RequestParam("id") Long lessonId, Model model) {
