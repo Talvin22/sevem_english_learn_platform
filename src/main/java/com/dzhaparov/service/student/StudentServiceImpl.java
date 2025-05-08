@@ -40,15 +40,17 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public LessonDtoListResponse getMyLessons(Long studentId) {
-        var participants = lessonParticipantRepository.findByStudentId(studentId);
+        List<LessonParticipant> participants = lessonParticipantRepository.findByStudentId(studentId);
 
-        var dtoList = participants.stream()
+        List<LessonDtoDetailResponse> dtoList = participants.stream()
                 .map(participant -> {
                     Lesson lesson = participant.getLesson();
+                    String studentFullName = participant.getStudent().getFirst_name() + " " + participant.getStudent().getLast_name();
+
                     return new LessonDtoDetailResponse(
                             lesson.getId(),
                             lesson.getTeacher().getFirst_name() + " " + lesson.getTeacher().getLast_name(),
-                            participant.getStudent().getFirst_name() + " " + participant.getStudent().getLast_name(),
+                            List.of(studentFullName),
                             lesson.getGroup() != null ? lesson.getGroup().getName() : null,
                             lesson.getDateUtc(),
                             lesson.getStatus(),
