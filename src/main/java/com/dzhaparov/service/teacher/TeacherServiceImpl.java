@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,7 +37,7 @@ public class TeacherServiceImpl implements TeacherService {
                               HomeworkRepository homeworkRepository,
                               GroupRepository groupRepository,
                               LessonParticipantRepository lessonParticipantRepository
-                              ) {
+    ) {
         this.userRepository = userRepository;
         this.lessonRepository = lessonRepository;
         this.homeworkRepository = homeworkRepository;
@@ -62,22 +63,30 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public LessonDtoListResponse getMyLessons(Long teacherId) {
         List<Lesson> lessons = lessonRepository.findByTeacherId(teacherId);
-
         List<LessonParticipant> participants = lessonParticipantRepository.findAllByLessonIn(lessons);
 
-        List<LessonDtoDetailResponse> dtoList = participants.stream()
-                .map(lp -> {
-                    Lesson lesson = lp.getLesson();
+        Map<Lesson, List<LessonParticipant>> grouped = participants.stream()
+                .collect(Collectors.groupingBy(LessonParticipant::getLesson));
+
+        List<LessonDtoDetailResponse> dtoList = grouped.entrySet().stream()
+                .map(entry -> {
+                    Lesson lesson = entry.getKey();
+                    List<LessonParticipant> lessonParticipants = entry.getValue();
+
+                    String studentSummary = (lessonParticipants.size() == 1)
+                            ? lessonParticipants.get(0).getStudent().getFirst_name() + " " + lessonParticipants.get(0).getStudent().getLast_name()
+                            : "Group of " + lessonParticipants.size() + " students";
+
                     return new LessonDtoDetailResponse(
                             lesson.getId(),
                             lesson.getTeacher().getFirst_name() + " " + lesson.getTeacher().getLast_name(),
-                            lp.getStudent().getFirst_name() + " " + lp.getStudent().getLast_name(),
+                            studentSummary,
                             lesson.getGroup() != null ? lesson.getGroup().getName() : null,
                             lesson.getDateUtc(),
                             lesson.getStatus(),
                             lesson.getCancelingReason(),
-                            lp.getAttendanceStatus(),
-                            lp.getCancelledBy()
+                            null,
+                            lesson.getCancelledBy()
                     );
                 })
                 .collect(Collectors.toList());
