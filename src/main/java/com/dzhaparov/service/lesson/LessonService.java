@@ -4,6 +4,7 @@ import com.dzhaparov.dto.lesson.request.CreateLessonRequest;
 import com.dzhaparov.dto.lesson.request.UpdateLessonStatusRequest;
 import com.dzhaparov.dto.lesson.response.LessonDtoCreateResponse;
 import com.dzhaparov.dto.lesson.response.LessonEditDtoResponse;
+import com.dzhaparov.dto.student.StudentAttendanceDto;
 import com.dzhaparov.dto.user.response.UserDtoDetailResponse;
 import com.dzhaparov.entity.group.Group;
 import com.dzhaparov.entity.lesson.Lesson;
@@ -140,8 +141,12 @@ public class LessonService {
                 .map(p -> p.getStudent().getFirst_name() + " " + p.getStudent().getLast_name())
                 .toList();
 
-
-        LessonAttendanceStatus attendanceStatus = participants.isEmpty() ? null : participants.get(0).getAttendanceStatus();
+        List<StudentAttendanceDto> studentAttendanceList = participants.stream()
+                .map(p -> new StudentAttendanceDto(
+                        p.getStudent().getId(),
+                        p.getStudent().getFirst_name() + " " + p.getStudent().getLast_name(),
+                        p.getAttendanceStatus()
+                )).toList();
 
         return new LessonEditDtoResponse(
                 lesson.getId(),
@@ -152,7 +157,7 @@ public class LessonService {
                 lesson.getStatus(),
                 lesson.getCancelingReason(),
                 lesson.getCancelledBy(),
-                attendanceStatus
+                studentAttendanceList
         );
     }
 }
