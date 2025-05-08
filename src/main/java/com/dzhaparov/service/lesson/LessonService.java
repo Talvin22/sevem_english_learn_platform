@@ -130,20 +130,26 @@ public class LessonService {
         lessonRepository.save(lesson);
     }
 
+    @Override
     public LessonEditDtoResponse getLessonForEdit(Long lessonId) {
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new RuntimeException("Lesson not found"));
 
+        List<LessonParticipant> participants = lessonParticipantRepository.findByLesson(lesson);
+        List<String> studentNames = participants.stream()
+                .map(p -> p.getStudent().getFirst_name() + " " + p.getStudent().getLast_name())
+                .toList();
+
         return new LessonEditDtoResponse(
                 lesson.getId(),
                 lesson.getTeacher().getFirst_name() + " " + lesson.getTeacher().getLast_name(),
-                lesson.getGroup() != null ? null : "–",
+                studentNames,
                 lesson.getGroup() != null ? lesson.getGroup().getName() : null,
                 lesson.getDateUtc(),
                 lesson.getStatus(),
-                null,
                 lesson.getCancelingReason(),
-                lesson.getCancelledBy()
+                lesson.getCancelledBy(),
+                participants.isEmpty() ? null : participants.get(0).getAttendanceStatus() // или null если не нужно
         );
     }
 }
