@@ -31,13 +31,7 @@ public class LessonRestController {
     public void updateLesson(@RequestBody UpdateLessonStatusRequest request) {
         lessonService.updateLessonStatus(request);
     }
-    @GetMapping("/weekly")
-    public Map<String, List<LessonShortCardResponse>> getLessonsByWeek(
-            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam("timeZone") String timeZone) {
 
-        return lessonService.getLessonsByWeek(startDate, timeZone);
-    }
     @GetMapping("/week")
     public List<LessonShortCardResponse> getLessonsForWeek(
             @RequestParam("start") String startStr,
