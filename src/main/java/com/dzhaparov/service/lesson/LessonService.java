@@ -171,4 +171,7 @@ public class LessonService {
                 studentAttendanceList
         );
     }
+    public List<Lesson> getLessonsBetween(ZonedDateTime start, ZonedDateTime end, Long teacherId) {
+        return lessonRepository.findByTeacherIdAndDateUtcBetweenOrderByDateUtcAsc(teacherId, start, end);
+    }
 }
