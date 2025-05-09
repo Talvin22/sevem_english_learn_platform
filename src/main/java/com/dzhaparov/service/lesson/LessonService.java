@@ -4,6 +4,7 @@ import com.dzhaparov.dto.lesson.request.CreateLessonRequest;
 import com.dzhaparov.dto.lesson.request.UpdateLessonStatusRequest;
 import com.dzhaparov.dto.lesson.response.LessonDtoCreateResponse;
 import com.dzhaparov.dto.lesson.response.LessonEditDtoResponse;
+import com.dzhaparov.dto.lesson.response.LessonShortCardResponse;
 import com.dzhaparov.dto.student.StudentAttendanceDto;
 import com.dzhaparov.dto.user.response.UserDtoDetailResponse;
 import com.dzhaparov.entity.group.Group;
@@ -173,5 +174,19 @@ public class LessonService {
     }
     public List<Lesson> getLessonsBetween(ZonedDateTime start, ZonedDateTime end, Long teacherId) {
         return lessonRepository.findByTeacherIdAndDateUtcBetweenOrderByDateUtcAsc(teacherId, start, end);
+    }
+    public List<LessonShortCardResponse> getLessonsForWeek(ZonedDateTime start, ZonedDateTime end) {
+        User teacher = authHelper.getCurrentUser();
+
+        List<Lesson> lessons = lessonRepository.findAllByTeacherAndDateUtcBetween(teacher, start, end);
+
+        return lessons.stream()
+                .map(lesson -> new LessonShortCardResponse(
+                        lesson.getId(),
+                        lesson.getDateUtc(),
+                        lesson.getStatus(),
+                        lesson.getGroup() != null ? lesson.getGroup().getName() : null
+                ))
+                .toList();
     }
 }
