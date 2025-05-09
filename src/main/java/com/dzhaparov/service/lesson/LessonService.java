@@ -176,17 +176,28 @@ public class LessonService {
         return lessonRepository.findByTeacherIdAndDateUtcBetweenOrderByDateUtcAsc(teacherId, start, end);
     }
     public List<LessonShortCardResponse> getLessonsForWeek(ZonedDateTime start, ZonedDateTime end) {
-        User teacher = authHelper.getCurrentUser();
+        Long teacherId = authHelper.getCurrentUser().getId();
 
-        List<Lesson> lessons = lessonRepository.findAllByTeacherAndDateUtcBetween(teacher, start, end);
+        List<Lesson> lessons = getLessonsBetween(start, end, teacherId);
+
+        Map<Long, List<LessonParticipant>> participantsMap = lessonParticipantRepository
+                .findAllByLessonIn(lessons).stream()
+                .collect(Collectors.groupingBy(p -> p.getLesson().getId()));
 
         return lessons.stream()
-                .map(lesson -> new LessonShortCardResponse(
-                        lesson.getId(),
-                        lesson.getDateUtc(),
-                        lesson.getStatus(),
-                        lesson.getGroup() != null ? lesson.getGroup().getName() : null
-                ))
+                .map(lesson -> {
+                    List<String> studentNames = participantsMap.getOrDefault(lesson.getId(), List.of()).stream()
+                            .map(p -> p.getStudent().getFirst_name() + " " + p.getStudent().getLast_name())
+                            .toList();
+
+                    return new LessonShortCardResponse(
+                            lesson.getId(),
+                            lesson.getDateUtc(),
+                            lesson.getGroup() != null ? lesson.getGroup().getName() : null,
+                            studentNames,
+                            lesson.getStatus()
+                    );
+                })
                 .toList();
     }
 }
