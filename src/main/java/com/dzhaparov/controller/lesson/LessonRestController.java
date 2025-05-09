@@ -2,11 +2,15 @@ package com.dzhaparov.controller.lesson;
 
 import com.dzhaparov.dto.lesson.request.UpdateLessonStatusRequest;
 import com.dzhaparov.dto.lesson.response.LessonEditDtoResponse;
+import com.dzhaparov.dto.lesson.response.LessonShortCardResponse;
 import com.dzhaparov.service.lesson.LessonService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/lessons/api")
@@ -33,5 +37,13 @@ public class LessonRestController {
             @RequestParam("timeZone") String timeZone) {
 
         return lessonService.getLessonsByWeek(startDate, timeZone);
+    }
+    @GetMapping("/week")
+    public List<LessonShortCardResponse> getLessonsForWeek(
+            @RequestParam("start") String startStr,
+            @RequestParam("end") String endStr) {
+        ZonedDateTime start = ZonedDateTime.parse(startStr);
+        ZonedDateTime end = ZonedDateTime.parse(endStr);
+        return lessonService.getLessonsForWeek(start, end);
     }
 }
