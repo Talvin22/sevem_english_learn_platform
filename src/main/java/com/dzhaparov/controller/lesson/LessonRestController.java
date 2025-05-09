@@ -40,4 +40,11 @@ public class LessonRestController {
         ZonedDateTime end = ZonedDateTime.parse(endStr);
         return lessonService.getLessonsForWeek(start, end);
     }
+    @GetMapping("/weekly")
+    public Map<String, List<LessonShortCardResponse>> getLessonsByWeek(
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("timeZone") String timeZone) {
+
+        return lessonService.getLessonsByWeek(startDate, timeZone);
+    }
 }
