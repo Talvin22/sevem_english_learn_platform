@@ -16,22 +16,14 @@
             ➕ Create Lesson
         </a>
 
-        <div th:if="${homePageData.lessons != null and homePageData.lessons.lessons.size() > 0}">
-            <div th:each="lesson : ${homePageData.lessons.lessons}"
-                 class="card-content"
-                 th:onclick="'openLessonModal(' + ${lesson.id} + ')'"
-                 style="cursor:pointer;">
-                <strong class="lesson-date" th:data-date="${lesson.dateUtc}"></strong><br>
-
-                <span th:if="${lesson.groupName != null}" th:text="${lesson.groupName}"></span>
-                <span th:if="${lesson.groupName == null}" th:text="${#strings.arrayJoin(lesson.studentNames.toArray(), ', ')}"></span>
-
-                <span th:text="${lesson.status}"
-                      th:class="'badge badge-' + ${lesson.status.name().toLowerCase()}">
-                </span>
-            </div>
+        <div style="margin-top: 10px;">
+            <button id="prevWeekBtn" class="btn">← Previous</button>
+            <button id="nextWeekBtn" class="btn">Next →</button>
         </div>
-        <p th:if="${homePageData.lessons == null or homePageData.lessons.lessons.size() == 0}">No lessons found.</p>
+
+        <div id="weekly-lessons-container" style="margin-top: 20px;">
+            <!-- Уроки по дням недели будут подгружаться здесь -->
+        </div>
     </div>
 
     <!-- HOMEWORKS -->
@@ -40,7 +32,8 @@
         <div th:if="${homePageData.homeworks != null and homePageData.homeworks.homeworks.size() > 0}">
             <div th:each="homework : ${homePageData.homeworks.homeworks}" class="card-content">
                 <span th:text="'Lesson ID: ' + ${homework.lessonId}"></span> /
-                <span th:text="${homework.status}" th:class="'badge badge-' + ${homework.status.name().toLowerCase()}"></span>
+                <span th:text="${homework.status}"
+                      th:class="'badge badge-' + ${homework.status.name().toLowerCase()}"></span>
             </div>
         </div>
         <p th:if="${homePageData.homeworks == null or homePageData.homeworks.homeworks.size() == 0}">No homeworks found.</p>
@@ -87,5 +80,6 @@
 
 <!-- External JS -->
 <script th:src="@{/lesson-modal.js}"></script>
+<script th:src="@{/weekly-lessons.js}"></script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 package com.dzhaparov.service.lesson;
 
+import java.util.LinkedHashMap;
 import com.dzhaparov.dto.lesson.request.CreateLessonRequest;
 import com.dzhaparov.dto.lesson.request.UpdateLessonStatusRequest;
 import com.dzhaparov.dto.lesson.response.LessonDtoCreateResponse;
@@ -21,6 +22,7 @@ import com.dzhaparov.util.AuthHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -199,5 +201,24 @@ public class LessonService {
                     );
                 })
                 .toList();
+    }
+
+    public Map<String, List<LessonShortCardResponse>> getLessonsByWeek(LocalDate startDate, String timeZone) {
+        ZoneId zone = ZoneId.of(timeZone);
+
+        ZonedDateTime startOfWeekLocal = startDate.atStartOfDay(zone);
+        ZonedDateTime endOfWeekLocal = startOfWeekLocal.plusDays(7);
+
+        ZonedDateTime startUtc = startOfWeekLocal.withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime endUtc = endOfWeekLocal.withZoneSameInstant(ZoneId.of("UTC"));
+
+        List<LessonShortCardResponse> lessons = getLessonsForWeek(startUtc, endUtc);
+
+        return lessons.stream()
+                .collect(Collectors.groupingBy(
+                        l -> l.dateUtc().withZoneSameInstant(zone).getDayOfWeek().name(),
+                        LinkedHashMap::new,
+                        Collectors.toList()
+                ));
     }
 }
