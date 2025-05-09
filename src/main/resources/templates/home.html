@@ -21,7 +21,7 @@
                  class="card-content"
                  th:onclick="'openLessonModal(' + ${lesson.id} + ')'"
                  style="cursor:pointer;">
-                <strong th:text="${lesson.dateUtc}"></strong><br>
+                <strong class="lesson-date" th:data-date="${lesson.dateUtc}"></strong><br>
 
                 <span th:if="${lesson.groupName != null}" th:text="${lesson.groupName}"></span>
                 <span th:if="${lesson.groupName == null}" th:text="${#strings.arrayJoin(lesson.studentNames.toArray(), ', ')}"></span>

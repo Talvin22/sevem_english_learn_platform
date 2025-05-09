@@ -96,3 +96,23 @@ function updateLesson() {
         location.reload();
     });
 }
+
+// === Format lesson dates on homepage cards ===
+document.addEventListener("DOMContentLoaded", () => {
+    const dateElements = document.querySelectorAll(".lesson-date");
+
+    dateElements.forEach(el => {
+        const raw = el.getAttribute("data-date");
+        if (!raw) return;
+
+        const formatted = new Date(raw).toLocaleString("de-DE", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+
+        el.textContent = formatted;
+    });
+});
