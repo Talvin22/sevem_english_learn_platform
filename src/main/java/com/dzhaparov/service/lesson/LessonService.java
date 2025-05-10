@@ -254,14 +254,7 @@ public class LessonService {
     }
     @Transactional
     public void deleteLessonById(Long lessonId) {
-        Lesson lesson = lessonRepository.findById(lessonId)
-                .orElseThrow(() -> new RuntimeException("Lesson not found"));
-
-
-        List<LessonParticipant> participants = lessonParticipantRepository.findAllByLesson(lesson);
-        lessonParticipantRepository.deleteAll(participants);
-
-
-        lessonRepository.delete(lesson);
+        lessonParticipantRepository.deleteAllByLessonId(lessonId);
+        lessonRepository.deleteById(lessonId);
     }
 }
