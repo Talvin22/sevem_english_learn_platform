@@ -27,8 +27,11 @@ public class HomeController {
         boolean isTeacher = authentication.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_TEACHER"));
 
+        String userRole = isTeacher ? "TEACHER" : "STUDENT";
+
         model.addAttribute("homePageData", homePageData);
         model.addAttribute("isTeacher", isTeacher);
+        model.addAttribute("userRole", userRole);
 
         return "home";
     }

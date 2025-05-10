@@ -1,6 +1,16 @@
 let selectedLessonId = null;
 
+function closeModal() {
+    document.getElementById("lessonModal").style.display = "none";
+    document.getElementById("modalOverlay").style.display = "none";
+}
+
 function openLessonModal(lessonId) {
+    const userRole = document.body.dataset.role;
+    const isTeacher = userRole === "TEACHER";
+
+    console.log("ROLE:", userRole);
+
     fetch(`/lessons/api/lesson?id=${lessonId}`)
         .then(res => res.json())
         .then(data => {
@@ -14,12 +24,18 @@ function openLessonModal(lessonId) {
             statusElem.textContent = data.status;
             statusElem.className = "badge badge-" + data.status.toLowerCase();
 
-            document.getElementById("statusSelect").value = data.status || "PLANNED";
-            document.getElementById("cancelledBySelect").value = data.cancelledBy || "TEACHER";
-            document.getElementById("cancelReasonSelect").value = data.cancelingReason || "VALID_REASON";
-            toggleCancelFields(data.status === "CANCELLED");
+            // Управление статусом урока
+            if (isTeacher) {
+                document.getElementById("statusSelect").value = data.status || "PLANNED";
+                document.getElementById("cancelledBySelect").value = data.cancelledBy || "TEACHER";
+                document.getElementById("cancelReasonSelect").value = data.cancelingReason || "VALID_REASON";
+                toggleCancelFields(data.status === "CANCELLED");
+            } else {
+                document.getElementById("statusBlock").style.display = "none";
+                document.getElementById("cancelFields").style.display = "none";
+            }
 
-            // === Attendance UI ===
+            // Посещаемость
             const attendanceFields = document.getElementById("attendanceFields");
             attendanceFields.innerHTML = "";
 
@@ -32,22 +48,35 @@ function openLessonModal(lessonId) {
                     label.textContent = p.name + ": ";
                     label.style.marginRight = "8px";
 
-                    const select = document.createElement("select");
-                    select.dataset.studentId = p.studentId;
-                    ["ATTENDED", "CANCELLED", "PLANNED"].forEach(status => {
-                        const option = document.createElement("option");
-                        option.value = status;
-                        option.textContent = status;
-                        if (p.attendanceStatus === status) {
-                            option.selected = true;
-                        }
-                        select.appendChild(option);
-                    });
+                    if (isTeacher) {
+                        const select = document.createElement("select");
+                        select.dataset.studentId = p.studentId;
+                        ["ATTENDED", "CANCELLED", "PLANNED"].forEach(status => {
+                            const option = document.createElement("option");
+                            option.value = status;
+                            option.textContent = status;
+                            if (p.attendanceStatus === status) {
+                                option.selected = true;
+                            }
+                            select.appendChild(option);
+                        });
+                        wrapper.appendChild(label);
+                        wrapper.appendChild(select);
+                    } else {
+                        const span = document.createElement("span");
+                        span.textContent = p.attendanceStatus;
+                        wrapper.appendChild(label);
+                        wrapper.appendChild(span);
+                    }
 
-                    wrapper.appendChild(label);
-                    wrapper.appendChild(select);
                     attendanceFields.appendChild(wrapper);
                 });
+            }
+
+            // Кнопки обновления и удаления
+            const btnBlock = document.getElementById("modal-buttons");
+            if (btnBlock) {
+                btnBlock.style.display = isTeacher ? "flex" : "none";
             }
 
             document.getElementById("lessonModal").style.display = "block";
@@ -55,18 +84,13 @@ function openLessonModal(lessonId) {
         });
 }
 
-function closeModal() {
-    document.getElementById("lessonModal").style.display = "none";
-    document.getElementById("modalOverlay").style.display = "none";
-}
+document.getElementById("statusSelect").addEventListener("change", function () {
+    toggleCancelFields(this.value === "CANCELLED");
+});
 
 function toggleCancelFields(show) {
     document.getElementById("cancelFields").style.display = show ? "block" : "none";
 }
-
-document.getElementById("statusSelect").addEventListener("change", function () {
-    toggleCancelFields(this.value === "CANCELLED");
-});
 
 function updateLesson() {
     const status = document.getElementById("statusSelect").value;
@@ -95,38 +119,18 @@ function updateLesson() {
         location.reload();
     });
 }
+
 function confirmDeleteLesson() {
     if (confirm("Are you sure you want to delete this lesson?")) {
         fetch(`/lessons/api/lesson/${selectedLessonId}`, {
             method: "DELETE"
-        })
-            .then(res => {
-                if (res.ok) {
-                    closeModal();
-                    location.reload();
-                } else {
-                    alert("Error");
-                }
-            });
+        }).then(res => {
+            if (res.ok) {
+                closeModal();
+                location.reload();
+            } else {
+                alert("Error deleting lesson");
+            }
+        });
     }
 }
-
-// === Format lesson dates on homepage cards ===
-document.addEventListener("DOMContentLoaded", () => {
-    const dateElements = document.querySelectorAll(".lesson-date");
-
-    dateElements.forEach(el => {
-        const raw = el.getAttribute("data-date");
-        if (!raw) return;
-
-        const formatted = new Date(raw).toLocaleString("de-DE", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit"
-        });
-
-        el.textContent = formatted;
-    });
-});
