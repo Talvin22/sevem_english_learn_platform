@@ -426,3 +426,25 @@ select {
     border: 2px solid #3b82f6;
     border-radius: 8px;
 }
+.btn {
+    padding: 8px 16px;
+    border: none;
+    background-color: #3b82f6;
+    color: white;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #2563eb;
+}
+
+.btn.danger {
+    background-color: #ef4444;
+}
+
+.btn.danger:hover {
+    background-color: #dc2626;
+}

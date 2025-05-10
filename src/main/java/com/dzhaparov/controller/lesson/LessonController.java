@@ -8,6 +8,7 @@ import com.dzhaparov.dto.user.response.UserDtoDetailResponse;
 import com.dzhaparov.service.lesson.LessonService;
 import com.dzhaparov.util.AuthHelper;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,7 +27,7 @@ public class LessonController {
         this.lessonService = lessonService;
         this.authHelper = authHelper;
     }
-
+    @PreAuthorize("hasRole('TEACHER')")
     @GetMapping("/create")
     public String showCreateLessonForm(Model model, Authentication authentication) {
         String email = authentication.getName();
@@ -38,13 +39,15 @@ public class LessonController {
 
         return "lesson/create-lesson";
     }
-
+    @PreAuthorize("hasRole('TEACHER')")
     @PostMapping("/create")
     public String createLesson(@ModelAttribute @Valid CreateLessonRequest request,
                                Authentication auth) {
         lessonService.createLesson(request, auth.getName());
         return "redirect:/";
     }
+
+    @PreAuthorize("hasRole('TEACHER')")
     @GetMapping("/edit")
     public String showEditLessonForm(@RequestParam("id") Long lessonId, Model model) {
         LessonEditDtoResponse lesson = lessonService.getLessonForEdit(lessonId);
@@ -64,6 +67,7 @@ public class LessonController {
         return "lesson/edit-lesson";
     }
 
+    @PreAuthorize("hasRole('TEACHER')")
     @PostMapping("/update")
     public String updateLesson(@ModelAttribute @Valid UpdateLessonStatusRequest request) {
         lessonService.updateLessonStatus(request);
