@@ -421,3 +421,8 @@ select {
     transform: scale(1.03);
     text-decoration: none;
 }
+.card-content.today {
+    background-color: #e0f2fe;
+    border: 2px solid #3b82f6;
+    border-radius: 8px;
+}
