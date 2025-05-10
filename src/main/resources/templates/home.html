@@ -8,6 +8,11 @@
 <body th:attr="data-role=${userRole}">
 <div class="container">
     <h1>Welcome to Your Dashboard!</h1>
+    <div style="text-align: right; margin-bottom: 10px;">
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="btn danger">🚪 Logout</button>
+        </form>
+    </div>
 
     <!-- LESSONS -->
     <div class="card">
