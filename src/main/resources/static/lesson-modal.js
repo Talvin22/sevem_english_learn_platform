@@ -1,5 +1,4 @@
 let selectedLessonId = null;
-let attendanceUpdates = [];
 
 function openLessonModal(lessonId) {
     fetch(`/lessons/api/lesson?id=${lessonId}`)

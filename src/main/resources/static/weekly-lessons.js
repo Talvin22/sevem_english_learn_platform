@@ -1,86 +1,83 @@
-let currentStartDate = getMonday(new Date());
-
 document.addEventListener("DOMContentLoaded", function () {
-    loadLessons();
-
-    document.getElementById("prevWeekBtn").addEventListener("click", () => {
-        currentStartDate.setDate(currentStartDate.getDate() - 7);
-        loadLessons();
-    });
-
-    document.getElementById("nextWeekBtn").addEventListener("click", () => {
-        currentStartDate.setDate(currentStartDate.getDate() + 7);
-        loadLessons();
-    });
-});
-
-function loadLessons() {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const isoDate = currentStartDate.toISOString().split("T")[0];
-
-    fetch(`/lessons/api/weekly?startDate=${isoDate}&timeZone=${tz}`)
-        .then(res => res.json())
-        .then(data => renderLessonsByDay(data));
-}
-
-function renderLessonsByDay(data) {
     const container = document.getElementById("weekly-lessons-container");
-    container.innerHTML = "";
+    const prevBtn = document.getElementById("prevWeekBtn");
+    const nextBtn = document.getElementById("nextWeekBtn");
 
-    const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    let currentStartDate = getStartOfWeek(new Date());
 
-    daysOfWeek.forEach(day => {
-        const lessons = data[day] || [];
-        const dayDiv = document.createElement("div");
-        dayDiv.className = "day-section";
+    function getStartOfWeek(date) {
+        const day = date.getDay(); // 0 (Sun) to 6 (Sat)
+        const diff = (day === 0 ? -6 : 1) - day;
+        const start = new Date(date);
+        start.setDate(date.getDate() + diff);
+        start.setHours(0, 0, 0, 0);
+        return start;
+    }
 
-        const title = document.createElement("h3");
-        title.textContent = day;
-        dayDiv.appendChild(title);
+    function formatDateISO(date) {
+        return date.toISOString().split("T")[0];
+    }
 
-        if (lessons.length === 0) {
-            const none = document.createElement("p");
-            none.textContent = "No lessons.";
-            none.style.color = "gray";
-            dayDiv.appendChild(none);
-        } else {
-            lessons.forEach(lesson => {
-                const card = document.createElement("div");
-                card.className = "card-content";
-                card.style.cursor = "pointer";
-                card.onclick = () => openLessonModal(lesson.id);
+    function renderLessonsByWeek(startDate) {
+        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const startISO = formatDateISO(startDate);
 
-                const date = new Date(lesson.dateUtc);
-                const timeString = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        fetch(`/lessons/api/weekly?startDate=${startISO}&timeZone=${encodeURIComponent(timeZone)}`)
+            .then(res => res.json())
+            .then(data => {
+                container.innerHTML = "";
 
-                const dateText = document.createElement("strong");
-                dateText.textContent = timeString;
-                card.appendChild(dateText);
+                const daysOfWeek = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
+                daysOfWeek.forEach(day => {
+                    const section = document.createElement("div");
+                    const title = document.createElement("h3");
+                    title.textContent = capitalizeFirstLetter(day.toLowerCase());
+                    section.appendChild(title);
 
-                card.appendChild(document.createElement("br"));
+                    const lessons = data[day];
+                    if (lessons && lessons.length > 0) {
+                        lessons.forEach(lesson => {
+                            const date = new Date(lesson.dateUtc);
+                            const time = date.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+                            const formattedDate = date.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" });
 
-                const groupOrStudents = document.createElement("span");
-                groupOrStudents.textContent = lesson.groupName || lesson.studentNames.join(", ");
-                card.appendChild(groupOrStudents);
+                            const lessonCard = document.createElement("div");
+                            lessonCard.className = "card-content";
+                            lessonCard.style.cursor = "pointer";
+                            lessonCard.onclick = () => openLessonModal(lesson.id);
 
-                card.appendChild(document.createElement("br"));
+                            lessonCard.innerHTML = `
+                                <strong>${formattedDate} ${time}</strong><br>
+                                <span>${lesson.groupName || lesson.studentNames.join(", ")}</span><br>
+                                <span class="badge badge-${lesson.status.toLowerCase()}">${lesson.status}</span>
+                            `;
 
-                const badge = document.createElement("span");
-                badge.className = "badge badge-" + lesson.status.toLowerCase();
-                badge.textContent = lesson.status;
-                card.appendChild(badge);
+                            section.appendChild(lessonCard);
+                        });
+                    } else {
+                        const noLessons = document.createElement("p");
+                        noLessons.textContent = "No lessons.";
+                        section.appendChild(noLessons);
+                    }
 
-                dayDiv.appendChild(card);
+                    container.appendChild(section);
+                });
             });
-        }
+    }
 
-        container.appendChild(dayDiv);
+    function capitalizeFirstLetter(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    }
+
+    prevBtn.addEventListener("click", function () {
+        currentStartDate.setDate(currentStartDate.getDate() - 7);
+        renderLessonsByWeek(currentStartDate);
     });
-}
 
-function getMonday(d) {
-    const date = new Date(d);
-    const day = date.getDay();
-    const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-    return new Date(date.setDate(diff));
-}
+    nextBtn.addEventListener("click", function () {
+        currentStartDate.setDate(currentStartDate.getDate() + 7);
+        renderLessonsByWeek(currentStartDate);
+    });
+
+    renderLessonsByWeek(currentStartDate);
+});
