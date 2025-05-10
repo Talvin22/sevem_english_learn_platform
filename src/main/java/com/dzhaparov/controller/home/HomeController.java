@@ -24,7 +24,11 @@ public class HomeController {
         String email = authentication.getName();
         HomePageDataResponse homePageData = homeService.getHomePageData(email);
 
+        boolean isTeacher = authentication.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_TEACHER"));
+
         model.addAttribute("homePageData", homePageData);
+        model.addAttribute("isTeacher", isTeacher);
 
         return "home";
     }
