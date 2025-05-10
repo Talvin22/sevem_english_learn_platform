@@ -12,7 +12,7 @@
     <!-- LESSONS -->
     <div class="card">
         <h2>Lessons</h2>
-        <a th:href="@{/lessons/create}" class="btn create-lesson">
+        <a th:if="${isTeacher}" th:href="@{/lessons/create}" class="btn create-lesson">
             ➕ Create Lesson
         </a>
 
@@ -73,7 +73,7 @@
     <h3>Attendance</h3>
     <div id="attendanceFields"></div>
 
-    <div style="display: flex; gap: 10px; margin-top: 10px;">
+    <div th:if="${isTeacher}" style="display: flex; gap: 10px; margin-top: 10px;">
         <button onclick="updateLesson()" class="btn">Update</button>
         <button onclick="confirmDeleteLesson()" class="btn danger">🗑 Delete Lesson</button>
     </div>

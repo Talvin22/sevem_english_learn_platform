@@ -13,9 +13,9 @@ import java.util.List;
 
 public interface LessonParticipantRepository extends JpaRepository<LessonParticipant, Long> {
     List<LessonParticipant> findByLessonId(Long lessonId);
-    List<LessonParticipant> findByStudentId(Long studentId);
+    @Query("SELECT lp FROM LessonParticipant lp WHERE lp.student.id = :studentId")
+    List<LessonParticipant> findAllByStudentId(@Param("studentId") Long studentId);
     List<LessonParticipant> findAllByLessonIn(List<Lesson> lessons);
-    List<LessonParticipant> findAllByStudentId(Long studentId);
     List<LessonParticipant> findByLesson(Lesson lesson);
     List<LessonParticipant> findAllByLesson(Lesson lesson);
     @Modifying
