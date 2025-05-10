@@ -96,14 +96,23 @@ function updateLesson() {
     });
 }
 function deleteLesson() {
-    if (!confirm("Are you sure you want to delete this lesson?")) return;
+    if (!selectedLessonId) return;
+
+    const confirmed = confirm("Вы уверены, что хотите удалить этот урок?");
+    if (!confirmed) return;
 
     fetch(`/lessons/api/lesson/${selectedLessonId}`, {
         method: "DELETE"
-    }).then(() => {
-        closeModal();
-        location.reload();
-    });
+    })
+        .then(res => {
+            if (res.ok) {
+                alert("Урок успешно удалён.");
+                closeModal();
+                location.reload();
+            } else {
+                alert("Ошибка при удалении урока.");
+            }
+        });
 }
 
 // === Format lesson dates on homepage cards ===
