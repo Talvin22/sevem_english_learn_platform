@@ -47,4 +47,8 @@ public class LessonRestController {
 
         return lessonService.getLessonsByWeek(startDate, timeZone);
     }
+    @DeleteMapping("/{id}")
+    public void deleteLesson(@PathVariable Long id) {
+        lessonService.deleteLessonById(id);
+    }
 }
