@@ -9,7 +9,7 @@
 
 <div class="container">
     <h1>Create a New Lesson</h1>
-    <p><em>Выберите <strong>одного ученика</strong> или введите <strong>название группы</strong> — не оба сразу.</em></p>
+    <p><em>Choose <strong>one student</strong> or enter <strong>a group name</strong> — not both.</em></p>
 
     <form th:action="@{/lessons/create}" th:object="${lessonRequest}" method="post" class="card">
 
@@ -35,6 +35,17 @@
         <div class="form-group">
             <label for="dateUtc"><strong>Date & Time:</strong></label>
             <input type="datetime-local" th:field="*{dateUtc}" id="dateUtc" required/>
+        </div>
+
+        <div class="form-group">
+            <label for="repeatWeeks"><strong>Repeat for weeks:</strong></label>
+            <input type="number"
+                   th:field="*{repeatWeeks}"
+                   id="repeatWeeks"
+                   min="0"
+                   placeholder="0 = no repeat"
+                   value="0"/>
+            <small>(Вы можете повторить урок на N недель вперёд)</small>
         </div>
 
         <input type="hidden" id="timeZone" th:field="*{timeZone}" />
