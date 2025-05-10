@@ -5,6 +5,7 @@ import com.dzhaparov.dto.lesson.response.LessonEditDtoResponse;
 import com.dzhaparov.dto.lesson.response.LessonShortCardResponse;
 import com.dzhaparov.service.lesson.LessonService;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -47,8 +48,9 @@ public class LessonRestController {
 
         return lessonService.getLessonsByWeek(startDate, timeZone);
     }
-    @DeleteMapping("/{id}")
-    public void deleteLesson(@PathVariable Long id) {
+    @DeleteMapping("/lesson/{id}")
+    public ResponseEntity<Void> deleteLesson(@PathVariable Long id) {
         lessonService.deleteLessonById(id);
+        return ResponseEntity.noContent().build();
     }
 }
