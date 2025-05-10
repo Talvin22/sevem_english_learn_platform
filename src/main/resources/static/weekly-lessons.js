@@ -34,6 +34,8 @@ document.addEventListener("DOMContentLoaded", function () {
         );
     }
 
+    // ...
+
     function renderLessonsByWeek(startDate) {
         const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         const startISO = formatDateISO(startDate);
@@ -58,8 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     const title = document.createElement("h3");
                     title.textContent = capitalizeFirstLetter(day.toLowerCase());
 
-                    if (day === todayStr &&
-                        today >= startDate && today <= endDate) {
+                    if (day === todayStr && today >= startDate && today <= endDate) {
                         title.style.color = "#2563eb";
                     }
 
@@ -80,11 +81,16 @@ document.addEventListener("DOMContentLoaded", function () {
                             lessonCard.style.cursor = "pointer";
                             lessonCard.onclick = () => openLessonModal(lesson.id);
 
+                            if (isToday) {
+                                lessonCard.style.backgroundColor = "#e6f0ff";
+                                lessonCard.style.border = "1px solid #3399ff";
+                            }
+
                             lessonCard.innerHTML = `
-                                <strong>${todayIcon}${formattedDate} ${time}</strong><br>
-                                <span>${lesson.groupName || lesson.studentNames.join(", ")}</span><br>
-                                <span class="badge badge-${lesson.status.toLowerCase()}">${lesson.status}</span>
-                            `;
+                            <strong>${todayIcon}${formattedDate} ${time}</strong><br>
+                            <span>${lesson.groupName || lesson.studentNames.join(", ")}</span><br>
+                            <span class="badge badge-${lesson.status.toLowerCase()}">${lesson.status}</span>
+                        `;
 
                             section.appendChild(lessonCard);
                         });
