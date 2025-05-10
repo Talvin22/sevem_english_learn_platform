@@ -95,6 +95,16 @@ function updateLesson() {
         location.reload();
     });
 }
+function deleteLesson() {
+    if (!confirm("Are you sure you want to delete this lesson?")) return;
+
+    fetch(`/lessons/api/lesson/${selectedLessonId}`, {
+        method: "DELETE"
+    }).then(() => {
+        closeModal();
+        location.reload();
+    });
+}
 
 // === Format lesson dates on homepage cards ===
 document.addEventListener("DOMContentLoaded", () => {
