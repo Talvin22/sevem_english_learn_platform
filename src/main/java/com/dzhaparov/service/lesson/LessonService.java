@@ -69,7 +69,6 @@ public class LessonService {
         if (request.getGroupName() != null && !request.getGroupName().isBlank()) {
             Group group = groupRepository.findByNameAndTeacherEmail(request.getGroupName(), email)
                     .orElseThrow(() -> new IllegalArgumentException("Group not found: " + request.getGroupName()));
-
             lesson.setGroup(group);
             lessonRepository.save(lesson);
 
@@ -84,7 +83,6 @@ public class LessonService {
         } else if (request.getStudentId() != null) {
             User student = userRepository.findById(request.getStudentId())
                     .orElseThrow(() -> new IllegalArgumentException("Student not found"));
-
             lessonRepository.save(lesson);
 
             LessonParticipant participant = new LessonParticipant();
@@ -95,6 +93,39 @@ public class LessonService {
             studentIds.add(student.getId());
         } else {
             throw new IllegalArgumentException("Either group name or student must be specified");
+        }
+
+        Integer repeatWeeks = request.getRepeatWeeks();
+        if (repeatWeeks != null && repeatWeeks > 0) {
+            for (int i = 1; i <= repeatWeeks; i++) {
+                ZonedDateTime repeatedDate = utcDate.plusWeeks(i);
+                Lesson repeatedLesson = new Lesson();
+                repeatedLesson.setTeacher(teacher);
+                repeatedLesson.setDateUtc(repeatedDate);
+                repeatedLesson.setStatus(LessonStatus.PLANNED);
+
+                if (lesson.getGroup() != null) {
+                    repeatedLesson.setGroup(lesson.getGroup());
+                    lessonRepository.save(repeatedLesson);
+
+                    for (Long studentId : studentIds) {
+                        User student = userRepository.findById(studentId).orElseThrow();
+                        LessonParticipant participant = new LessonParticipant();
+                        participant.setLesson(repeatedLesson);
+                        participant.setStudent(student);
+                        participant.setAttendanceStatus(LessonAttendanceStatus.PLANNED);
+                        lessonParticipantRepository.save(participant);
+                    }
+                } else if (request.getStudentId() != null) {
+                    lessonRepository.save(repeatedLesson);
+                    User student = userRepository.findById(request.getStudentId()).orElseThrow();
+                    LessonParticipant participant = new LessonParticipant();
+                    participant.setLesson(repeatedLesson);
+                    participant.setStudent(student);
+                    participant.setAttendanceStatus(LessonAttendanceStatus.PLANNED);
+                    lessonParticipantRepository.save(participant);
+                }
+            }
         }
 
         return LessonDtoCreateResponse.of(true, lesson, studentIds);
