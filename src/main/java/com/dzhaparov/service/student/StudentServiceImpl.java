@@ -40,7 +40,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public LessonDtoListResponse getMyLessons(Long studentId) {
-        List<LessonParticipant> participants = lessonParticipantRepository.findByStudentId(studentId);
+        List<LessonParticipant> participants = lessonParticipantRepository.findAllByStudentId(studentId);
 
         List<LessonDtoDetailResponse> dtoList = participants.stream()
                 .map(participant -> {
