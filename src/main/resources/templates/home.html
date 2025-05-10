@@ -73,8 +73,10 @@
     <h3>Attendance</h3>
     <div id="attendanceFields"></div>
 
-    <button onclick="updateLesson()" style="margin-top:10px;">Update</button>
-    <button onclick="confirmDeleteLesson()" class="btn danger" style="margin-top:10px;">🗑 Delete Lesson</button>
+    <div style="display: flex; gap: 10px; margin-top: 10px;">
+        <button onclick="updateLesson()" class="btn">Update</button>
+        <button onclick="confirmDeleteLesson()" class="btn danger">🗑 Delete Lesson</button>
+    </div>
 </div>
 
 <div id="modalOverlay" class="modal-overlay" onclick="closeModal()"></div>
