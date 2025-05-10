@@ -11,6 +11,7 @@ public class CreateLessonRequest {
     private Long studentId;
     private String groupName;
     private String timeZone;
+    private Integer repeatWeeks;
 
     public LocalDateTime getDateUtc() {
         return dateUtc;
@@ -42,5 +43,13 @@ public class CreateLessonRequest {
 
     public void setTimeZone(String timeZone) {
         this.timeZone = timeZone;
+    }
+
+    public Integer getRepeatWeeks() {
+        return repeatWeeks;
+    }
+
+    public void setRepeatWeeks(Integer repeatWeeks) {
+        this.repeatWeeks = repeatWeeks;
     }
 }
