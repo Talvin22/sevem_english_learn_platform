@@ -6,6 +6,7 @@ import com.dzhaparov.dto.lesson.response.LessonShortCardResponse;
 import com.dzhaparov.service.lesson.LessonService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -28,6 +29,7 @@ public class LessonRestController {
         return lessonService.getLessonForEdit(lessonId);
     }
 
+    @PreAuthorize("hasRole('TEACHER')")
     @PostMapping("/lesson/update")
     public void updateLesson(@RequestBody UpdateLessonStatusRequest request) {
         lessonService.updateLessonStatus(request);
@@ -48,6 +50,8 @@ public class LessonRestController {
 
         return lessonService.getLessonsByWeek(startDate, timeZone);
     }
+
+    @PreAuthorize("hasRole('TEACHER')")
     @DeleteMapping("/lesson/{id}")
     public ResponseEntity<Void> deleteLesson(@PathVariable Long id) {
         lessonService.deleteLessonById(id);
