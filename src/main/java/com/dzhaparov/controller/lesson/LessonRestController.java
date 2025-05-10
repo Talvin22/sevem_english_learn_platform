@@ -7,6 +7,7 @@ import com.dzhaparov.service.lesson.LessonService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -43,12 +44,15 @@ public class LessonRestController {
         ZonedDateTime end = ZonedDateTime.parse(endStr);
         return lessonService.getLessonsForWeek(start, end);
     }
+
     @GetMapping("/weekly")
     public Map<String, List<LessonShortCardResponse>> getLessonsByWeek(
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam("timeZone") String timeZone) {
+            @RequestParam("timeZone") String timeZone,
+            Authentication authentication) {
 
-        return lessonService.getLessonsByWeek(startDate, timeZone);
+        String email = authentication.getName();
+        return lessonService.getLessonsByWeek(startDate, timeZone, email);
     }
 
     @PreAuthorize("hasRole('TEACHER')")

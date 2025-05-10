@@ -1,6 +1,7 @@
 package com.dzhaparov.service.lesson;
 
-import java.util.LinkedHashMap;
+import java.util.*;
+
 import com.dzhaparov.dto.lesson.request.CreateLessonRequest;
 import com.dzhaparov.dto.lesson.request.UpdateLessonStatusRequest;
 import com.dzhaparov.dto.lesson.response.LessonDtoCreateResponse;
@@ -13,12 +14,14 @@ import com.dzhaparov.entity.lesson.Lesson;
 import com.dzhaparov.entity.lesson.LessonParticipant;
 import com.dzhaparov.entity.lesson.LessonStatus;
 import com.dzhaparov.entity.lesson.attendance.LessonAttendanceStatus;
+import com.dzhaparov.entity.role.Role;
 import com.dzhaparov.entity.user.User;
 import com.dzhaparov.repository.group.GroupRepository;
 import com.dzhaparov.repository.lesson.LessonParticipantRepository;
 import com.dzhaparov.repository.lesson.LessonRepository;
 import com.dzhaparov.repository.user.UserRepository;
 import com.dzhaparov.util.AuthHelper;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,9 +29,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -234,7 +234,7 @@ public class LessonService {
                 .toList();
     }
 
-    public Map<String, List<LessonShortCardResponse>> getLessonsByWeek(LocalDate startDate, String timeZone) {
+    public Map<String, List<LessonShortCardResponse>> getLessonsByWeek(LocalDate startDate, String timeZone, String email) {
         ZoneId zone = ZoneId.of(timeZone);
 
         ZonedDateTime startOfWeekLocal = startDate.atStartOfDay(zone);
@@ -243,9 +243,45 @@ public class LessonService {
         ZonedDateTime startUtc = startOfWeekLocal.withZoneSameInstant(ZoneId.of("UTC"));
         ZonedDateTime endUtc = endOfWeekLocal.withZoneSameInstant(ZoneId.of("UTC"));
 
-        List<LessonShortCardResponse> lessons = getLessonsForWeek(startUtc, endUtc);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
 
-        return lessons.stream()
+        List<Lesson> lessons;
+
+        if (user.getRole() == Role.TEACHER) {
+            lessons = lessonRepository.findAllByTeacherAndDateUtcBetween(user, startUtc, endUtc);
+        } else if (user.getRole() == Role.STUDENT) {
+            List<LessonParticipant> participants = lessonParticipantRepository.findAllByStudentId(user.getId());
+            lessons = participants.stream()
+                    .map(LessonParticipant::getLesson)
+                    .filter(l -> !l.getDateUtc().isBefore(startUtc) && !l.getDateUtc().isAfter(endUtc))
+                    .toList();
+        } else {
+            throw new IllegalStateException("Unsupported role: " + user.getRole());
+        }
+
+        Map<Long, List<LessonParticipant>> participantsMap = lessonParticipantRepository
+                .findAllByLessonIn(lessons).stream()
+                .collect(Collectors.groupingBy(p -> p.getLesson().getId()));
+
+        List<LessonShortCardResponse> responseList = lessons.stream()
+                .map(lesson -> {
+                    List<String> studentNames = participantsMap.getOrDefault(lesson.getId(), List.of()).stream()
+                            .map(p -> p.getStudent().getFirst_name() + " " + p.getStudent().getLast_name())
+                            .toList();
+
+                    return new LessonShortCardResponse(
+                            lesson.getId(),
+                            lesson.getDateUtc(),
+                            lesson.getGroup() != null ? lesson.getGroup().getName() : null,
+                            studentNames,
+                            lesson.getStatus()
+                    );
+                })
+                .toList();
+
+
+        return responseList.stream()
                 .collect(Collectors.groupingBy(
                         l -> l.dateUtc().withZoneSameInstant(zone).getDayOfWeek().name(),
                         LinkedHashMap::new,

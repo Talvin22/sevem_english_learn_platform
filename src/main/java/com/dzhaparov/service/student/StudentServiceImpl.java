@@ -60,7 +60,6 @@ public class StudentServiceImpl implements StudentService {
                     );
                 })
                 .collect(Collectors.toList());
-
         return LessonDtoListResponse.of(dtoList);
     }
 
