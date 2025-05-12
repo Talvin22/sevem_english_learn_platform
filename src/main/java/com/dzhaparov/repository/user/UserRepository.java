@@ -13,8 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
     boolean existsByEmail(String email);
-    List<User> findAllByGroup_Teacher_Id(Long teacherId);
     List<User> findAllByTeacherId(Long teacherId);
-    @Query("SELECT u FROM User u WHERE u.group.name = :groupName")
+    @Query("SELECT u FROM User u JOIN u.groups g WHERE g.name = ?1")
     List<User> findAllByGroupName(String groupName);
 }
