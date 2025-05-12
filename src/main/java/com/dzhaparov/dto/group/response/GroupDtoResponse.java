@@ -29,7 +29,7 @@ public record GroupDtoResponse(
                 "Group fetched successfully.",
                 group.getId(),
                 group.getName(),
-                group.getIsActive(),
+                group.getActive(),
                 group.getTeacher().getFirst_name() + " " + group.getTeacher().getLast_name(),
                 null,
                 null
