@@ -86,7 +86,24 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public GroupDtoResponse getMyGroup(Long studentId) {
         var user = userRepository.findById(studentId).orElseThrow();
-        var group = user.getGroup();
+        var groups = user.getGroups();
+
+        if (groups.isEmpty()) {
+            return new GroupDtoResponse(
+                    HttpStatus.OK.value(),
+                    HttpStatus.OK.getReasonPhrase(),
+                    true,
+                    "User is not assigned to any group.",
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+            );
+        }
+
+        var group = groups.get(0);
 
         return new GroupDtoResponse(
                 HttpStatus.OK.value(),
@@ -95,7 +112,7 @@ public class StudentServiceImpl implements StudentService {
                 "Group fetched successfully.",
                 group.getId(),
                 group.getName(),
-                group.getIsActive(),
+                group.getActive(),
                 group.getTeacher().getFirst_name() + " " + group.getTeacher().getLast_name(),
                 null,
                 null
@@ -105,13 +122,15 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public UserProfileDtoResponse getProfile(Long studentId) {
         var user = userRepository.findById(studentId).orElseThrow();
+        var firstGroup = user.getGroups().isEmpty() ? null : user.getGroups().get(0);
+
         return new UserProfileDtoResponse(
                 user.getId(),
                 user.getFirst_name(),
                 user.getLast_name(),
                 user.getEmail(),
                 user.getRole(),
-                user.getGroup() != null ? user.getGroup() : null,
+                firstGroup,
                 user.getSalaryPerLesson()
         );
     }
