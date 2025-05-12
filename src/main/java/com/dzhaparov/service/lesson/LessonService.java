@@ -64,36 +64,30 @@ public class LessonService {
         lesson.setDateUtc(utcDate);
         lesson.setStatus(LessonStatus.PLANNED);
 
-        List<Long> studentIds = new ArrayList<>();
-
+        List<User> students;
         if (request.getGroupName() != null && !request.getGroupName().isBlank()) {
             Group group = groupRepository.findByNameAndTeacherEmail(request.getGroupName(), email)
                     .orElseThrow(() -> new IllegalArgumentException("Group not found: " + request.getGroupName()));
             lesson.setGroup(group);
-            lessonRepository.save(lesson);
-
-            for (User student : group.getStudents()) {
-                LessonParticipant participant = new LessonParticipant();
-                participant.setLesson(lesson);
-                participant.setStudent(student);
-                participant.setAttendanceStatus(LessonAttendanceStatus.PLANNED);
-                lessonParticipantRepository.save(participant);
-                studentIds.add(student.getId());
-            }
+            students = group.getStudents();
         } else if (request.getStudentId() != null) {
             User student = userRepository.findById(request.getStudentId())
                     .orElseThrow(() -> new IllegalArgumentException("Student not found"));
-            lessonRepository.save(lesson);
-
-            LessonParticipant participant = new LessonParticipant();
-            participant.setLesson(lesson);
-            participant.setStudent(student);
-            participant.setAttendanceStatus(LessonAttendanceStatus.PLANNED);
-            lessonParticipantRepository.save(participant);
-            studentIds.add(student.getId());
+            students = List.of(student);
         } else {
             throw new IllegalArgumentException("Either group name or student must be specified");
         }
+
+        lessonRepository.save(lesson);
+
+        List<LessonParticipant> participants = students.stream().map(student -> {
+            LessonParticipant p = new LessonParticipant();
+            p.setLesson(lesson);
+            p.setStudent(student);
+            p.setAttendanceStatus(LessonAttendanceStatus.PLANNED);
+            return p;
+        }).toList();
+        lessonParticipantRepository.saveAll(participants);
 
         Integer repeatWeeks = request.getRepeatWeeks();
         if (repeatWeeks != null && repeatWeeks > 0) {
@@ -103,31 +97,24 @@ public class LessonService {
                 repeatedLesson.setTeacher(teacher);
                 repeatedLesson.setDateUtc(repeatedDate);
                 repeatedLesson.setStatus(LessonStatus.PLANNED);
-
                 if (lesson.getGroup() != null) {
                     repeatedLesson.setGroup(lesson.getGroup());
-                    lessonRepository.save(repeatedLesson);
-
-                    for (Long studentId : studentIds) {
-                        User student = userRepository.findById(studentId).orElseThrow();
-                        LessonParticipant participant = new LessonParticipant();
-                        participant.setLesson(repeatedLesson);
-                        participant.setStudent(student);
-                        participant.setAttendanceStatus(LessonAttendanceStatus.PLANNED);
-                        lessonParticipantRepository.save(participant);
-                    }
-                } else if (request.getStudentId() != null) {
-                    lessonRepository.save(repeatedLesson);
-                    User student = userRepository.findById(request.getStudentId()).orElseThrow();
-                    LessonParticipant participant = new LessonParticipant();
-                    participant.setLesson(repeatedLesson);
-                    participant.setStudent(student);
-                    participant.setAttendanceStatus(LessonAttendanceStatus.PLANNED);
-                    lessonParticipantRepository.save(participant);
                 }
+
+                lessonRepository.save(repeatedLesson);
+
+                List<LessonParticipant> repeatedParticipants = students.stream().map(student -> {
+                    LessonParticipant p = new LessonParticipant();
+                    p.setLesson(repeatedLesson);
+                    p.setStudent(student);
+                    p.setAttendanceStatus(LessonAttendanceStatus.PLANNED);
+                    return p;
+                }).toList();
+                lessonParticipantRepository.saveAll(repeatedParticipants);
             }
         }
 
+        List<Long> studentIds = students.stream().map(User::getId).toList();
         return LessonDtoCreateResponse.of(true, lesson, studentIds);
     }
 
