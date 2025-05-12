@@ -16,4 +16,6 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     Optional<Group> findByName(String groupName);
     @Query("SELECT g FROM Group g WHERE g.name = :name AND g.teacher.email = :email")
     Optional<Group> findByNameAndTeacherEmail(@Param("name") String name, @Param("email") String email);
+    @Query("SELECT g FROM Group g LEFT JOIN FETCH g.students WHERE g.name = :name AND g.teacher.email = :email")
+    Optional<Group> findWithStudentsByNameAndTeacherEmail(@Param("name") String name, @Param("email") String email);
 }
