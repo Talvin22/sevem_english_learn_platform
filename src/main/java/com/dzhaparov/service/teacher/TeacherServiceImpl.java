@@ -164,4 +164,14 @@ public class TeacherServiceImpl implements TeacherService {
                 .map(GroupDtoResponse::ofSuccess)
                 .collect(Collectors.toList());
     }
+    public void removeStudentFromGroup(Long groupId, Long studentId) {
+        var group = groupRepository.findById(groupId).orElseThrow();
+        var student = userRepository.findById(studentId).orElseThrow();
+
+
+        group.getStudents().removeIf(s -> s.getId().equals(studentId));
+        student.getGroups().removeIf(g -> g.getId().equals(groupId));
+
+        groupRepository.save(group);
+    }
 }

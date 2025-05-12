@@ -26,4 +26,6 @@ public interface TeacherService {
     GroupDtoResponse addStudentToGroup(Long groupId, Long studentId);
 
     UserProfileDtoResponse getProfile(Long teacherId);
+
+    void removeStudentFromGroup(Long groupId, Long studentId);
 }
