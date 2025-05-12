@@ -1,3 +1,7 @@
+
+let currentGroupId = null;
+let currentGroupName = null;
+
 document.addEventListener("DOMContentLoaded", () => {
     loadGroups();
 });
@@ -31,6 +35,9 @@ function loadGroups() {
 }
 
 function openGroupModal(groupId, groupName) {
+    currentGroupId = groupId;
+    currentGroupName = groupName;
+
     document.getElementById("groupModalTitle").textContent = `Group: ${groupName}`;
 
     fetch(`/api/groups/${groupId}/students`)
@@ -50,12 +57,16 @@ function openGroupModal(groupId, groupName) {
 
             document.getElementById("groupModal").style.display = "block";
             document.getElementById("groupModalOverlay").style.display = "block";
+        })
+        .catch(err => {
+            console.error(`❌ Failed to load students for group ${groupId}:`, err);
+            alert("Error loading students");
         });
 }
 
 function removeStudent(groupId, studentId) {
     fetch(`/api/groups/${groupId}/remove-student?studentId=${studentId}`, { method: "DELETE" })
-        .then(() => openGroupModal(groupId, document.getElementById("groupModalTitle").textContent));
+        .then(() => openGroupModal(currentGroupId, currentGroupName));
 }
 
 function showAddStudentSelect(groupId) {
@@ -94,7 +105,7 @@ function addStudentToGroup(groupId, studentId) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ studentId })
-    }).then(() => openGroupModal(groupId, document.getElementById("groupModalTitle").textContent));
+    }).then(() => openGroupModal(currentGroupId, currentGroupName));
 }
 
 function closeGroupModal() {
