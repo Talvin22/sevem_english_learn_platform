@@ -66,9 +66,11 @@ public class LessonService {
         lesson.setStatus(LessonStatus.PLANNED);
 
         List<User> students;
+
         if (request.getGroupName() != null && !request.getGroupName().isBlank()) {
-            Group group = groupRepository.findByNameAndTeacherEmail(request.getGroupName(), email)
+            Group group = groupRepository.findWithStudentsByNameAndTeacherEmail(request.getGroupName(), email)
                     .orElseThrow(() -> new IllegalArgumentException("Group not found: " + request.getGroupName()));
+
             lesson.setGroup(group);
             students = group.getStudents();
         } else if (request.getStudentId() != null) {
@@ -82,16 +84,12 @@ public class LessonService {
         lessonRepository.save(lesson);
 
         List<LessonParticipant> participants = students.stream().map(student -> {
+            LessonParticipantId id = new LessonParticipantId(lesson.getId(), student.getId());
             LessonParticipant p = new LessonParticipant();
+            p.setId(id);
             p.setLesson(lesson);
             p.setStudent(student);
             p.setAttendanceStatus(LessonAttendanceStatus.PLANNED);
-
-            LessonParticipantId id = new LessonParticipantId();
-            id.setLessonId(lesson.getId());
-            id.setStudentId(student.getId());
-            p.setId(id);
-
             return p;
         }).toList();
 
@@ -112,16 +110,12 @@ public class LessonService {
                 lessonRepository.save(repeatedLesson);
 
                 List<LessonParticipant> repeatedParticipants = students.stream().map(student -> {
+                    LessonParticipantId id = new LessonParticipantId(repeatedLesson.getId(), student.getId());
                     LessonParticipant p = new LessonParticipant();
+                    p.setId(id);
                     p.setLesson(repeatedLesson);
                     p.setStudent(student);
                     p.setAttendanceStatus(LessonAttendanceStatus.PLANNED);
-
-                    LessonParticipantId id = new LessonParticipantId();
-                    id.setLessonId(repeatedLesson.getId());
-                    id.setStudentId(student.getId());
-                    p.setId(id);
-
                     return p;
                 }).toList();
 

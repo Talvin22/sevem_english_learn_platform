@@ -136,7 +136,9 @@ public class TeacherServiceImpl implements TeacherService {
         var group = groupRepository.findById(groupId).orElseThrow();
 
         student.getGroups().add(group);
-        userRepository.save(student);
+        group.getStudents().add(student);
+
+        groupRepository.save(group);
 
         return GroupDtoResponse.of(true, group);
     }
