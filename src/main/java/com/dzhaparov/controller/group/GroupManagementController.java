@@ -2,9 +2,10 @@ package com.dzhaparov.controller.group;
 
 import com.dzhaparov.dto.group.response.GroupDtoResponse;
 import com.dzhaparov.dto.user.response.UserProfileDtoResponse;
+import com.dzhaparov.entity.group.Group;
+import com.dzhaparov.repository.group.GroupRepository;
 import com.dzhaparov.service.teacher.TeacherService;
 import com.dzhaparov.util.AuthHelper;
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,10 +15,14 @@ import java.util.List;
 public class GroupManagementController {
 
     private final TeacherService teacherService;
+    private final GroupRepository groupRepository;
     private final AuthHelper authHelper;
 
-    public GroupManagementController(TeacherService teacherService, AuthHelper authHelper) {
+    public GroupManagementController(TeacherService teacherService,
+                                     GroupRepository groupRepository,
+                                     AuthHelper authHelper) {
         this.teacherService = teacherService;
+        this.groupRepository = groupRepository;
         this.authHelper = authHelper;
     }
 
@@ -29,8 +34,19 @@ public class GroupManagementController {
 
     @GetMapping("/{groupId}/students")
     public List<UserProfileDtoResponse> getStudentsInGroup(@PathVariable Long groupId) {
-        return teacherService.getMyStudents(authHelper.getCurrentUser().getId()).stream()
-                .filter(s -> s.group() != null && s.group().getId().equals(groupId))
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new RuntimeException("Group not found"));
+
+        return group.getStudents().stream()
+                .map(s -> new UserProfileDtoResponse(
+                        s.getId(),
+                        s.getFirst_name(),
+                        s.getLast_name(),
+                        s.getEmail(),
+                        s.getRole(),
+                        null,
+                        s.getSalaryPerLesson()
+                ))
                 .toList();
     }
 
@@ -46,9 +62,7 @@ public class GroupManagementController {
 
     @GetMapping("/students/free")
     public List<UserProfileDtoResponse> getFreeStudents() {
-        return teacherService.getMyStudents(authHelper.getCurrentUser().getId()).stream()
-                .filter(s -> s.group() == null)
-                .toList();
+        return teacherService.getStudentsWithoutGroups();
     }
 
     public record AddStudentRequest(Long studentId) {}

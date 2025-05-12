@@ -174,4 +174,19 @@ public class TeacherServiceImpl implements TeacherService {
 
         groupRepository.save(group);
     }
+    @Override
+    public List<UserProfileDtoResponse> getStudentsWithoutGroups() {
+        return userRepository.findAll().stream()
+                .filter(user -> user.isStudent() && (user.getGroups() == null || user.getGroups().isEmpty()))
+                .map(user -> new UserProfileDtoResponse(
+                        user.getId(),
+                        user.getFirst_name(),
+                        user.getLast_name(),
+                        user.getEmail(),
+                        user.getRole(),
+                        null,
+                        user.getSalaryPerLesson()
+                ))
+                .toList();
+    }
 }

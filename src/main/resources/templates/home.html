@@ -100,12 +100,11 @@
     <button onclick="closeGroupModal()" class="close-btn">✖</button>
     <h2 id="groupModalTitle">Group Details</h2>
 
-    <div id="groupMembersList"></div>
+    <div id="group-student-list" style="margin-bottom: 15px;"></div>
 
     <h3 style="margin-top: 15px">Add Student</h3>
-    <input type="text" id="studentSearch" placeholder="Search by name...">
-    <select id="studentSelect"></select>
-    <button class="btn" onclick="addStudentToGroup()">Add</button>
+    <div id="add-student-container"></div>
+    <button id="add-student-btn" class="btn">+ Add Student</button>
 </div>
 <div id="groupModalOverlay" class="modal-overlay" onclick="closeGroupModal()"></div>
 

@@ -28,4 +28,5 @@ public interface TeacherService {
     UserProfileDtoResponse getProfile(Long teacherId);
 
     void removeStudentFromGroup(Long groupId, Long studentId);
+    List<UserProfileDtoResponse> getStudentsWithoutGroups();
 }
