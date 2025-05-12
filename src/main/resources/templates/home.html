@@ -30,6 +30,13 @@
         <div id="weekly-lessons-container" style="margin-top: 20px;">
         </div>
     </div>
+    <!-- GROUPS -->
+    <div class="card">
+        <h2>Your Groups</h2>
+        <div id="groupsContainer">
+            <p>Loading groups...</p>
+        </div>
+    </div>
 
     <!-- HOMEWORKS -->
     <div class="card">
@@ -88,8 +95,23 @@
 
 <div id="modalOverlay" class="modal-overlay" onclick="closeModal()"></div>
 
+<!-- GROUP MODAL -->
+<div id="groupModal" class="modal">
+    <button onclick="closeGroupModal()" class="close-btn">✖</button>
+    <h2 id="groupModalTitle">Group Details</h2>
+
+    <div id="groupMembersList"></div>
+
+    <h3 style="margin-top: 15px">Add Student</h3>
+    <input type="text" id="studentSearch" placeholder="Search by name...">
+    <select id="studentSelect"></select>
+    <button class="btn" onclick="addStudentToGroup()">Add</button>
+</div>
+<div id="groupModalOverlay" class="modal-overlay" onclick="closeGroupModal()"></div>
+
 <!-- External JS -->
 <script th:src="@{/lesson-modal.js}"></script>
 <script th:src="@{/weekly-lessons.js}"></script>
+<script th:src="@{/groups-modal.js}"></script>
 </body>
 </html>
