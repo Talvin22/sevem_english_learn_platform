@@ -1,5 +1,6 @@
 package com.dzhaparov.service.teacher;
 
+import com.dzhaparov.dto.group.request.GroupShortDto;
 import com.dzhaparov.dto.group.response.GroupDtoResponse;
 import com.dzhaparov.dto.homework.request.HomeworkDtoGradeRequest;
 import com.dzhaparov.dto.homework.response.HomeworkDtoDetailResponse;
@@ -60,9 +61,12 @@ public class TeacherServiceImpl implements TeacherService {
                         user.getLast_name(),
                         user.getEmail(),
                         user.getRole(),
-                        user.getGroups(),
+                        user.getGroups().stream()
+                                .map(g -> new GroupShortDto(g.getId(), g.getName()))
+                                .toList(),
                         user.getSalaryPerLesson()
-                )).toList();
+                ))
+                .toList();
     }
 
     @Override

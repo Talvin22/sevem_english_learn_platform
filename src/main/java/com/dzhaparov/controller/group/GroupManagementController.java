@@ -1,7 +1,9 @@
 package com.dzhaparov.controller.group;
 
+import com.dzhaparov.dto.group.request.GroupShortDto;
 import com.dzhaparov.dto.group.response.GroupDtoResponse;
 import com.dzhaparov.dto.user.response.UserProfileDtoResponse;
+import com.dzhaparov.repository.group.GroupRepository;
 import com.dzhaparov.service.teacher.TeacherService;
 import com.dzhaparov.util.AuthHelper;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +16,12 @@ public class GroupManagementController {
 
     private final TeacherService teacherService;
     private final AuthHelper authHelper;
+    private final GroupRepository groupRepository;
 
-    public GroupManagementController(TeacherService teacherService, AuthHelper authHelper) {
+    public GroupManagementController(TeacherService teacherService, AuthHelper authHelper, GroupRepository groupRepository) {
         this.teacherService = teacherService;
         this.authHelper = authHelper;
+        this.groupRepository = groupRepository;
     }
 
 
@@ -29,8 +33,19 @@ public class GroupManagementController {
 
     @GetMapping("/{groupId}/students")
     public List<UserProfileDtoResponse> getStudentsInGroup(@PathVariable Long groupId) {
-        return teacherService.getMyStudents(authHelper.getCurrentUser().getId()).stream()
-                .filter(s -> s.groups().stream().anyMatch(g -> g.getId().equals(groupId)))
+        var group = groupRepository.findById(groupId).orElseThrow();
+        return group.getStudents().stream()
+                .map(user -> new UserProfileDtoResponse(
+                        user.getId(),
+                        user.getFirst_name(),
+                        user.getLast_name(),
+                        user.getEmail(),
+                        user.getRole(),
+                        user.getGroups().stream()
+                                .map(g -> new GroupShortDto(g.getId(), g.getName()))
+                                .toList(),
+                        user.getSalaryPerLesson()
+                ))
                 .toList();
     }
 

@@ -1,6 +1,9 @@
 package com.dzhaparov.dto.user.response;
 
+import com.dzhaparov.dto.group.request.GroupShortDto;
 import com.dzhaparov.entity.role.Role;
+
+import java.util.List;
 
 public record UserProfileDtoResponse(
         Long id,

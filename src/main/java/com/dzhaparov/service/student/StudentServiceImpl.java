@@ -1,5 +1,6 @@
 package com.dzhaparov.service.student;
 
+import com.dzhaparov.dto.group.request.GroupShortDto;
 import com.dzhaparov.dto.group.response.GroupDtoResponse;
 import com.dzhaparov.dto.homework.request.HomeworkDtoSubmitRequest;
 import com.dzhaparov.dto.homework.response.HomeworkDtoDetailResponse;
@@ -129,7 +130,9 @@ public class StudentServiceImpl implements StudentService {
                 user.getLast_name(),
                 user.getEmail(),
                 user.getRole(),
-                user.getGroups(),
+                user.getGroups().stream()
+                        .map(g -> new GroupShortDto(g.getId(), g.getName()))
+                        .toList(),
                 user.getSalaryPerLesson()
         );
     }
