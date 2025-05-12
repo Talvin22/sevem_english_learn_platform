@@ -10,14 +10,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/teacher/groups")
-@RequiredArgsConstructor
+@RequestMapping("/api/groups")
 public class GroupManagementController {
 
     private final TeacherService teacherService;
     private final AuthHelper authHelper;
 
-    @GetMapping
+    public GroupManagementController(TeacherService teacherService, AuthHelper authHelper) {
+        this.teacherService = teacherService;
+        this.authHelper = authHelper;
+    }
+
+    @GetMapping("/teacher")
     public List<GroupDtoResponse> getGroups() {
         Long teacherId = authHelper.getCurrentUser().getId();
         return teacherService.getGroupsForTeacher(teacherId);
@@ -30,13 +34,22 @@ public class GroupManagementController {
                 .toList();
     }
 
-    @PostMapping("/{groupId}/students/{studentId}")
-    public GroupDtoResponse addStudent(@PathVariable Long groupId, @PathVariable Long studentId) {
-        return teacherService.addStudentToGroup(groupId, studentId);
+    @PostMapping("/{groupId}/add-student")
+    public GroupDtoResponse addStudent(@PathVariable Long groupId, @RequestBody AddStudentRequest request) {
+        return teacherService.addStudentToGroup(groupId, request.studentId());
     }
 
-    @DeleteMapping("/{groupId}/students/{studentId}")
-    public void removeStudent(@PathVariable Long groupId, @PathVariable Long studentId) {
+    @DeleteMapping("/{groupId}/remove-student")
+    public void removeStudent(@PathVariable Long groupId, @RequestParam Long studentId) {
         teacherService.removeStudentFromGroup(groupId, studentId);
     }
+
+    @GetMapping("/students/free")
+    public List<UserProfileDtoResponse> getFreeStudents() {
+        return teacherService.getMyStudents(authHelper.getCurrentUser().getId()).stream()
+                .filter(s -> s.group() == null)
+                .toList();
+    }
+
+    public record AddStudentRequest(Long studentId) {}
 }

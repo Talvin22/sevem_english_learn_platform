@@ -4,10 +4,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function loadGroups() {
     fetch("/api/groups/teacher")
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) throw new Error(`Server responded with status ${res.status}`);
+            return res.json();
+        })
         .then(groups => {
             const container = document.getElementById("teacher-groups-container");
             container.innerHTML = "";
+
+            if (groups.length === 0) {
+                container.innerHTML = "<p>No groups found.</p>";
+                return;
+            }
+
             groups.forEach(group => {
                 const div = document.createElement("div");
                 div.className = "card-content group-card";
@@ -15,6 +24,11 @@ function loadGroups() {
                 div.onclick = () => openGroupModal(group.id);
                 container.appendChild(div);
             });
+        })
+        .catch(err => {
+            const container = document.getElementById("teacher-groups-container");
+            container.innerHTML = `<p style="color:red;">Error loading groups: ${err.message}</p>`;
+            console.error(err);
         });
 }
 
