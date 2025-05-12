@@ -167,7 +167,7 @@ public class LessonService {
         Lesson lesson = lessonRepository.findById(lessonId)
                 .orElseThrow(() -> new RuntimeException("Lesson not found"));
 
-        List<LessonParticipant> participants = lessonParticipantRepository.findAllByLesson(lesson);
+        List<LessonParticipant> participants = lessonParticipantRepository.findAllByLessonId(lessonId);
 
         List<String> studentNames = participants.stream()
                 .map(p -> p.getStudent().getFirst_name() + " " + p.getStudent().getLast_name())
