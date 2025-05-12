@@ -122,7 +122,6 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public UserProfileDtoResponse getProfile(Long studentId) {
         var user = userRepository.findById(studentId).orElseThrow();
-        var firstGroup = user.getGroups().isEmpty() ? null : user.getGroups().get(0);
 
         return new UserProfileDtoResponse(
                 user.getId(),
@@ -130,7 +129,7 @@ public class StudentServiceImpl implements StudentService {
                 user.getLast_name(),
                 user.getEmail(),
                 user.getRole(),
-                firstGroup,
+                user.getGroups(),
                 user.getSalaryPerLesson()
         );
     }
