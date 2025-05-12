@@ -4,6 +4,8 @@ import com.dzhaparov.entity.group.Group;
 import com.dzhaparov.entity.role.Role;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -25,9 +27,8 @@ public class User {
     private String hashed_password;
     @Column(nullable = true)
     private Double salaryPerLesson;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "group_id")
-    private Group group;
+    @ManyToMany(mappedBy = "students")
+    private List<Group> groups = new ArrayList<>();
     @ManyToOne
     @JoinColumn(name = "teacher_id")
     private User teacher;
@@ -96,12 +97,20 @@ public class User {
         this.salaryPerLesson = salaryPerLesson;
     }
 
-    public Group getGroup() {
-        return group;
+    public List<Group> getGroups() {
+        return groups;
     }
 
-    public void setGroup(Group group) {
-        this.group = group;
+    public void setGroups(List<Group> groups) {
+        this.groups = groups;
+    }
+
+    public User getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(User teacher) {
+        this.teacher = teacher;
     }
 
     @Override
@@ -109,12 +118,12 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && role == user.role && Objects.equals(first_name, user.first_name) && Objects.equals(last_name, user.last_name) && Objects.equals(email, user.email) && Objects.equals(hashed_password, user.hashed_password) && Objects.equals(salaryPerLesson, user.salaryPerLesson) && Objects.equals(group, user.group);
+        return Objects.equals(id, user.id) && role == user.role && Objects.equals(first_name, user.first_name) && Objects.equals(last_name, user.last_name) && Objects.equals(email, user.email) && Objects.equals(hashed_password, user.hashed_password) && Objects.equals(salaryPerLesson, user.salaryPerLesson) && Objects.equals(groups, user.groups);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, role, first_name, last_name, email, hashed_password, salaryPerLesson, group);
+        return Objects.hash(id, role, first_name, last_name, email, hashed_password, salaryPerLesson, groups);
     }
 
     @Override
@@ -127,7 +136,7 @@ public class User {
                 ", email='" + email + '\'' +
                 ", hashed_password='" + hashed_password + '\'' +
                 ", salaryPerLesson=" + salaryPerLesson +
-                ", group=" + group +
+                ", groups=" + groups +
                 '}';
     }
 }
