@@ -1,3 +1,5 @@
+package com.dzhaparov.controller.group;
+
 import com.dzhaparov.dto.group.response.GroupDtoResponse;
 import com.dzhaparov.dto.user.response.UserProfileDtoResponse;
 import com.dzhaparov.service.teacher.TeacherService;

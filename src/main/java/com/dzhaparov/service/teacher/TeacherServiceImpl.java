@@ -60,7 +60,7 @@ public class TeacherServiceImpl implements TeacherService {
                         user.getLast_name(),
                         user.getEmail(),
                         user.getRole(),
-                        user.getGroups().isEmpty() ? null : user.getGroups().get(0),
+                        user.getGroups(),
                         user.getSalaryPerLesson()
                 )).toList();
     }
