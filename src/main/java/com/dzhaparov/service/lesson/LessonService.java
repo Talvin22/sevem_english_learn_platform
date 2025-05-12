@@ -148,7 +148,7 @@ public class LessonService {
             lesson.setCancelingReason(null);
         }
 
-        List<LessonParticipant> participants = lessonParticipantRepository.findAllByLesson(lesson);
+        List<LessonParticipant> participants = lessonParticipantRepository.findAllByLessonId(lesson.getId());
         Map<Long, LessonAttendanceStatus> statusMap = request.participants().stream()
                 .collect(Collectors.toMap(UpdateLessonStatusRequest.ParticipantUpdate::studentId,
                         UpdateLessonStatusRequest.ParticipantUpdate::attendanceStatus));
