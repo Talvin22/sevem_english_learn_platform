@@ -1,7 +1,7 @@
 package com.dzhaparov.dto.user.response;
 
 import com.dzhaparov.entity.role.Role;
-import com.dzhaparov.entity.group.Group;
+import java.util.List;
 
 public record UserProfileDtoResponse(
         Long id,
@@ -9,6 +9,6 @@ public record UserProfileDtoResponse(
         String lastName,
         String email,
         Role role,
-        Group group,
+        List<String> groupNames,
         Double salaryPerLesson
 ) {}
