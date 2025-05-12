@@ -12,6 +12,7 @@ import com.dzhaparov.dto.user.response.UserDtoDetailResponse;
 import com.dzhaparov.entity.group.Group;
 import com.dzhaparov.entity.lesson.Lesson;
 import com.dzhaparov.entity.lesson.LessonParticipant;
+import com.dzhaparov.entity.lesson.LessonParticipantId;
 import com.dzhaparov.entity.lesson.LessonStatus;
 import com.dzhaparov.entity.lesson.attendance.LessonAttendanceStatus;
 import com.dzhaparov.entity.role.Role;
@@ -85,8 +86,15 @@ public class LessonService {
             p.setLesson(lesson);
             p.setStudent(student);
             p.setAttendanceStatus(LessonAttendanceStatus.PLANNED);
+
+            LessonParticipantId id = new LessonParticipantId();
+            id.setLessonId(lesson.getId());
+            id.setStudentId(student.getId());
+            p.setId(id);
+
             return p;
         }).toList();
+
         lessonParticipantRepository.saveAll(participants);
 
         Integer repeatWeeks = request.getRepeatWeeks();
@@ -108,8 +116,15 @@ public class LessonService {
                     p.setLesson(repeatedLesson);
                     p.setStudent(student);
                     p.setAttendanceStatus(LessonAttendanceStatus.PLANNED);
+
+                    LessonParticipantId id = new LessonParticipantId();
+                    id.setLessonId(repeatedLesson.getId());
+                    id.setStudentId(student.getId());
+                    p.setId(id);
+
                     return p;
                 }).toList();
+
                 lessonParticipantRepository.saveAll(repeatedParticipants);
             }
         }
