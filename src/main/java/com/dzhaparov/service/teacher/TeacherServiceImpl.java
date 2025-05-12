@@ -10,7 +10,6 @@ import com.dzhaparov.dto.lesson.response.LessonDtoListResponse;
 import com.dzhaparov.dto.user.response.UserProfileDtoResponse;
 import com.dzhaparov.entity.lesson.Lesson;
 import com.dzhaparov.entity.lesson.LessonParticipant;
-import com.dzhaparov.entity.user.User;
 import com.dzhaparov.repository.group.GroupRepository;
 import com.dzhaparov.repository.homework.HomeworkRepository;
 import com.dzhaparov.repository.lesson.LessonParticipantRepository;
@@ -47,17 +46,23 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public List<UserProfileDtoResponse> getMyStudents(Long teacherId) {
-        var students = userRepository.findAllByGroup_Teacher_Id(teacherId);
-        return students.stream()
+        var groups = groupRepository.findByTeacherId(teacherId);
+
+        var allStudents = groups.stream()
+                .flatMap(group -> group.getStudents().stream())
+                .distinct()
+                .toList();
+
+        return allStudents.stream()
                 .map(user -> new UserProfileDtoResponse(
                         user.getId(),
                         user.getFirst_name(),
                         user.getLast_name(),
                         user.getEmail(),
                         user.getRole(),
-                        user.getGroup(),
+                        user.getGroups().isEmpty() ? null : user.getGroups().get(0),
                         user.getSalaryPerLesson()
-                )).collect(Collectors.toList());
+                )).toList();
     }
 
     @Override
