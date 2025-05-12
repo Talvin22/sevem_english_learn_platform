@@ -14,4 +14,5 @@ public interface LessonParticipantRepository extends JpaRepository<LessonPartici
     List<LessonParticipant> findAllByStudentId(Long studentId);
 
     List<LessonParticipant> findAllByLessonIn(List<Lesson> lessons);
+    void deleteAllByLessonId(Long lessonId);
 }
