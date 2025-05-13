@@ -1,5 +1,6 @@
 package com.dzhaparov.service.teacher;
 
+import com.dzhaparov.dto.group.request.GroupShortDto;
 import com.dzhaparov.dto.group.response.GroupDtoResponse;
 import com.dzhaparov.dto.homework.request.HomeworkDtoGradeRequest;
 import com.dzhaparov.dto.homework.response.HomeworkDtoGradeResponse;
@@ -13,7 +14,7 @@ import java.util.List;
 @Service
 public interface TeacherService {
 
-    List<GroupDtoResponse> getGroupsForTeacher(Long teacherId);
+    List<GroupShortDto> getGroupsForTeacher(Long teacherId);
 
     List<UserProfileDtoResponse> getMyStudents(Long teacherId);
 

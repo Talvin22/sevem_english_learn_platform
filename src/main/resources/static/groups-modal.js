@@ -1,9 +1,21 @@
-
 let currentGroupId = null;
 let currentGroupName = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     loadGroups();
+
+    document.getElementById("create-group-btn").onclick = () => {
+        const groupName = prompt("Enter group name:");
+        if (groupName) {
+            fetch("/api/groups", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: groupName })
+            })
+                .then(() => loadGroups())
+                .catch(err => alert("Failed to create group: " + err.message));
+        }
+    };
 });
 
 function loadGroups() {
@@ -19,12 +31,33 @@ function loadGroups() {
             }
 
             groups.forEach(group => {
-                const div = document.createElement("div");
-                div.className = "card-content group-card";
-                div.textContent = group.name;
-                div.style.cursor = "pointer";
-                div.onclick = () => openGroupModal(group.id, group.name);
-                container.appendChild(div);
+                const wrapper = document.createElement("div");
+                wrapper.className = "card-content group-card";
+                wrapper.style.position = "relative";
+
+                const name = document.createElement("div");
+                name.textContent = group.name;
+                name.style.cursor = "pointer";
+                name.onclick = () => openGroupModal(group.id, group.name);
+
+                const deleteBtn = document.createElement("button");
+                deleteBtn.textContent = "❌";
+                deleteBtn.className = "delete-btn";
+                deleteBtn.style.position = "absolute";
+                deleteBtn.style.right = "10px";
+                deleteBtn.style.top = "10px";
+                deleteBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if (confirm("Are you sure you want to delete this group?")) {
+                        fetch(`/api/groups/${group.id}`, { method: "DELETE" })
+                            .then(() => loadGroups())
+                            .catch(err => alert("Failed to delete group: " + err.message));
+                    }
+                };
+
+                wrapper.appendChild(name);
+                wrapper.appendChild(deleteBtn);
+                container.appendChild(wrapper);
             });
         })
         .catch(err => {
@@ -70,6 +103,8 @@ function removeStudent(groupId, studentId) {
 }
 
 function showAddStudentSelect(groupId) {
+    document.getElementById("add-student-btn").onclick = null; // Удаляем старый обработчик
+
     fetch(`/api/groups/${groupId}/students/free`)
         .then(res => res.json())
         .then(students => {
