@@ -67,9 +67,10 @@ public class GroupManagementController {
 
     @GetMapping("/{groupId}/students/free")
     public List<UserProfileDtoResponse> getFreeStudentsForGroup(@PathVariable Long groupId) {
-        return userRepository.findAll().stream()
-                .filter(user -> user.isStudent()
-                        && (user.getGroups() == null || user.getGroups().stream().noneMatch(g -> g.getId().equals(groupId))))
+        Long teacherId = authHelper.getCurrentUser().getId();
+
+        return userRepository.findStudentsByTeacherId(teacherId).stream()
+                .filter(user -> user.getGroups() == null || user.getGroups().stream().noneMatch(g -> g.getId().equals(groupId)))
                 .map(user -> new UserProfileDtoResponse(
                         user.getId(),
                         user.getFirst_name(),
