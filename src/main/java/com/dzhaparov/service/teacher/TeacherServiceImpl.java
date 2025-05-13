@@ -50,9 +50,19 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public List<User> getMyStudents(Long teacherId) {
-        return userRepository.findAllStudentsWithTeachers().stream()
-                .filter(user -> user.getTeacher() != null && user.getTeacher().getId().equals(teacherId))
+    public List<UserProfileDtoResponse> getMyStudents(Long teacherId) {
+        return userRepository.findStudentsByTeacherId(teacherId).stream()
+                .map(user -> new UserProfileDtoResponse(
+                        user.getId(),
+                        user.getFirst_name(),
+                        user.getLast_name(),
+                        user.getEmail(),
+                        user.getRole(),
+                        user.getGroups().stream()
+                                .map(g -> new GroupShortDto(g.getId(), g.getName()))
+                                .toList(),
+                        user.getSalaryPerLesson()
+                ))
                 .toList();
     }
 
