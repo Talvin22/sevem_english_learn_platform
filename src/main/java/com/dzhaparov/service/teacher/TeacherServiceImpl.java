@@ -50,26 +50,10 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public List<UserProfileDtoResponse> getMyStudents(Long teacherId) {
-        var groups = groupRepository.findByTeacherId(teacherId);
-
-        var allStudents = groups.stream()
-                .flatMap(group -> group.getStudents().stream())
-                .distinct()
+    public List<User> getMyStudents(Long teacherId) {
+        return userRepository.findAllStudentsWithTeachers().stream()
+                .filter(user -> user.getTeacher() != null && user.getTeacher().getId().equals(teacherId))
                 .toList();
-
-        return allStudents.stream()
-                .map(user -> new UserProfileDtoResponse(
-                        user.getId(),
-                        user.getFirst_name(),
-                        user.getLast_name(),
-                        user.getEmail(),
-                        user.getRole(),
-                        user.getGroups().stream()
-                                .map(g -> new GroupShortDto(g.getId(), g.getName()))
-                                .toList(),
-                        user.getSalaryPerLesson()
-                )).toList();
     }
 
     @Override
