@@ -105,7 +105,19 @@ function addStudentToGroup(groupId, studentId) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ studentId })
-    }).then(() => openGroupModal(currentGroupId, currentGroupName));
+    })
+        .then(res => {
+            if (!res.ok) throw new Error("Failed to add student");
+            return res.json();
+        })
+        .then(() => {
+            document.getElementById("add-student-container").innerHTML = "";
+            openGroupModal(currentGroupId, currentGroupName);
+        })
+        .catch(err => {
+            console.error("❌ Error adding student:", err);
+            alert("Failed to add student.");
+        });
 }
 
 function closeGroupModal() {
