@@ -1,5 +1,6 @@
 package com.dzhaparov.controller.group;
 
+import com.dzhaparov.dto.group.request.CreateGroupRequest;
 import com.dzhaparov.dto.group.request.GroupShortDto;
 import com.dzhaparov.dto.group.response.GroupDtoResponse;
 import com.dzhaparov.dto.user.response.UserProfileDtoResponse;
@@ -31,7 +32,7 @@ public class GroupManagementController {
 
 
     @GetMapping("/teacher")
-    public List<GroupDtoResponse> getGroups() {
+    public List<GroupShortDto> getGroups() {
         Long teacherId = authHelper.getCurrentUser().getId();
         return teacherService.getGroupsForTeacher(teacherId);
     }
@@ -84,4 +85,14 @@ public class GroupManagementController {
     }
 
     public record AddStudentRequest(Long studentId) {}
+
+    @PostMapping
+    public GroupDtoResponse createGroup(@RequestBody CreateGroupRequest request) {
+        return teacherService.createGroup(request);
+    }
+
+    @DeleteMapping("/{groupId}")
+    public void deleteGroup(@PathVariable Long groupId) {
+        teacherService.deleteGroup(groupId);
+    }
 }

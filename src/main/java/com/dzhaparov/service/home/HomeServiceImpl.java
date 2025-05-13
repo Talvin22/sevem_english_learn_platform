@@ -1,5 +1,6 @@
 package com.dzhaparov.service.home;
 
+import com.dzhaparov.dto.group.request.GroupShortDto;
 import com.dzhaparov.dto.group.response.GroupDtoResponse;
 import com.dzhaparov.dto.home.response.HomePageDataResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoListResponse;
@@ -74,7 +75,7 @@ public class HomeServiceImpl implements HomeService {
     }
 
     @Override
-    public List<GroupDtoResponse> getGroupsForTeacher(Long teacherId) {
+    public List<GroupShortDto> getGroupsForTeacher(Long teacherId) {
         return teacherService.getGroupsForTeacher(teacherId);
     }
 

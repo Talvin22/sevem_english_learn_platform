@@ -1,5 +1,6 @@
 package com.dzhaparov.dto.home.response;
 
+import com.dzhaparov.dto.group.request.GroupShortDto;
 import com.dzhaparov.dto.group.response.GroupDtoResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoListResponse;
 import com.dzhaparov.dto.lesson.response.LessonDtoListResponse;
@@ -12,5 +13,5 @@ public record HomePageDataResponse(
         HomeworkDtoListResponse homeworks,
         GroupDtoResponse studentGroup,
         List<UserProfileDtoResponse> teacherStudents,
-        List<GroupDtoResponse> teacherGroups
+        List<GroupShortDto> teacherGroups
 ) {}

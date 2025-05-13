@@ -1,5 +1,6 @@
 package com.dzhaparov.service.teacher;
 
+import com.dzhaparov.dto.group.request.CreateGroupRequest;
 import com.dzhaparov.dto.group.request.GroupShortDto;
 import com.dzhaparov.dto.group.response.GroupDtoResponse;
 import com.dzhaparov.dto.homework.request.HomeworkDtoGradeRequest;
@@ -30,4 +31,7 @@ public interface TeacherService {
 
     void removeStudentFromGroup(Long groupId, Long studentId);
     List<UserProfileDtoResponse> getStudentsWithoutGroups();
+    GroupDtoResponse createGroup(CreateGroupRequest request);
+
+    void deleteGroup(Long groupId);
 }

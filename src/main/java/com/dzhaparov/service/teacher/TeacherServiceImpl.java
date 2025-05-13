@@ -1,5 +1,6 @@
 package com.dzhaparov.service.teacher;
 
+import com.dzhaparov.dto.group.request.CreateGroupRequest;
 import com.dzhaparov.dto.group.request.GroupShortDto;
 import com.dzhaparov.dto.group.response.GroupDtoResponse;
 import com.dzhaparov.dto.homework.request.HomeworkDtoGradeRequest;
@@ -9,15 +10,15 @@ import com.dzhaparov.dto.homework.response.HomeworkDtoListResponse;
 import com.dzhaparov.dto.lesson.response.LessonDtoDetailResponse;
 import com.dzhaparov.dto.lesson.response.LessonDtoListResponse;
 import com.dzhaparov.dto.user.response.UserProfileDtoResponse;
+import com.dzhaparov.entity.group.Group;
 import com.dzhaparov.entity.lesson.Lesson;
 import com.dzhaparov.entity.lesson.LessonParticipant;
-import com.dzhaparov.entity.role.Role;
-import com.dzhaparov.entity.user.User;
 import com.dzhaparov.repository.group.GroupRepository;
 import com.dzhaparov.repository.homework.HomeworkRepository;
 import com.dzhaparov.repository.lesson.LessonParticipantRepository;
 import com.dzhaparov.repository.lesson.LessonRepository;
 import com.dzhaparov.repository.user.UserRepository;
+import com.dzhaparov.util.AuthHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,18 +36,21 @@ public class TeacherServiceImpl implements TeacherService {
     private final HomeworkRepository homeworkRepository;
     private final GroupRepository groupRepository;
     private final LessonParticipantRepository lessonParticipantRepository;
+    private final AuthHelper authHelper;
 
     public TeacherServiceImpl(UserRepository userRepository,
                               LessonRepository lessonRepository,
                               HomeworkRepository homeworkRepository,
                               GroupRepository groupRepository,
-                              LessonParticipantRepository lessonParticipantRepository
+                              LessonParticipantRepository lessonParticipantRepository,
+                              AuthHelper authHelper
     ) {
         this.userRepository = userRepository;
         this.lessonRepository = lessonRepository;
         this.homeworkRepository = homeworkRepository;
         this.groupRepository = groupRepository;
         this.lessonParticipantRepository = lessonParticipantRepository;
+        this.authHelper = authHelper;
     }
 
     @Override
@@ -192,5 +196,18 @@ public class TeacherServiceImpl implements TeacherService {
                         user.getSalaryPerLesson()
                 ))
                 .toList();
+    }
+    @Override
+    public GroupDtoResponse createGroup(CreateGroupRequest request) {
+        Group group = new Group();
+        group.setName(request.name());
+        group.setTeacher(userRepository.findById(authHelper.getCurrentUser().getId()).orElseThrow());
+        group.setActive(true);
+        return GroupDtoResponse.of(true, groupRepository.save(group));
+    }
+
+    @Override
+    public void deleteGroup(Long groupId) {
+        groupRepository.deleteById(groupId);
     }
 }
