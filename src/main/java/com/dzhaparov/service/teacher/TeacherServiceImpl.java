@@ -11,6 +11,8 @@ import com.dzhaparov.dto.lesson.response.LessonDtoListResponse;
 import com.dzhaparov.dto.user.response.UserProfileDtoResponse;
 import com.dzhaparov.entity.lesson.Lesson;
 import com.dzhaparov.entity.lesson.LessonParticipant;
+import com.dzhaparov.entity.role.Role;
+import com.dzhaparov.entity.user.User;
 import com.dzhaparov.repository.group.GroupRepository;
 import com.dzhaparov.repository.homework.HomeworkRepository;
 import com.dzhaparov.repository.lesson.LessonParticipantRepository;
@@ -18,7 +20,9 @@ import com.dzhaparov.repository.lesson.LessonRepository;
 import com.dzhaparov.repository.user.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -65,8 +69,7 @@ public class TeacherServiceImpl implements TeacherService {
                                 .map(g -> new GroupShortDto(g.getId(), g.getName()))
                                 .toList(),
                         user.getSalaryPerLesson()
-                ))
-                .toList();
+                )).toList();
     }
 
     @Override
@@ -135,15 +138,16 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
+    @Transactional
     public GroupDtoResponse addStudentToGroup(Long groupId, Long studentId) {
         var student = userRepository.findById(studentId).orElseThrow();
         var group = groupRepository.findById(groupId).orElseThrow();
 
-        student.getGroups().add(group);
+
         group.getStudents().add(student);
+        student.getGroups().add(group);
 
         groupRepository.save(group);
-
         return GroupDtoResponse.of(true, group);
     }
 
@@ -168,16 +172,19 @@ public class TeacherServiceImpl implements TeacherService {
                 .map(GroupDtoResponse::ofSuccess)
                 .collect(Collectors.toList());
     }
+
+    @Override
     public void removeStudentFromGroup(Long groupId, Long studentId) {
         var group = groupRepository.findById(groupId).orElseThrow();
         var student = userRepository.findById(studentId).orElseThrow();
 
-
-        group.getStudents().removeIf(s -> s.getId().equals(studentId));
-        student.getGroups().removeIf(g -> g.getId().equals(groupId));
+        group.getStudents().remove(student);
+        student.getGroups().remove(group);
 
         groupRepository.save(group);
+        userRepository.save(student);
     }
+
     @Override
     public List<UserProfileDtoResponse> getStudentsWithoutGroups() {
         return userRepository.findAll().stream()
@@ -188,7 +195,7 @@ public class TeacherServiceImpl implements TeacherService {
                         user.getLast_name(),
                         user.getEmail(),
                         user.getRole(),
-                        null,
+                        Collections.emptyList(),
                         user.getSalaryPerLesson()
                 ))
                 .toList();

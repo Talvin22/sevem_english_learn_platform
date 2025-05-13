@@ -16,4 +16,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findAllByTeacherId(Long teacherId);
     @Query("SELECT u FROM User u JOIN u.groups g WHERE g.name = ?1")
     List<User> findAllByGroupName(String groupName);
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.teacher WHERE u.role = 'STUDENT'")
+    List<User> findAllStudentsWithTeachers();
 }

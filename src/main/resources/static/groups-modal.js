@@ -70,7 +70,7 @@ function removeStudent(groupId, studentId) {
 }
 
 function showAddStudentSelect(groupId) {
-    fetch("/api/groups/students/free")
+    fetch(`/api/groups/${groupId}/students/free`)
         .then(res => res.json())
         .then(students => {
             const container = document.getElementById("add-student-container");

@@ -89,7 +89,7 @@ public class StudentServiceImpl implements StudentService {
         var user = userRepository.findById(studentId).orElseThrow();
         var groups = user.getGroups();
 
-        if (groups.isEmpty()) {
+        if (groups == null || groups.isEmpty()) {
             return new GroupDtoResponse(
                     HttpStatus.OK.value(),
                     HttpStatus.OK.getReasonPhrase(),
@@ -105,6 +105,7 @@ public class StudentServiceImpl implements StudentService {
         }
 
         var group = groups.get(0);
+        var teacher = group.getTeacher();
 
         return new GroupDtoResponse(
                 HttpStatus.OK.value(),
@@ -114,7 +115,7 @@ public class StudentServiceImpl implements StudentService {
                 group.getId(),
                 group.getName(),
                 group.getActive(),
-                group.getTeacher().getFirst_name() + " " + group.getTeacher().getLast_name(),
+                teacher != null ? teacher.getFirst_name() + " " + teacher.getLast_name() : null,
                 null,
                 null
         );
