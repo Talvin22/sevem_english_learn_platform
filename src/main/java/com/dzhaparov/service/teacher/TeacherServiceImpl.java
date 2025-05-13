@@ -160,13 +160,12 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public List<GroupDtoResponse> getGroupsForTeacher(Long teacherId) {
-        var groups = groupRepository.findByTeacherId(teacherId);
-        return groups.stream()
-                .map(GroupDtoResponse::ofSuccess)
-                .collect(Collectors.toList());
+    public List<GroupShortDto> getGroupsForTeacher(Long teacherId) {
+        return groupRepository.findByTeacherId(teacherId)
+                .stream()
+                .map(g -> new GroupShortDto(g.getId(), g.getName()))
+                .toList();
     }
-
     @Override
     public void removeStudentFromGroup(Long groupId, Long studentId) {
         var group = groupRepository.findById(groupId).orElseThrow();
