@@ -14,6 +14,7 @@ import com.dzhaparov.repository.lesson.LessonRepository;
 import com.dzhaparov.repository.user.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,34 +37,40 @@ public class HomeworkServiceImpl implements HomeworkService {
     }
 
     @Override
-    public void createHomework(CreateHomeworkRequest request) {
+    public List<HomeworkDtoResponse> createHomework(CreateHomeworkRequest request, Long teacherId) {
         Lesson lesson = lessonRepository.findById(request.lessonId())
                 .orElseThrow(() -> new IllegalArgumentException("Lesson not found"));
+
+        List<Homework> createdHomeworks = new ArrayList<>();
 
         if (request.groupId() != null) {
             Group group = groupRepository.findById(request.groupId())
                     .orElseThrow(() -> new IllegalArgumentException("Group not found"));
             for (User student : group.getStudents()) {
-                Homework homework = new Homework();
-                homework.setLesson(lesson);
-                homework.setStudent(student);
-                homework.setGroup(group);
-                homework.setContent(request.content());
-                homework.setStatus(HomeworkStatus.NOT_SUBMITTED);
-                homeworkRepository.save(homework);
+                Homework hw = new Homework();
+                hw.setLesson(lesson);
+                hw.setStudent(student);
+                hw.setGroup(group);
+                hw.setContent(request.content());
+                hw.setStatus(HomeworkStatus.NOT_SUBMITTED);
+                createdHomeworks.add(homeworkRepository.save(hw));
             }
         } else if (request.studentId() != null) {
             User student = userRepository.findById(request.studentId())
                     .orElseThrow(() -> new IllegalArgumentException("Student not found"));
-            Homework homework = new Homework();
-            homework.setLesson(lesson);
-            homework.setStudent(student);
-            homework.setContent(request.content());
-            homework.setStatus(HomeworkStatus.NOT_SUBMITTED);
-            homeworkRepository.save(homework);
+            Homework hw = new Homework();
+            hw.setLesson(lesson);
+            hw.setStudent(student);
+            hw.setContent(request.content());
+            hw.setStatus(HomeworkStatus.NOT_SUBMITTED);
+            createdHomeworks.add(homeworkRepository.save(hw));
         } else {
             throw new IllegalArgumentException("Either groupId or studentId must be provided");
         }
+
+        return createdHomeworks.stream()
+                .map(HomeworkDtoResponse::from)
+                .toList();
     }
 
     @Override
@@ -76,8 +83,8 @@ public class HomeworkServiceImpl implements HomeworkService {
     @Override
     public List<HomeworkDtoResponse> getHomeworksToCheckForTeacher(Long teacherId) {
         return homeworkRepository.findByLessonTeacherId(teacherId).stream()
-                .filter(hw -> hw. != HomeworkStatus.NOT_SUBMITTED)
-                .map(HomeworkDtoResponse::fromEntity)
+                .filter(hw -> hw.getStatus()!= HomeworkStatus.NOT_SUBMITTED)
+                .map(HomeworkDtoResponse::from)
                 .collect(Collectors.toList());
     }
 }

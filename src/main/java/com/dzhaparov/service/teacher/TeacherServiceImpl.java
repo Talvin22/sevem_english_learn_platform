@@ -105,7 +105,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public HomeworkDtoListResponse getHomeworksToCheck(Long teacherId) {
-        var homeworks = homeworkRepository.findByLesson_Teacher_Id(teacherId);
+        var homeworks = homeworkRepository.findByLessonTeacherId(teacherId);
         var dtoList = homeworks.stream()
                 .map(hw -> new HomeworkDtoDetailResponse(
                         hw.getId(),

@@ -12,7 +12,7 @@ import java.util.List;
 public interface HomeworkRepository extends JpaRepository<Homework, Long> {
     List<Homework> findByStudentId(Long studentId);
     List<Homework> findByGroupId(Long groupId);
-    List<Homework> findByLesson_Teacher_Id(Long teacherId);
+    List<Homework> findByLessonTeacherId(Long teacherId);
     @Query("SELECT h FROM Homework h WHERE h.lesson.teacher.id = :teacherId AND h.status = :status")
     List<Homework> findByLessonTeacherIdAndStatus(Long teacherId, HomeworkStatus status);
 }

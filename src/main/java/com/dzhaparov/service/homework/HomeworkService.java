@@ -6,7 +6,7 @@ import com.dzhaparov.dto.homework.response.HomeworkDtoResponse;
 import java.util.List;
 
 public interface HomeworkService {
-    HomeworkDtoResponse createHomework(CreateHomeworkRequest request);
+    List<HomeworkDtoResponse> createHomework(CreateHomeworkRequest request, Long teacherId);
 
     List<HomeworkDtoResponse> getHomeworksForStudent(Long studentId);
 

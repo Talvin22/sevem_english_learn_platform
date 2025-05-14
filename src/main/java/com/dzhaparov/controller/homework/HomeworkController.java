@@ -1,5 +1,8 @@
 package com.dzhaparov.controller.homework;
 
+import com.dzhaparov.dto.homework.request.CreateHomeworkRequest;
+import com.dzhaparov.dto.homework.response.HomeworkDtoResponse;
+import com.dzhaparov.service.homework.HomeworkService;
 import com.dzhaparov.util.AuthHelper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
