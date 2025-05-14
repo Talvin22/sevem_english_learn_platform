@@ -11,6 +11,7 @@
 
     <div th:if="${userRole == 'TEACHER'}">
         <h2>Your Students</h2>
+        <button class="btn" onclick="showAssignStudentModal()">+ Assign Student</button>
         <div id="teacher-students-container"></div>
 
         <h2>Your Groups</h2>
