@@ -38,7 +38,15 @@
     <button id="add-student-btn" class="btn">+ Add Student</button>
 </div>
 <div id="groupModalOverlay" class="modal-overlay" onclick="closeGroupModal()"></div>
+<!-- ASSIGN STUDENT MODAL -->
+<div id="assignStudentModal" class="modal">
+    <button onclick="closeAssignStudentModal()" class="close-btn">✖</button>
+    <h2>Assign Student</h2>
 
+    <div id="assign-student-container" style="margin-top: 10px;"></div>
+</div>
+
+<div id="assignStudentModalOverlay" class="modal-overlay" onclick="closeAssignStudentModal()"></div>
 <!-- Scripts -->
 <script th:src="@{/groups-modal.js}"></script>
 <script th:src="@{/profile.js}"></script>

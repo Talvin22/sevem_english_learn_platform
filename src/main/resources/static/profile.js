@@ -150,7 +150,7 @@ function showAssignStudentModal() {
             btn.textContent = "Assign";
             btn.className = "btn";
             btn.onclick = () => {
-                fetch("/api/teacher/assign", {
+                fetch("/api/teacher/assign-student", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ studentId: select.value })
