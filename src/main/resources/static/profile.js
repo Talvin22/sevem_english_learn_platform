@@ -126,3 +126,53 @@ function loadTeacherStudents() {
                 "<p style='color: red;'>Error loading students.</p>";
         });
 }
+function showAssignStudentModal() {
+    fetch("/api/teacher/unassigned-students")
+        .then(res => res.json())
+        .then(students => {
+            const container = document.getElementById("assign-student-container");
+            container.innerHTML = "";
+
+            if (students.length === 0) {
+                container.innerHTML = "<p>No available students.</p>";
+                return;
+            }
+
+            const select = document.createElement("select");
+            students.forEach(s => {
+                const option = document.createElement("option");
+                option.value = s.id;
+                option.textContent = `${s.firstName} ${s.lastName}`;
+                select.appendChild(option);
+            });
+
+            const btn = document.createElement("button");
+            btn.textContent = "Assign";
+            btn.className = "btn";
+            btn.onclick = () => {
+                fetch("/api/teacher/assign", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ studentId: select.value })
+                })
+                    .then(() => {
+                        closeAssignStudentModal();
+                        loadTeacherStudents();
+                    })
+                    .catch(err => {
+                        alert("Failed to assign student: " + err.message);
+                    });
+            };
+
+            container.appendChild(select);
+            container.appendChild(btn);
+
+            document.getElementById("assignStudentModal").style.display = "block";
+            document.getElementById("assignStudentOverlay").style.display = "block";
+        });
+}
+
+function closeAssignStudentModal() {
+    document.getElementById("assignStudentModal").style.display = "none";
+    document.getElementById("assignStudentOverlay").style.display = "none";
+}
