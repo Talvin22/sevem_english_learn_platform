@@ -35,4 +35,5 @@ public interface TeacherService {
 
     void deleteGroup(Long groupId);
     void assignStudentToTeacher(Long teacherId, Long studentId);
+    void unassignStudentFromTeacher(Long studentId);
 }

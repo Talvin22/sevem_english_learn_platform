@@ -222,4 +222,11 @@ public class TeacherServiceImpl implements TeacherService {
         student.setTeacher(teacher);
         userRepository.save(student);
     }
+
+    @Override
+    public void unassignStudentFromTeacher(Long studentId) {
+        var student = userRepository.findById(studentId).orElseThrow();
+        student.setTeacher(null);
+        userRepository.save(student);
+    }
 }
