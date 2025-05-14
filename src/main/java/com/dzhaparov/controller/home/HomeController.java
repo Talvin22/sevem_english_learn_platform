@@ -3,6 +3,7 @@ package com.dzhaparov.controller.home;
 
 import com.dzhaparov.dto.home.response.HomePageDataResponse;
 import com.dzhaparov.service.home.HomeService;
+import com.dzhaparov.util.AuthHelper;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class HomeController {
 
     private final HomeService homeService;
+    private final AuthHelper authHelper;
 
-    public HomeController(HomeService homeService) {
+    public HomeController(HomeService homeService, AuthHelper authHelper) {
         this.homeService = homeService;
+        this.authHelper = authHelper;
     }
 
     @GetMapping
@@ -34,5 +37,10 @@ public class HomeController {
         model.addAttribute("userRole", userRole);
 
         return "home";
+    }
+    @GetMapping("/profile")
+    public String profile(Model model) {
+        model.addAttribute("userRole", authHelper.getCurrentUser().getRole().name());
+        return "profile";
     }
 }
