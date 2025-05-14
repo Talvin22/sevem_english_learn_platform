@@ -23,6 +23,11 @@
     <input type="password" name="password" placeholder="Password" required>
     <button type="submit">Login</button>
   </form>
+
+  <p style="margin-top: 20px; text-align: center;">
+    Don't have an account?
+    <a th:href="@{/auth/register}" class="btn" style="margin-left: 5px;">Register</a>
+  </p>
 </div>
 
 </body>
