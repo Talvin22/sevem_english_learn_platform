@@ -7,9 +7,11 @@ import com.dzhaparov.entity.group.Group;
 import com.dzhaparov.entity.homework.Homework;
 import com.dzhaparov.entity.homework.HomeworkStatus;
 import com.dzhaparov.entity.lesson.Lesson;
+import com.dzhaparov.entity.lesson.LessonParticipant;
 import com.dzhaparov.entity.user.User;
 import com.dzhaparov.repository.group.GroupRepository;
 import com.dzhaparov.repository.homework.HomeworkRepository;
+import com.dzhaparov.repository.lesson.LessonParticipantRepository;
 import com.dzhaparov.repository.lesson.LessonRepository;
 import com.dzhaparov.repository.user.UserRepository;
 import org.springframework.stereotype.Service;
@@ -25,15 +27,18 @@ public class HomeworkServiceImpl implements HomeworkService {
     private final LessonRepository lessonRepository;
     private final UserRepository userRepository;
     private final GroupRepository groupRepository;
+    private final LessonParticipantRepository lessonParticipantRepository;
 
     public HomeworkServiceImpl(HomeworkRepository homeworkRepository,
                                LessonRepository lessonRepository,
                                UserRepository userRepository,
-                               GroupRepository groupRepository) {
+                               GroupRepository groupRepository,
+                               LessonParticipantRepository lessonParticipantRepository) {
         this.homeworkRepository = homeworkRepository;
         this.lessonRepository = lessonRepository;
         this.userRepository = userRepository;
         this.groupRepository = groupRepository;
+        this.lessonParticipantRepository = lessonParticipantRepository;
     }
 
     @Override
@@ -64,8 +69,30 @@ public class HomeworkServiceImpl implements HomeworkService {
             hw.setContent(request.content());
             hw.setStatus(HomeworkStatus.NOT_SUBMITTED);
             createdHomeworks.add(homeworkRepository.save(hw));
+        } else if (lesson.getGroup() != null) {
+            Group group = lesson.getGroup();
+            for (User student : group.getStudents()) {
+                Homework hw = new Homework();
+                hw.setLesson(lesson);
+                hw.setStudent(student);
+                hw.setGroup(group);
+                hw.setContent(request.content());
+                hw.setStatus(HomeworkStatus.NOT_SUBMITTED);
+                createdHomeworks.add(homeworkRepository.save(hw));
+            }
         } else {
-            throw new IllegalArgumentException("Either groupId or studentId must be provided");
+            List<LessonParticipant> participants = lessonParticipantRepository.findAllByLessonId(lesson.getId());
+            if (participants.size() == 1) {
+                User student = participants.get(0).getStudent();
+                Homework hw = new Homework();
+                hw.setLesson(lesson);
+                hw.setStudent(student);
+                hw.setContent(request.content());
+                hw.setStatus(HomeworkStatus.NOT_SUBMITTED);
+                createdHomeworks.add(homeworkRepository.save(hw));
+            } else {
+                throw new IllegalArgumentException("Cannot determine target for homework: no group and ambiguous participants.");
+            }
         }
 
         return createdHomeworks.stream()
@@ -83,7 +110,7 @@ public class HomeworkServiceImpl implements HomeworkService {
     @Override
     public List<HomeworkDtoResponse> getHomeworksToCheckForTeacher(Long teacherId) {
         return homeworkRepository.findByLessonTeacherId(teacherId).stream()
-                .filter(hw -> hw.getStatus()!= HomeworkStatus.NOT_SUBMITTED)
+                .filter(hw -> hw.getStatus() != HomeworkStatus.NOT_SUBMITTED)
                 .map(HomeworkDtoResponse::from)
                 .collect(Collectors.toList());
     }
