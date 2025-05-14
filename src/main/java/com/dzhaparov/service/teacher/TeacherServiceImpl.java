@@ -210,4 +210,16 @@ public class TeacherServiceImpl implements TeacherService {
     public void deleteGroup(Long groupId) {
         groupRepository.deleteById(groupId);
     }
+    @Override
+    public void assignStudentToTeacher(Long teacherId, Long studentId) {
+        var teacher = userRepository.findById(teacherId).orElseThrow();
+        var student = userRepository.findById(studentId).orElseThrow();
+
+        if (!student.isStudent()) {
+            throw new IllegalArgumentException("User is not a student.");
+        }
+
+        student.setTeacher(teacher);
+        userRepository.save(student);
+    }
 }
