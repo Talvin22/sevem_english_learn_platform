@@ -21,4 +21,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findAllStudentsWithTeachers();
     @Query("SELECT u FROM User u WHERE u.role = 'STUDENT' AND u.teacher.id = :teacherId")
     List<User> findStudentsByTeacherId(@Param("teacherId") Long teacherId);
+    @Query("SELECT u FROM User u WHERE u.role = 'STUDENT' AND u.teacher IS NULL")
+    List<User> findUnassignedStudents();
 }

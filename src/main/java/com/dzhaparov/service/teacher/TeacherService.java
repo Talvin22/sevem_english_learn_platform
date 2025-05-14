@@ -34,5 +34,5 @@ public interface TeacherService {
     GroupDtoResponse createGroup(CreateGroupRequest request);
 
     void deleteGroup(Long groupId);
-    void assignStudentToTeacher(Long teacherId, Long studentId)
+    void assignStudentToTeacher(Long teacherId, Long studentId);
 }
