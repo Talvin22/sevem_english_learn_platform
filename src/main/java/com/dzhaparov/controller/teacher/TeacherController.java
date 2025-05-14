@@ -3,9 +3,8 @@ package com.dzhaparov.controller.teacher;
 import com.dzhaparov.dto.user.response.UserProfileDtoResponse;
 import com.dzhaparov.service.teacher.TeacherService;
 import com.dzhaparov.util.AuthHelper;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,6 +24,12 @@ public class TeacherController {
     public List<UserProfileDtoResponse> getMyStudents() {
         Long teacherId = authHelper.getCurrentUser().getId();
         return teacherService.getMyStudents(teacherId);
+    }
+    @PostMapping("/assign-student")
+    public ResponseEntity<Void> assignStudent(@RequestParam Long studentId) {
+        Long teacherId = authHelper.getCurrentUser().getId();
+        teacherService.assignStudentToTeacher(teacherId, studentId);
+        return ResponseEntity.ok().build();
     }
 
 }
