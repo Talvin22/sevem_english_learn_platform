@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const role = document.body.getAttribute("data-role");
 
     if (role === "TEACHER") {
+        loadTeacherStudents();
         loadTeacherGroups();
         document.getElementById("create-group-btn").onclick = showCreateGroupPrompt;
     } else if (role === "STUDENT") {
@@ -95,5 +96,33 @@ function loadStudentGroup() {
             console.error("❌ Failed to load student group:", err);
             document.getElementById("student-group-container").innerHTML =
                 "<p>Error loading group info.</p>";
+        });
+}
+function loadTeacherStudents() {
+    fetch("/api/teacher/students")
+        .then(res => res.json())
+        .then(students => {
+            const container = document.getElementById("teacher-students-container");
+            container.innerHTML = "";
+
+            if (students.length === 0) {
+                container.innerHTML = "<p>You don't have any students yet.</p>";
+                return;
+            }
+
+            students.forEach(student => {
+                const div = document.createElement("div");
+                div.className = "card-content";
+                div.innerHTML = `
+                    <strong>${student.firstName} ${student.lastName}</strong><br>
+                    <small>${student.email}</small>
+                `;
+                container.appendChild(div);
+            });
+        })
+        .catch(err => {
+            console.error("Failed to load students:", err);
+            document.getElementById("teacher-students-container").innerHTML =
+                "<p style='color: red;'>Error loading students.</p>";
         });
 }
