@@ -7,35 +7,30 @@
 </head>
 <body th:attr="data-role=${userRole}">
 <div class="container">
-    <h1>Welcome to Your Dashboard!</h1>
-    <div style="text-align: right; margin-bottom: 10px;">
-        <form th:action="@{/logout}" method="post">
-            <button type="submit" class="btn danger">🚪 Logout</button>
-        </form>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h1>Welcome to Your Dashboard!</h1>
+        <div>
+            <a th:href="@{/profile}" class="btn">👤 Profile</a>
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <button type="submit" class="btn danger">🚪 Logout</button>
+            </form>
+        </div>
     </div>
 
     <!-- LESSONS -->
     <div class="card">
         <h2>Lessons</h2>
-        <a th:if="${isTeacher}" th:href="@{/lessons/create}" class="btn create-lesson">➕ Create Lesson</a>
+        <a th:if="${isTeacher}" th:href="@{/lessons/create}" class="btn create-lesson">
+            ➕ Create Lesson
+        </a>
 
         <div style="margin-top: 10px;">
             <button id="prevWeekBtn" class="btn">← Previous</button>
             <button id="nextWeekBtn" class="btn">Next →</button>
         </div>
         <div id="weekRange" style="margin-top: 10px; font-weight: bold;"></div>
-        <div id="weekly-lessons-container" style="margin-top: 20px;"></div>
-    </div>
 
-    <!-- GROUPS -->
-    <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2>Your Groups</h2>
-            <button id="create-group-btn" class="btn">+ Create Group</button>
-        </div>
-        <div id="teacher-groups-container">
-            <p>Loading groups...</p>
-        </div>
+        <div id="weekly-lessons-container" style="margin-top: 20px;"></div>
     </div>
 
     <!-- HOMEWORKS -->
@@ -48,9 +43,7 @@
                       th:class="'badge badge-' + ${homework.status.name().toLowerCase()}"></span>
             </div>
         </div>
-        <p th:if="${homePageData.homeworks == null or homePageData.homeworks.homeworks.size() == 0}">
-            No homeworks found.
-        </p>
+        <p th:if="${homePageData.homeworks == null or homePageData.homeworks.homeworks.size() == 0}">No homeworks found.</p>
     </div>
 </div>
 
@@ -97,36 +90,8 @@
 
 <div id="modalOverlay" class="modal-overlay" onclick="closeModal()"></div>
 
-<!-- GROUP MODAL -->
-<div id="groupModal" class="modal">
-    <button onclick="closeGroupModal()" class="close-btn">✖</button>
-    <h2 id="groupModalTitle">Group Details</h2>
-
-    <div id="group-student-list" style="margin-bottom: 15px;"></div>
-
-    <h3 style="margin-top: 15px">Add Student</h3>
-    <div id="add-student-container"></div>
-    <button id="add-student-btn" class="btn">+ Add Student</button>
-    <hr>
-    <button onclick="deleteCurrentGroup()" class="btn danger">🗑 Delete Group</button>
-</div>
-
-<div id="groupModalOverlay" class="modal-overlay" onclick="closeGroupModal()"></div>
-
-<!-- CREATE GROUP MODAL -->
-<div id="createGroupModal" class="modal">
-    <button onclick="closeCreateGroupModal()" class="close-btn">✖</button>
-    <h2>Create New Group</h2>
-    <label for="newGroupName">Group Name:</label>
-    <input type="text" id="newGroupName" placeholder="Enter group name" />
-    <button class="btn" onclick="createGroup()">Create</button>
-</div>
-
-<div id="createGroupOverlay" class="modal-overlay" onclick="closeCreateGroupModal()"></div>
-
-<!-- External JS -->
+<!-- Scripts -->
 <script th:src="@{/lesson-modal.js}"></script>
 <script th:src="@{/weekly-lessons.js}"></script>
-<script th:src="@{/groups-modal.js}"></script>
 </body>
 </html>
