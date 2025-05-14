@@ -2,27 +2,35 @@ let currentGroupId = null;
 let currentGroupName = null;
 
 document.addEventListener("DOMContentLoaded", () => {
+    const role = document.body.getAttribute("data-role");
+    if (role !== "TEACHER") return;
+
     loadGroups();
 
-    document.getElementById("create-group-btn").onclick = () => {
-        const groupName = prompt("Enter group name:");
-        if (groupName) {
-            fetch("/api/groups", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: groupName })
-            })
-                .then(() => loadGroups())
-                .catch(err => alert("Failed to create group: " + err.message));
-        }
-    };
+    const createBtn = document.getElementById("create-group-btn");
+    if (createBtn) {
+        createBtn.onclick = () => {
+            const groupName = prompt("Enter group name:");
+            if (groupName) {
+                fetch("/api/groups", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name: groupName })
+                })
+                    .then(() => loadGroups())
+                    .catch(err => alert("Failed to create group: " + err.message));
+            }
+        };
+    }
 });
 
 function loadGroups() {
+    const container = document.getElementById("teacher-groups-container");
+    if (!container) return;
+
     fetch("/api/groups/teacher")
         .then(res => res.json())
         .then(groups => {
-            const container = document.getElementById("teacher-groups-container");
             container.innerHTML = "";
 
             if (groups.length === 0) {
@@ -62,8 +70,7 @@ function loadGroups() {
         })
         .catch(err => {
             console.error("Failed to load groups:", err);
-            document.getElementById("teacher-groups-container").innerHTML =
-                `<p style="color: red;">Error loading groups: ${err.message}</p>`;
+            container.innerHTML = `<p style="color: red;">Error loading groups: ${err.message}</p>`;
         });
 }
 
@@ -71,12 +78,18 @@ function openGroupModal(groupId, groupName) {
     currentGroupId = groupId;
     currentGroupName = groupName;
 
+    const modal = document.getElementById("groupModal");
+    const overlay = document.getElementById("groupModalOverlay");
+    const list = document.getElementById("group-student-list");
+    const addBtn = document.getElementById("add-student-btn");
+
+    if (!modal || !overlay || !list || !addBtn) return;
+
     document.getElementById("groupModalTitle").textContent = `Group: ${groupName}`;
 
     fetch(`/api/groups/${groupId}/students`)
         .then(res => res.json())
         .then(students => {
-            const list = document.getElementById("group-student-list");
             list.innerHTML = "";
 
             students.forEach(s => {
@@ -86,15 +99,22 @@ function openGroupModal(groupId, groupName) {
                 list.appendChild(div);
             });
 
-            document.getElementById("add-student-btn").onclick = () => showAddStudentSelect(groupId);
+            addBtn.onclick = () => showAddStudentSelect(groupId);
 
-            document.getElementById("groupModal").style.display = "block";
-            document.getElementById("groupModalOverlay").style.display = "block";
+            modal.style.display = "block";
+            overlay.style.display = "block";
         })
         .catch(err => {
             console.error(`❌ Failed to load students for group ${groupId}:`, err);
             alert("Error loading students");
         });
+}
+
+function closeGroupModal() {
+    const modal = document.getElementById("groupModal");
+    const overlay = document.getElementById("groupModalOverlay");
+    if (modal) modal.style.display = "none";
+    if (overlay) overlay.style.display = "none";
 }
 
 function removeStudent(groupId, studentId) {
@@ -103,12 +123,16 @@ function removeStudent(groupId, studentId) {
 }
 
 function showAddStudentSelect(groupId) {
-    document.getElementById("add-student-btn").onclick = null; // Удаляем старый обработчик
+    const addBtn = document.getElementById("add-student-btn");
+    const container = document.getElementById("add-student-container");
+
+    if (!addBtn || !container) return;
+
+    addBtn.onclick = null;
 
     fetch(`/api/groups/${groupId}/students/free`)
         .then(res => res.json())
         .then(students => {
-            const container = document.getElementById("add-student-container");
             container.innerHTML = "";
 
             if (students.length === 0) {
@@ -146,16 +170,12 @@ function addStudentToGroup(groupId, studentId) {
             return res.json();
         })
         .then(() => {
-            document.getElementById("add-student-container").innerHTML = "";
+            const container = document.getElementById("add-student-container");
+            if (container) container.innerHTML = "";
             openGroupModal(currentGroupId, currentGroupName);
         })
         .catch(err => {
             console.error("❌ Error adding student:", err);
             alert("Failed to add student.");
         });
-}
-
-function closeGroupModal() {
-    document.getElementById("groupModal").style.display = "none";
-    document.getElementById("groupModalOverlay").style.display = "none";
 }
