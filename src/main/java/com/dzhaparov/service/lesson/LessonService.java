@@ -2,6 +2,7 @@ package com.dzhaparov.service.lesson;
 
 import java.util.*;
 
+import com.dzhaparov.dto.homework.request.HomeworkBriefDto;
 import com.dzhaparov.dto.lesson.request.CreateLessonRequest;
 import com.dzhaparov.dto.lesson.request.UpdateLessonStatusRequest;
 import com.dzhaparov.dto.lesson.response.LessonDtoCreateResponse;
@@ -18,6 +19,7 @@ import com.dzhaparov.entity.lesson.attendance.LessonAttendanceStatus;
 import com.dzhaparov.entity.role.Role;
 import com.dzhaparov.entity.user.User;
 import com.dzhaparov.repository.group.GroupRepository;
+import com.dzhaparov.repository.homework.HomeworkRepository;
 import com.dzhaparov.repository.lesson.LessonParticipantRepository;
 import com.dzhaparov.repository.lesson.LessonRepository;
 import com.dzhaparov.repository.user.UserRepository;
@@ -40,13 +42,15 @@ public class LessonService {
     private final GroupRepository groupRepository;
     private final AuthHelper authHelper;
     private final LessonParticipantRepository lessonParticipantRepository;
+    private final HomeworkRepository homeworkRepository;
 
-    public LessonService(LessonRepository lessonRepository, UserRepository userRepository, GroupRepository groupRepository, AuthHelper authHelper, LessonParticipantRepository lessonParticipantRepository) {
+    public LessonService(LessonRepository lessonRepository, UserRepository userRepository, GroupRepository groupRepository, AuthHelper authHelper, LessonParticipantRepository lessonParticipantRepository, HomeworkRepository homeworkRepository) {
         this.lessonRepository = lessonRepository;
         this.userRepository = userRepository;
         this.groupRepository = groupRepository;
         this.authHelper = authHelper;
         this.lessonParticipantRepository = lessonParticipantRepository;
+        this.homeworkRepository = homeworkRepository;
 
     }
 
@@ -189,6 +193,20 @@ public class LessonService {
                         p.getAttendanceStatus()
                 )).toList();
 
+        User currentUser = authHelper.getCurrentUser();
+        List<HomeworkBriefDto> homeworks;
+        if (currentUser.getRole() == Role.TEACHER && lesson.getTeacher().getId().equals(currentUser.getId())) {
+            homeworks = homeworkRepository.findByLessonId(lessonId).stream()
+                    .map(HomeworkBriefDto::from)
+                    .toList();
+        } else if (currentUser.getRole() == Role.STUDENT) {
+            homeworks = homeworkRepository.findByLessonIdAndStudentId(lessonId, currentUser.getId()).stream()
+                    .map(HomeworkBriefDto::from)
+                    .toList();
+        } else {
+            homeworks = Collections.emptyList();
+        }
+
         return new LessonEditDtoResponse(
                 lesson.getId(),
                 lesson.getTeacher().getFirst_name() + " " + lesson.getTeacher().getLast_name(),
@@ -198,7 +216,8 @@ public class LessonService {
                 lesson.getStatus(),
                 lesson.getCancelingReason(),
                 lesson.getCancelledBy(),
-                studentAttendanceList
+                studentAttendanceList,
+                homeworks
         );
     }
     public List<Lesson> getLessonsBetween(ZonedDateTime start, ZonedDateTime end, Long teacherId) {

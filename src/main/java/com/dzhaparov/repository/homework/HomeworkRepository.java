@@ -15,4 +15,6 @@ public interface HomeworkRepository extends JpaRepository<Homework, Long> {
     List<Homework> findByLessonTeacherId(Long teacherId);
     @Query("SELECT h FROM Homework h WHERE h.lesson.teacher.id = :teacherId AND h.status = :status")
     List<Homework> findByLessonTeacherIdAndStatus(Long teacherId, HomeworkStatus status);
+    List<Homework> findByLessonId(Long lessonId);
+    List<Homework> findByLessonIdAndStudentId(Long lessonId, Long studentId);
 }

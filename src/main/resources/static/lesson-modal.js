@@ -9,8 +9,6 @@ function openLessonModal(lessonId) {
     const userRole = document.body.dataset.role;
     const isTeacher = userRole === "TEACHER";
 
-    console.log("ROLE:", userRole);
-
     fetch(`/lessons/api/lesson?id=${lessonId}`)
         .then(res => res.json())
         .then(data => {
@@ -24,18 +22,21 @@ function openLessonModal(lessonId) {
             statusElem.textContent = data.status;
             statusElem.className = "badge badge-" + data.status.toLowerCase();
 
-            // Управление статусом урока
             if (isTeacher) {
                 document.getElementById("statusSelect").value = data.status || "PLANNED";
                 document.getElementById("cancelledBySelect").value = data.cancelledBy || "TEACHER";
                 document.getElementById("cancelReasonSelect").value = data.cancelingReason || "VALID_REASON";
                 toggleCancelFields(data.status === "CANCELLED");
+
+                // Показать кнопку создания домашки
+                document.getElementById("createHomeworkBtn").style.display = "inline-block";
+                document.getElementById("createHomeworkBtn").onclick = () => showCreateHomeworkModal();
             } else {
                 document.getElementById("statusBlock").style.display = "none";
                 document.getElementById("cancelFields").style.display = "none";
+                document.getElementById("createHomeworkBtn").style.display = "none";
             }
 
-            // Посещаемость
             const attendanceFields = document.getElementById("attendanceFields");
             attendanceFields.innerHTML = "";
 
@@ -73,12 +74,24 @@ function openLessonModal(lessonId) {
                 });
             }
 
-            // Кнопки обновления и удаления
-            const btnBlock = document.getElementById("modal-buttons");
-            if (btnBlock) {
-                btnBlock.style.display = isTeacher ? "flex" : "none";
+            const homeworkBlock = document.getElementById("modal-homeworks");
+            homeworkBlock.innerHTML = "";
+
+            if (data.homeworks && data.homeworks.length > 0) {
+                data.homeworks.forEach(hw => {
+                    const div = document.createElement("div");
+                    div.className = "card-content";
+                    div.innerHTML = `
+                        <strong>Status:</strong> ${hw.status} <br>
+                        ${hw.grade != null ? `<strong>Grade:</strong> ${hw.grade}` : ""}
+                    `;
+                    homeworkBlock.appendChild(div);
+                });
+            } else {
+                homeworkBlock.innerHTML = "<p>No homeworks.</p>";
             }
 
+            document.getElementById("modal-buttons").style.display = isTeacher ? "flex" : "none";
             document.getElementById("lessonModal").style.display = "block";
             document.getElementById("modalOverlay").style.display = "block";
         });
@@ -133,4 +146,32 @@ function confirmDeleteLesson() {
             }
         });
     }
+}
+
+function showCreateHomeworkModal() {
+    const content = prompt("Enter homework content:");
+    if (!content) return;
+
+    const payload = {
+        lessonId: selectedLessonId,
+        content: content
+    };
+
+    fetch("/api/homeworks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    })
+        .then(res => {
+            if (!res.ok) throw new Error("Failed to create homework");
+            return res.json();
+        })
+        .then(() => {
+            alert("Homework created successfully!");
+            openLessonModal(selectedLessonId);
+        })
+        .catch(err => {
+            console.error("❌ Homework creation failed:", err);
+            alert("Error: " + err.message);
+        });
 }
