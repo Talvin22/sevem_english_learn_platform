@@ -9,6 +9,9 @@
 <div class="container">
     <h1>Your Profile</h1>
 
+    <!-- Back to Home button -->
+    <a href="/" class="btn" style="margin-bottom: 20px; display: inline-block;">← Back to Home</a>
+
     <div th:if="${userRole == 'TEACHER'}">
         <h2>Your Students</h2>
         <button class="btn" onclick="showAssignStudentModal()">+ Assign Student</button>
@@ -27,6 +30,7 @@
     </div>
 </div>
 
+<!-- GROUP MODAL -->
 <div id="groupModal" class="modal">
     <button onclick="closeGroupModal()" class="close-btn">✖</button>
     <h2 id="groupModalTitle">Group Details</h2>
@@ -38,6 +42,7 @@
     <button id="add-student-btn" class="btn">+ Add Student</button>
 </div>
 <div id="groupModalOverlay" class="modal-overlay" onclick="closeGroupModal()"></div>
+
 <!-- ASSIGN STUDENT MODAL -->
 <div id="assignStudentModal" class="modal">
     <button onclick="closeAssignStudentModal()" class="delete-btn">✖</button>
@@ -45,8 +50,8 @@
 
     <div id="assign-student-container" style="margin-top: 10px;"></div>
 </div>
-
 <div id="assignStudentModalOverlay" class="modal-overlay" onclick="closeAssignStudentModal()"></div>
+
 <!-- Scripts -->
 <script th:src="@{/groups-modal.js}"></script>
 <script th:src="@{/profile.js}"></script>
