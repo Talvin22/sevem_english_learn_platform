@@ -16,7 +16,7 @@ public class Homework {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lesson_id", nullable = false)
+    @JoinColumn(name = "lesson_id", nullable = true)
     private Lesson lesson;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -109,12 +109,12 @@ public class Homework {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Homework homework = (Homework) o;
-        return Objects.equals(id, homework.id) && Objects.equals(lesson, homework.lesson) && Objects.equals(student, homework.student) && status == homework.status && Objects.equals(grade, homework.grade) && Objects.equals(content, homework.content) && Objects.equals(submittedAt, homework.submittedAt) && Objects.equals(group, homework.group);
+        return Objects.equals(id, homework.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, lesson, student, status, grade, content, submittedAt, group);
+        return Objects.hashCode(id);
     }
 
     @Override
