@@ -174,3 +174,14 @@ function closeAssignStudentModal() {
     document.getElementById("assignStudentModal").style.display = "none";
     document.getElementById("assignStudentModalOverlay").style.display = "none";
 }
+function unassignStudent(studentId) {
+    if (!confirm("Unassign this student?")) return;
+
+    fetch(`/api/teacher/unassign-student?studentId=${studentId}`, {
+        method: "DELETE"
+    })
+        .then(() => loadTeacherStudents())
+        .catch(err => {
+            alert("Failed to unassign student: " + err.message);
+        });
+}
