@@ -150,10 +150,8 @@ function showAssignStudentModal() {
             btn.textContent = "Assign";
             btn.className = "btn";
             btn.onclick = () => {
-                fetch("/api/teacher/assign-student", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ studentId: select.value })
+                fetch(`/api/teacher/assign-student?studentId=${select.value}`, {
+                    method: "POST"
                 })
                     .then(() => {
                         closeAssignStudentModal();
@@ -168,11 +166,11 @@ function showAssignStudentModal() {
             container.appendChild(btn);
 
             document.getElementById("assignStudentModal").style.display = "block";
-            document.getElementById("assignStudentOverlay").style.display = "block";
+            document.getElementById("assignStudentModalOverlay").style.display = "block";
         });
 }
 
 function closeAssignStudentModal() {
     document.getElementById("assignStudentModal").style.display = "none";
-    document.getElementById("assignStudentOverlay").style.display = "none";
+    document.getElementById("assignStudentModalOverlay").style.display = "none";
 }
