@@ -50,4 +50,10 @@ public class TeacherController {
                 .toList();
     }
 
+    @DeleteMapping("/unassign-student")
+    public ResponseEntity<Void> unassignStudent(@RequestParam Long studentId) {
+        teacherService.unassignStudentFromTeacher(studentId);
+        return ResponseEntity.ok().build();
+    }
+
 }
