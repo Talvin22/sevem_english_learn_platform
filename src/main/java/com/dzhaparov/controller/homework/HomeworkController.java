@@ -7,6 +7,8 @@ import com.dzhaparov.util.AuthHelper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/homeworks")
 public class HomeworkController {
@@ -20,9 +22,9 @@ public class HomeworkController {
     }
 
     @PostMapping
-    public ResponseEntity<HomeworkDtoResponse> createHomework(@RequestBody CreateHomeworkRequest request) {
+    public ResponseEntity<List<HomeworkDtoResponse>> createHomework(@RequestBody CreateHomeworkRequest request) {
         Long teacherId = authHelper.getCurrentUser().getId();
-        HomeworkDtoResponse response = homeworkService.createHomework(request, teacherId);
+        List<HomeworkDtoResponse> response = homeworkService.createHomework(request, teacherId);
         return ResponseEntity.ok(response);
     }
 }
