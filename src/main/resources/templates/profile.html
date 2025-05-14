@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+    <link rel="stylesheet" th:href="@{/home.css}">
+</head>
+<body th:attr="data-role=${userRole}">
+<div class="container">
+    <h1>Your Profile</h1>
+
+    <div th:if="${userRole == 'TEACHER'}">
+        <h2>Your Students</h2>
+        <div id="teacher-students-container">
+        </div>
+
+        <h2>Your Groups</h2>
+        <div id="teacher-groups-container">
+            <p>Loading groups...</p>
+        </div>
+        <button class="btn" onclick="showCreateGroupPrompt()">+ Create Group</button>
+    </div>
+
+    <div th:if="${userRole == 'STUDENT'}">
+        <h2>Your Group</h2>
+        <div id="student-group-container">
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Group Details (same as before) -->
+<div id="groupModal" class="modal">
+    <button onclick="closeGroupModal()" class="close-btn">✖</button>
+    <h2 id="groupModalTitle">Group Details</h2>
+
+    <div id="group-student-list" style="margin-bottom: 15px;"></div>
+
+    <h3 style="margin-top: 15px">Add Student</h3>
+    <div id="add-student-container"></div>
+    <button id="add-student-btn" class="btn">+ Add Student</button>
+    <button id="delete-group-btn" class="btn danger" style="margin-top: 10px;">🗑 Delete Group</button>
+</div>
+<div id="groupModalOverlay" class="modal-overlay" onclick="closeGroupModal()"></div>
+
+<script th:src="@{/profile.js}"></script>
+</body>
+</html>
