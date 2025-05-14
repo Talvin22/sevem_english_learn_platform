@@ -1,3 +1,4 @@
+
 body {
     font-family: 'Poppins', sans-serif;
     background: linear-gradient(135deg, #74ebd5, #ACB6E5);
@@ -17,6 +18,8 @@ body {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 1000px;
+    margin: 0 auto;
+    font-family: sans-serif;
 }
 
 h1 {
@@ -60,19 +63,18 @@ p {
     margin-top: 10px;
 }
 
-/* Если нет данных */
 p:empty::after {
     content: "No data available.";
     color: #888;
     font-style: italic;
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
     .container {
         padding: 20px;
     }
 }
+
 .lesson-card {
     border: 1px solid #ccc;
     border-left: 5px solid #007bff;
@@ -95,59 +97,6 @@ p:empty::after {
 .lesson-info {
     color: #555;
 }
-.badge {
-    padding: 3px 8px;
-    border-radius: 12px;
-    font-size: 0.9em;
-    color: white;
-    font-weight: bold;
-    margin-right: 5px;
-}
-.completed { background-color: #28a745; }
-.planned   { background-color: #6c757d; }
-.cancelled { background-color: #dc3545; }
-.attended  { background-color: #17a2b8; }
-
-.modal {
-    display: none;
-    position: fixed;
-    top: 20%;
-    left: 50%;
-    transform: translate(-50%, -20%);
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.3);
-    z-index: 1000;
-}
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    z-index: 999;
-}
-.close-btn {
-    float: right;
-    border: none;
-    background: transparent;
-    font-size: 18px;
-    cursor: pointer;
-}
-/* Контейнер карточек */
-.card-content {
-    padding: 12px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    margin-top: 10px;
-    background-color: #fafafa;
-    transition: background-color 0.2s ease-in-out;
-}
-.card-content:hover {
-    background-color: #f1f1f1;
-}
-
 
 .badge {
     display: inline-block;
@@ -159,53 +108,22 @@ p:empty::after {
     margin-right: 8px;
 }
 
-/* --- Статусы урока --- */
-.status-PLANNED {
-    background-color: #3498db; /* синий */
-}
-.status-COMPLETED {
-    background-color: #2ecc71; /* зелёный */
-}
-.status-CANCELLED {
-    background-color: #e74c3c; /* красный */
-}
+.badge-planned { background-color: #007bff; }
+.badge-completed, .badge-done { background-color: #28a745; }
+.badge-cancelled { background-color: #dc3545; }
+.badge-default { background-color: gray; }
 
-/* --- Посещаемость --- */
-.attendance-PLANNED {
-    background-color: #95a5a6; /* серый */
-}
-.attendance-ATTENDED {
-    background-color: #27ae60; /* зелёный */
-}
-.attendance-CANCELLED {
-    background-color: #c0392b; /* тёмно-красный */
-}
+.status-PLANNED { background-color: #3498db; }
+.status-COMPLETED { background-color: #2ecc71; }
+.status-CANCELLED { background-color: #e74c3c; }
 
-/* Посещаемость */
-.attendance-badge.planned {
-    background-color: #ff9800;
-    color: white;
-}
-.attendance-badge.attended {
-    background-color: #009688;
-    color: white;
-}
-.attendance-badge.cancelled {
-    background-color: #9e9e9e;
-    color: white;
-}
-.lesson-card {
-    border-radius: 10px;
-    padding: 12px;
-    margin-bottom: 12px;
-    background-color: #f8f8f8;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: background-color 0.2s ease;
-}
+.attendance-PLANNED { background-color: #95a5a6; }
+.attendance-ATTENDED { background-color: #27ae60; }
+.attendance-CANCELLED { background-color: #c0392b; }
 
-.lesson-card:hover {
-    background-color: #eef1f5;
-}
+.attendance-badge.planned { background-color: #ff9800; }
+.attendance-badge.attended { background-color: #009688; }
+.attendance-badge.cancelled { background-color: #9e9e9e; }
 
 .status-pill {
     display: inline-block;
@@ -216,59 +134,9 @@ p:empty::after {
     font-weight: bold;
     margin-top: 5px;
 }
-
-.status-pill-planned {
-    background-color: #3b82f6;
-}
-
-.status-pill-completed {
-    background-color: #10b981;
-}
-
-.status-pill-cancelled {
-    background-color: #ef4444;
-}
-
-.modal {
-    position: fixed;
-    top: 20%;
-    left: 50%;
-    transform: translate(-50%, -20%);
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.25);
-    z-index: 1000;
-    width: 350px;
-}
-
-.close-btn {
-    float: right;
-    background: transparent;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-}
-
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.4);
-    z-index: 999;
-}
-.container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: sans-serif;
-}
-
-h1 {
-    text-align: center;
-}
+.status-pill-planned { background-color: #3b82f6; }
+.status-pill-completed { background-color: #10b981; }
+.status-pill-cancelled { background-color: #ef4444; }
 
 .card {
     background-color: #fff;
@@ -286,92 +154,83 @@ h1 {
     box-shadow: inset 0 0 3px rgba(0,0,0,0.05);
     transition: background-color 0.3s;
 }
-
 .card-content:hover {
     background-color: #f0f4ff;
 }
+.card-content.today {
+    background-color: #e0f2fe;
+    border: 2px solid #3b82f6;
+}
 
-.badge {
-    padding: 4px 8px;
-    font-size: 0.8em;
-    border-radius: 6px;
+.btn {
+    padding: 10px 20px;
+    background-color: #4a90e2;
+    color: white;
+    font-size: 16px;
     font-weight: bold;
-    margin-left: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
-
-/* Статусы уроков */
-.badge-planned {
-    background-color: #007bff;
+.btn:hover {
+    background-color: #357bd8;
+}
+.btn.create-lesson {
+    display: inline-block;
+    margin-bottom: 25px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+.btn.create-lesson:hover {
+    transform: scale(1.03);
+    text-decoration: none;
+}
+.btn.danger {
+    background-color: #ef4444;
+}
+.btn.danger:hover {
+    background-color: #dc2626;
+}
+.delete-btn {
+    background-color: #e74c3c;
     color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s ease;
+}
+.delete-btn:hover {
+    background-color: #c0392b;
 }
 
-.badge-completed {
-    background-color: #28a745;
-    color: white;
-}
-
-.badge-cancelled {
-    background-color: #dc3545;
-    color: white;
-}
-
-/* По умолчанию (если вдруг не пришёл статус) */
-.badge-default {
-    background-color: gray;
-    color: white;
-}
-
-/* Стили для модального окна */
 .modal {
+    display: none;
     position: fixed;
-    top: 50%;
+    top: 20%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -20%);
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    z-index: 1000;
     padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    z-index: 1000;
     width: 400px;
 }
-
 .modal-overlay {
+    display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: 0; left: 0; right: 0; bottom: 0;
     background-color: rgba(0,0,0,0.3);
     z-index: 999;
-    display: none;
 }
-
 .close-btn {
     background: none;
     border: none;
     font-size: 1.4em;
     float: right;
     cursor: pointer;
-}
-.badge {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    font-size: 0.75rem;
-    font-weight: bold;
-    border-radius: 0.5rem;
-    color: white;
-}
-
-.badge-planned {
-    background-color: #3b82f6; /* синий */
-}
-
-.badge-cancelled {
-    background-color: #dc2626; /* красный */
-}
-
-.badge-done {
-    background-color: #16a34a; /* зелёный */
 }
 
 .form-group {
@@ -388,63 +247,4 @@ select {
     border-radius: 8px;
     margin-top: 5px;
     box-sizing: border-box;
-}
-
-.btn {
-    background-color: #4a90e2;
-    color: white;
-    padding: 10px 20px;
-    font-size: 16px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-.btn:hover {
-    background-color: #357bd8;
-}
-.btn.create-lesson {
-    display: inline-block;
-    background-color: #4a90e2;
-    color: #fff;
-    padding: 10px 20px;
-    font-weight: 600;
-    font-size: 16px;
-    border-radius: 8px;
-    text-decoration: none;
-    transition: background-color 0.3s, transform 0.2s;
-    margin-bottom: 25px;
-}
-
-.btn.create-lesson:hover {
-    background-color: #357ABD;
-    transform: scale(1.03);
-    text-decoration: none;
-}
-.card-content.today {
-    background-color: #e0f2fe;
-    border: 2px solid #3b82f6;
-    border-radius: 8px;
-}
-.btn {
-    padding: 8px 16px;
-    border: none;
-    background-color: #3b82f6;
-    color: white;
-    font-weight: bold;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.btn:hover {
-    background-color: #2563eb;
-}
-
-.btn.danger {
-    background-color: #ef4444;
-}
-
-.btn.danger:hover {
-    background-color: #dc2626;
 }

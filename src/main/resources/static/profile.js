@@ -116,6 +116,7 @@ function loadTeacherStudents() {
                 div.innerHTML = `
                     <strong>${student.firstName} ${student.lastName}</strong><br>
                     <small>${student.email}</small>
+                    <button class="delete-btn" style="float: right;" onclick="unassignStudent(${student.id})">✖</button>
                 `;
                 container.appendChild(div);
             });
