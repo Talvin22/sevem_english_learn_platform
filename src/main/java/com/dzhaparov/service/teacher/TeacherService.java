@@ -40,4 +40,5 @@ public interface TeacherService {
     void assignStudentToTeacher(Long teacherId, Long studentId);
     void unassignStudentFromTeacher(Long studentId);
     HomeworkGroupSummaryListResponse getGroupedHomeworksToCheck(Long teacherId);
+    HomeworkDtoGradeResponse updateHomeworkAsTeacher(HomeworkDtoGradeRequest request, Long teacherId)
 }

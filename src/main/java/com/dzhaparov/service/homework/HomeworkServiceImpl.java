@@ -2,11 +2,9 @@ package com.dzhaparov.service.homework;
 
 
 import com.dzhaparov.dto.homework.request.CreateHomeworkRequest;
+import com.dzhaparov.dto.homework.request.HomeworkDtoGradeRequest;
 import com.dzhaparov.dto.homework.request.HomeworkGroupSummaryDto;
-import com.dzhaparov.dto.homework.response.HomeworkDtoDetailResponse;
-import com.dzhaparov.dto.homework.response.HomeworkDtoListResponse;
-import com.dzhaparov.dto.homework.response.HomeworkDtoResponse;
-import com.dzhaparov.dto.homework.response.HomeworkGroupSummaryListResponse;
+import com.dzhaparov.dto.homework.response.*;
 import com.dzhaparov.entity.group.Group;
 import com.dzhaparov.entity.homework.Homework;
 import com.dzhaparov.entity.homework.HomeworkStatus;
@@ -19,6 +17,7 @@ import com.dzhaparov.repository.homework.HomeworkRepository;
 import com.dzhaparov.repository.lesson.LessonParticipantRepository;
 import com.dzhaparov.repository.lesson.LessonRepository;
 import com.dzhaparov.repository.user.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -170,5 +169,24 @@ public class HomeworkServiceImpl implements HomeworkService {
                 .map(HomeworkDtoDetailResponse::from)
                 .toList();
         return HomeworkDtoListResponse.of(dtos);
+    }
+
+    @Override
+    public HomeworkDtoGradeResponse gradeHomework(HomeworkDtoGradeRequest request) {
+        var homework = homeworkRepository.findById(request.homeworkId()).orElseThrow();
+
+        homework.setGrade(request.grade());
+
+        homeworkRepository.save(homework);
+
+        return new HomeworkDtoGradeResponse(
+                HttpStatus.OK.value(),
+                HttpStatus.OK.getReasonPhrase(),
+                true,
+                "Homework updated successfully",
+                homework.getId(),
+                homework.getGrade(),
+                homework.getStatus().name()
+        );
     }
 }

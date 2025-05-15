@@ -12,6 +12,7 @@ import com.dzhaparov.dto.lesson.response.LessonDtoDetailResponse;
 import com.dzhaparov.dto.lesson.response.LessonDtoListResponse;
 import com.dzhaparov.dto.user.response.UserProfileDtoResponse;
 import com.dzhaparov.entity.group.Group;
+import com.dzhaparov.entity.homework.Homework;
 import com.dzhaparov.entity.lesson.Lesson;
 import com.dzhaparov.entity.lesson.LessonParticipant;
 import com.dzhaparov.repository.group.GroupRepository;
@@ -22,6 +23,7 @@ import com.dzhaparov.repository.user.UserRepository;
 import com.dzhaparov.service.homework.HomeworkService;
 import com.dzhaparov.util.AuthHelper;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -231,5 +233,16 @@ public class TeacherServiceImpl implements TeacherService {
     }
     public HomeworkGroupSummaryListResponse getGroupedHomeworksToCheck(Long teacherId) {
         return homeworkService.getGroupedHomeworksToCheck(teacherId);
+    }
+    @Override
+    public HomeworkDtoGradeResponse updateHomeworkAsTeacher(HomeworkDtoGradeRequest request, Long teacherId) {
+        Homework homework = homeworkRepository.findById(request.homeworkId())
+                .orElseThrow(() -> new RuntimeException("Homework not found"));
+
+        if (!homework.getLesson().getTeacher().getId().equals(teacherId)) {
+            throw new AccessDeniedException("You cannot modify this homework");
+        }
+
+        return homeworkService.gradeHomework(request);
     }
 }
