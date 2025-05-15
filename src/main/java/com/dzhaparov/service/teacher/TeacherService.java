@@ -4,6 +4,7 @@ import com.dzhaparov.dto.group.request.CreateGroupRequest;
 import com.dzhaparov.dto.group.request.GroupShortDto;
 import com.dzhaparov.dto.group.response.GroupDtoResponse;
 import com.dzhaparov.dto.homework.request.HomeworkDtoGradeRequest;
+import com.dzhaparov.dto.homework.response.GroupedHomeworkResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoGradeResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoListResponse;
 import com.dzhaparov.dto.lesson.response.LessonDtoListResponse;
@@ -37,4 +38,5 @@ public interface TeacherService {
     void deleteGroup(Long groupId);
     void assignStudentToTeacher(Long teacherId, Long studentId);
     void unassignStudentFromTeacher(Long studentId);
+    List<GroupedHomeworkResponse> getGroupedHomeworksToCheck(Long teacherId);
 }

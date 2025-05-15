@@ -41,6 +41,7 @@ public class HomeServiceImpl implements HomeService {
                     studentService.getMyHomeworks(user.getId()),
                     studentService.getMyGroup(user.getId()),
                     null,
+                    null,
                     null
             );
         } else if (user.getRole() == Role.TEACHER) {
@@ -49,7 +50,8 @@ public class HomeServiceImpl implements HomeService {
                     teacherService.getHomeworksToCheck(user.getId()),
                     null,
                     teacherService.getMyStudents(user.getId()),
-                    teacherService.getGroupsForTeacher(user.getId())
+                    teacherService.getGroupsForTeacher(user.getId()),
+                    teacherService.getGroupedHomeworksToCheck(user.getId())
             );
 
         } else if (user.getRole() == Role.ADMIN) {

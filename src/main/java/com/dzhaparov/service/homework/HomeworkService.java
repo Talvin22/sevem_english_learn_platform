@@ -2,6 +2,7 @@ package com.dzhaparov.service.homework;
 
 import com.dzhaparov.dto.homework.request.CreateHomeworkRequest;
 import com.dzhaparov.dto.homework.response.HomeworkDtoResponse;
+import com.dzhaparov.dto.homework.response.HomeworkGroupSummaryListResponse;
 import com.dzhaparov.entity.user.User;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface HomeworkService {
     List<HomeworkDtoResponse> getHomeworksToCheckForTeacher(Long teacherId);
 
     HomeworkDtoResponse getHomeworkById(Long id, User user);
+
+    HomeworkGroupSummaryListResponse getGroupedHomeworksToCheck(Long teacherId);
 }
