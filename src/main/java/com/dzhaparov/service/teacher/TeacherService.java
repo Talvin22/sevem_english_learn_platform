@@ -7,6 +7,7 @@ import com.dzhaparov.dto.homework.request.HomeworkDtoGradeRequest;
 import com.dzhaparov.dto.homework.response.GroupedHomeworkResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoGradeResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoListResponse;
+import com.dzhaparov.dto.homework.response.HomeworkGroupSummaryListResponse;
 import com.dzhaparov.dto.lesson.response.LessonDtoListResponse;
 import com.dzhaparov.dto.user.response.UserProfileDtoResponse;
 import org.springframework.stereotype.Service;
@@ -38,5 +39,5 @@ public interface TeacherService {
     void deleteGroup(Long groupId);
     void assignStudentToTeacher(Long teacherId, Long studentId);
     void unassignStudentFromTeacher(Long studentId);
-    List<GroupedHomeworkResponse> getGroupedHomeworksToCheck(Long teacherId);
+    HomeworkGroupSummaryListResponse getGroupedHomeworksToCheck(Long teacherId);
 }

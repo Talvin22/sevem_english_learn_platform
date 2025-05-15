@@ -2,7 +2,9 @@ package com.dzhaparov.service.homework;
 
 
 import com.dzhaparov.dto.homework.request.CreateHomeworkRequest;
+import com.dzhaparov.dto.homework.request.HomeworkGroupSummaryDto;
 import com.dzhaparov.dto.homework.response.HomeworkDtoResponse;
+import com.dzhaparov.dto.homework.response.HomeworkGroupSummaryListResponse;
 import com.dzhaparov.entity.group.Group;
 import com.dzhaparov.entity.homework.Homework;
 import com.dzhaparov.entity.homework.HomeworkStatus;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -128,5 +131,33 @@ public class HomeworkServiceImpl implements HomeworkService {
         }
 
         return HomeworkDtoResponse.from(hw);
+    }
+
+    @Override
+    public HomeworkGroupSummaryListResponse getGroupedHomeworksToCheck(Long teacherId) {
+        List<Homework> homeworks = homeworkRepository.findByLessonTeacherId(teacherId);
+
+        Map<String, List<Homework>> grouped = homeworks.stream()
+                .collect(Collectors.groupingBy(hw -> {
+                    Long lessonId = hw.getLesson().getId();
+                    String groupName = hw.getGroup() != null ? hw.getGroup().getName() : "–";
+                    return lessonId + "|" + groupName;
+                }));
+
+        List<HomeworkGroupSummaryDto> summaryList = grouped.entrySet().stream()
+                .map(entry -> {
+                    List<Homework> hwList = entry.getValue();
+                    Homework sample = hwList.get(0);
+                    return new HomeworkGroupSummaryDto(
+                            sample.getLesson().getId(),
+                            sample.getLesson().getDateUtc().toLocalDateTime(),
+                            sample.getGroup() != null ? sample.getGroup().getName() : null,
+                            hwList.size(),
+                            (int) hwList.stream().filter(hw -> hw.getStatus().equals(HomeworkStatus.CHECKED)).count()
+                    );
+                })
+                .collect(Collectors.toList());
+
+        return HomeworkGroupSummaryListResponse.of(summaryList);
     }
 }

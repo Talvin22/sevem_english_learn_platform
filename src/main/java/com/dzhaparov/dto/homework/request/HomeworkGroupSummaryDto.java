@@ -4,9 +4,8 @@ import java.time.LocalDateTime;
 
 public record HomeworkGroupSummaryDto(
         Long lessonId,
-        String groupName,
         LocalDateTime lessonDate,
-        int notSubmittedCount,
-        int submittedCount,
-        int checkedCount
+        String groupName,
+        int totalHomeworks,
+        int checkedHomeworks
 ) {}
