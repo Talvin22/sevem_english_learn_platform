@@ -49,13 +49,13 @@
 
                 <div>
                     <strong>Lesson Date:</strong>
-                    <span th:text="${homework.lessonDate}"></span>
+                    <span th:text="${#temporals.format(homework.lessonDate, 'dd.MM HH:mm')}"></span>
                 </div>
 
                 <div>
                     <strong>Status:</strong>
                     <span th:text="${homework.status}"
-                          th:class="'badge badge-' + ${homework.status.name().toLowerCase()}"></span>
+                          th:class="'badge badge-' + ${homework.status.name()}"></span>
                 </div>
             </div>
         </div>

@@ -23,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -104,11 +105,18 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public HomeworkDtoListResponse getHomeworksToCheck(Long teacherId) {
+    public HomeworkDtoListResponse getHomeworksToCheck(Long teacherId, ZoneId zoneId) {
         var homeworks = homeworkRepository.findByLessonTeacherId(teacherId);
         var dtoList = homeworks.stream()
-                .map(HomeworkDtoDetailResponse::from)
-                .toList();
+                .map(hw -> new HomeworkDtoDetailResponse(
+                        hw.getId(),
+                        hw.getLesson().getId(),
+                        hw.getLesson().getDateUtc().withZoneSameInstant(zoneId),
+                        hw.getStatus(),
+                        hw.getGrade(),
+                        hw.getLesson().getGroup() != null ? hw.getLesson().getGroup().getName() : null,
+                        hw.getContent()
+                )).collect(Collectors.toList());
 
         return HomeworkDtoListResponse.of(dtoList);
     }

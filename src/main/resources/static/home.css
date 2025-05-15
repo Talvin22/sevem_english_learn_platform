@@ -248,3 +248,17 @@ select {
     margin-top: 5px;
     box-sizing: border-box;
 }
+.badge-NOT_SUBMITTED {
+    background-color: gray;
+    color: white;
+}
+
+.badge-SUBMITTED {
+    background-color: orange;
+    color: white;
+}
+
+.badge-CHECKED {
+    background-color: green;
+    color: white;
+}

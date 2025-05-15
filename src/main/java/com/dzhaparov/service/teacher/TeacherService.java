@@ -10,6 +10,7 @@ import com.dzhaparov.dto.lesson.response.LessonDtoListResponse;
 import com.dzhaparov.dto.user.response.UserProfileDtoResponse;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -21,7 +22,7 @@ public interface TeacherService {
 
     LessonDtoListResponse getMyLessons(Long teacherId);
 
-    HomeworkDtoListResponse getHomeworksToCheck(Long teacherId);
+    HomeworkDtoListResponse getHomeworksToCheck(Long teacherId, ZoneId zoneId);
 
     HomeworkDtoGradeResponse gradeHomework(HomeworkDtoGradeRequest request);
 
