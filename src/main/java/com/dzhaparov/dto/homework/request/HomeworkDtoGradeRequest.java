@@ -1,6 +1,8 @@
 package com.dzhaparov.dto.homework.request;
 
+import com.dzhaparov.entity.homework.HomeworkStatus;
+
 public record HomeworkDtoGradeRequest(
-        Long homeworkId,
-        int grade
+        HomeworkStatus status,
+        Integer grade
 ) {}
