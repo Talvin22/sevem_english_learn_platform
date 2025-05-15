@@ -20,48 +20,48 @@
     <!-- LESSONS -->
     <div class="card">
         <h2>Lessons</h2>
-        <a th:if="${isTeacher}" th:href="@{/lessons/create}" class="btn create-lesson">
-            ➕ Create Lesson
-        </a>
-
+        <a th:if="${isTeacher}" th:href="@{/lessons/create}" class="btn create-lesson">➕ Create Lesson</a>
         <div style="margin-top: 10px;">
             <button id="prevWeekBtn" class="btn">← Previous</button>
             <button id="nextWeekBtn" class="btn">Next →</button>
         </div>
         <div id="weekRange" style="margin-top: 10px; font-weight: bold;"></div>
-
         <div id="weekly-lessons-container" style="margin-top: 20px;"></div>
     </div>
 
     <!-- HOMEWORKS -->
     <div class="card">
         <h2>Homeworks</h2>
-        <div th:if="${homePageData.homeworks != null and homePageData.homeworks.homeworks.size() > 0}">
+
+        <!-- STUDENT -->
+        <div th:if="${userRole == 'STUDENT' and homePageData.homeworks?.homeworks?.size() > 0}">
             <div th:each="homework : ${homePageData.homeworks.homeworks}"
                  class="card-content"
                  th:onclick="'showHomeworkDetails(' + ${homework.id} + ')'"
                  style="cursor: pointer; display: flex; flex-direction: column; gap: 4px;">
-
-                <div>
-                    <strong>Group:</strong>
-                    <span th:text="${homework.groupName != null ? homework.groupName : '–'}"></span>
-                </div>
-
-                <div>
-                    <strong>Lesson Date:</strong>
-                    <span th:text="${#temporals.format(homework.lessonDate, 'dd.MM HH:mm')}"></span>
-                </div>
-
+                <div><strong>Group:</strong> <span th:text="${homework.groupName ?: '–'}"></span></div>
+                <div><strong>Lesson Date:</strong> <span th:text="${#temporals.format(homework.lessonDate, 'dd.MM HH:mm')}"></span></div>
                 <div>
                     <strong>Status:</strong>
-                    <span th:text="${homework.status}"
-                          th:class="'badge badge-' + ${homework.status.name()}"></span>
+                    <span th:text="${homework.status}" th:class="'badge badge-' + ${homework.status.name()}"></span>
                 </div>
             </div>
         </div>
-        <p th:if="${homePageData.homeworks == null or homePageData.homeworks.homeworks.size() == 0}">
-            No homeworks found.
-        </p>
+
+        <!-- TEACHER -->
+        <div th:if="${userRole == 'TEACHER' and homePageData.groupedHomeworks?.homeworks?.size() > 0}">
+            <div th:each="grouped : ${homePageData.groupedHomeworks.homeworks}"
+                 class="card-content"
+                 th:onclick="'openHomeworkGroupModal(' + ${grouped.lessonId} + ')'"
+                 style="cursor: pointer; display: flex; flex-direction: column; gap: 4px;">
+                <div><strong>Group:</strong> <span th:text="${grouped.groupName ?: '–'}"></span></div>
+                <div><strong>Lesson Date:</strong> <span th:text="${#temporals.format(grouped.lessonDate, 'dd.MM HH:mm')}"></span></div>
+                <div><strong>Homeworks:</strong> <span th:text="${grouped.checkedHomeworks + ' / ' + grouped.totalHomeworks}"></span></div>
+                <span th:if="${grouped.checkedHomeworks < grouped.totalHomeworks}" class="badge badge-orange">Need Review</span>
+            </div>
+        </div>
+
+        <p th:if="${homePageData.homeworks == null or homePageData.homeworks.homeworks.size() == 0}">No homeworks found.</p>
     </div>
 </div>
 
@@ -124,6 +124,14 @@
     <p><strong>Content:</strong> <span id="homework-content"></span></p>
 </div>
 <div id="homeworkOverlay" class="modal-overlay" onclick="closeHomeworkModal()"></div>
+
+<!-- GROUP HOMEWORK MODAL -->
+<div id="homeworkGroupModal" class="modal">
+    <button onclick="closeHomeworkGroupModal()" class="close-btn">✖</button>
+    <h2>Lesson Homeworks</h2>
+    <div id="homeworkGroupList" style="margin-top: 10px;"></div>
+</div>
+<div id="homeworkGroupOverlay" class="modal-overlay" onclick="closeHomeworkGroupModal()"></div>
 
 <!-- Scripts -->
 <script th:src="@{/lesson-modal.js}"></script>

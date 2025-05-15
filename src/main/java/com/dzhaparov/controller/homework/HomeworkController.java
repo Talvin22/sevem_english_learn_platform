@@ -1,6 +1,7 @@
 package com.dzhaparov.controller.homework;
 
 import com.dzhaparov.dto.homework.request.CreateHomeworkRequest;
+import com.dzhaparov.dto.homework.response.HomeworkDtoListResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoResponse;
 import com.dzhaparov.service.homework.HomeworkService;
 import com.dzhaparov.util.AuthHelper;
@@ -32,5 +33,9 @@ public class HomeworkController {
     public ResponseEntity<HomeworkDtoResponse> getHomeworkById(@PathVariable Long id) {
         var user = authHelper.getCurrentUser();
         return ResponseEntity.ok(homeworkService.getHomeworkById(id, user));
+    }
+    @GetMapping("/by-lesson/{lessonId}")
+    public ResponseEntity<HomeworkDtoListResponse> getHomeworksByLesson(@PathVariable Long lessonId) {
+        return ResponseEntity.ok(homeworkService.getHomeworksByLessonId(lessonId));
     }
 }
