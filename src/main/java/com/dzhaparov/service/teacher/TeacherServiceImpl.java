@@ -4,10 +4,7 @@ import com.dzhaparov.dto.group.request.CreateGroupRequest;
 import com.dzhaparov.dto.group.request.GroupShortDto;
 import com.dzhaparov.dto.group.response.GroupDtoResponse;
 import com.dzhaparov.dto.homework.request.HomeworkDtoGradeRequest;
-import com.dzhaparov.dto.homework.response.HomeworkDtoDetailResponse;
-import com.dzhaparov.dto.homework.response.HomeworkDtoGradeResponse;
-import com.dzhaparov.dto.homework.response.HomeworkDtoListResponse;
-import com.dzhaparov.dto.homework.response.HomeworkGroupSummaryListResponse;
+import com.dzhaparov.dto.homework.response.*;
 import com.dzhaparov.dto.lesson.response.LessonDtoDetailResponse;
 import com.dzhaparov.dto.lesson.response.LessonDtoListResponse;
 import com.dzhaparov.dto.user.response.UserProfileDtoResponse;
@@ -243,6 +240,16 @@ public class TeacherServiceImpl implements TeacherService {
             throw new AccessDeniedException("You cannot modify this homework");
         }
 
-        return homeworkService.gradeHomework(request);
+        HomeworkDtoResponse updated = homeworkService.updateHomework(request);
+
+        return new HomeworkDtoGradeResponse(
+                HttpStatus.OK.value(),
+                HttpStatus.OK.getReasonPhrase(),
+                true,
+                "Homework updated successfully",
+                updated.id(),
+                updated.grade(),
+                updated.status().name()
+        );
     }
 }

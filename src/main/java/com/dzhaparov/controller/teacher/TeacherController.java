@@ -1,5 +1,7 @@
 package com.dzhaparov.controller.teacher;
 
+import com.dzhaparov.dto.homework.request.HomeworkDtoGradeRequest;
+import com.dzhaparov.dto.homework.response.HomeworkDtoGradeResponse;
 import com.dzhaparov.dto.user.response.UserProfileDtoResponse;
 import com.dzhaparov.repository.user.UserRepository;
 import com.dzhaparov.service.teacher.TeacherService;
@@ -54,6 +56,11 @@ public class TeacherController {
     public ResponseEntity<Void> unassignStudent(@RequestParam Long studentId) {
         teacherService.unassignStudentFromTeacher(studentId);
         return ResponseEntity.ok().build();
+    }
+    @PostMapping("/api/homeworks/grade")
+    public ResponseEntity<HomeworkDtoGradeResponse> gradeHomework(@RequestBody HomeworkDtoGradeRequest request) {
+        Long teacherId = authHelper.getCurrentUser().getId();
+        return ResponseEntity.ok(teacherService.updateHomeworkAsTeacher(request, teacherId));
     }
 
 }

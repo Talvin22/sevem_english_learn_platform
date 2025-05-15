@@ -22,7 +22,6 @@ public interface HomeworkService {
     HomeworkGroupSummaryListResponse getGroupedHomeworksToCheck(Long teacherId);
 
     HomeworkDtoListResponse getHomeworksByLessonId(Long lessonId);
-
-    HomeworkDtoGradeResponse gradeHomework(HomeworkDtoGradeRequest request);
+    HomeworkDtoResponse updateHomework(HomeworkDtoGradeRequest request);
 
 }

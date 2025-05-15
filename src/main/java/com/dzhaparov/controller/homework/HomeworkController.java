@@ -2,9 +2,11 @@ package com.dzhaparov.controller.homework;
 
 import com.dzhaparov.dto.homework.request.CreateHomeworkRequest;
 import com.dzhaparov.dto.homework.request.HomeworkDtoGradeRequest;
+import com.dzhaparov.dto.homework.response.HomeworkDtoGradeResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoListResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoResponse;
 import com.dzhaparov.service.homework.HomeworkService;
+import com.dzhaparov.service.teacher.TeacherService;
 import com.dzhaparov.util.AuthHelper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,10 +19,12 @@ public class HomeworkController {
 
     private final HomeworkService homeworkService;
     private final AuthHelper authHelper;
+    private final TeacherService teacherService;
 
-    public HomeworkController(HomeworkService homeworkService, AuthHelper authHelper) {
+    public HomeworkController(HomeworkService homeworkService, AuthHelper authHelper, TeacherService teacherService) {
         this.homeworkService = homeworkService;
         this.authHelper = authHelper;
+        this.teacherService = teacherService;
     }
 
     @PostMapping
@@ -39,12 +43,9 @@ public class HomeworkController {
     public ResponseEntity<HomeworkDtoListResponse> getHomeworksByLesson(@PathVariable Long lessonId) {
         return ResponseEntity.ok(homeworkService.getHomeworksByLessonId(lessonId));
     }
-    @PostMapping("/{id}/grade")
-    public ResponseEntity<HomeworkDtoResponse> gradeHomework(
-            @PathVariable Long id,
-            @RequestBody HomeworkDtoGradeRequest request
-    ) {
-        HomeworkDtoResponse updated = homeworkService.gradeHomework(id, request);
-        return ResponseEntity.ok(updated);
+    @PostMapping("/grade")
+    public ResponseEntity<HomeworkDtoGradeResponse> updateHomework(@RequestBody HomeworkDtoGradeRequest request) {
+        HomeworkDtoGradeResponse response = teacherService.updateHomeworkAsTeacher(request, authHelper.getCurrentUser().getId());
+        return ResponseEntity.ok(response);
     }
 }

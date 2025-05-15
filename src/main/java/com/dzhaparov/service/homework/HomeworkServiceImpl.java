@@ -18,6 +18,7 @@ import com.dzhaparov.repository.lesson.LessonParticipantRepository;
 import com.dzhaparov.repository.lesson.LessonRepository;
 import com.dzhaparov.repository.user.UserRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -172,21 +173,20 @@ public class HomeworkServiceImpl implements HomeworkService {
     }
 
     @Override
-    public HomeworkDtoGradeResponse gradeHomework(HomeworkDtoGradeRequest request) {
-        var homework = homeworkRepository.findById(request.homeworkId()).orElseThrow();
+    public HomeworkDtoResponse updateHomework(HomeworkDtoGradeRequest request) {
+        Homework homework = homeworkRepository.findById(request.homeworkId())
+                .orElseThrow(() -> new RuntimeException("Homework not found"));
 
-        homework.setGrade(request.grade());
+        if (request.grade() != null) {
+            homework.setGrade(request.grade());
+        }
+
+        if (request.content() != null) {
+            homework.setContent(request.content());
+        }
 
         homeworkRepository.save(homework);
 
-        return new HomeworkDtoGradeResponse(
-                HttpStatus.OK.value(),
-                HttpStatus.OK.getReasonPhrase(),
-                true,
-                "Homework updated successfully",
-                homework.getId(),
-                homework.getGrade(),
-                homework.getStatus().name()
-        );
+        return HomeworkDtoResponse.from(homework);
     }
 }
