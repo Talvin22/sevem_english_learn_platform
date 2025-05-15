@@ -107,13 +107,8 @@ public class TeacherServiceImpl implements TeacherService {
     public HomeworkDtoListResponse getHomeworksToCheck(Long teacherId) {
         var homeworks = homeworkRepository.findByLessonTeacherId(teacherId);
         var dtoList = homeworks.stream()
-                .map(hw -> new HomeworkDtoDetailResponse(
-                        hw.getId(),
-                        hw.getLesson().getId(),
-                        hw.getLesson().getDateUtc().toLocalDateTime(),
-                        hw.getStatus(),
-                        hw.getGrade()
-                )).collect(Collectors.toList());
+                .map(HomeworkDtoDetailResponse::from)
+                .toList();
 
         return HomeworkDtoListResponse.of(dtoList);
     }
