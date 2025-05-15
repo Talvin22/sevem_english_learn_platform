@@ -3,6 +3,8 @@ package com.dzhaparov.service.homework;
 
 import com.dzhaparov.dto.homework.request.CreateHomeworkRequest;
 import com.dzhaparov.dto.homework.request.HomeworkGroupSummaryDto;
+import com.dzhaparov.dto.homework.response.HomeworkDtoDetailResponse;
+import com.dzhaparov.dto.homework.response.HomeworkDtoListResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoResponse;
 import com.dzhaparov.dto.homework.response.HomeworkGroupSummaryListResponse;
 import com.dzhaparov.entity.group.Group;
@@ -159,5 +161,14 @@ public class HomeworkServiceImpl implements HomeworkService {
                 .collect(Collectors.toList());
 
         return HomeworkGroupSummaryListResponse.of(summaryList);
+    }
+
+    @Override
+    public HomeworkDtoListResponse getHomeworksByLessonId(Long lessonId) {
+        List<Homework> homeworks = homeworkRepository.findByLessonId(lessonId);
+        List<HomeworkDtoDetailResponse> dtos = homeworks.stream()
+                .map(HomeworkDtoDetailResponse::from)
+                .toList();
+        return HomeworkDtoListResponse.of(dtos);
     }
 }
