@@ -8,13 +8,15 @@ import com.dzhaparov.dto.homework.response.HomeworkDtoListResponse;
 import com.dzhaparov.dto.user.response.UserProfileDtoResponse;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
+
 
 @Service
 public interface StudentService {
 
     LessonDtoListResponse getMyLessons(Long studentId);
 
-    HomeworkDtoListResponse getMyHomeworks(Long studentId);
+    HomeworkDtoListResponse getMyHomeworks(Long studentId, ZoneId zoneId);
 
     HomeworkDtoSubmitResponse submitHomework(Long studentId, HomeworkDtoSubmitRequest request);
 

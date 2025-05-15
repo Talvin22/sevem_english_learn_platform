@@ -19,6 +19,7 @@ import com.dzhaparov.repository.user.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,14 +66,22 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public HomeworkDtoListResponse getMyHomeworks(Long studentId) {
+    public HomeworkDtoListResponse getMyHomeworks(Long studentId, ZoneId zoneId) {
         var homeworks = homeworkRepository.findByStudentId(studentId);
         var dtoList = homeworks.stream()
-                .map(HomeworkDtoDetailResponse::from)
-                .toList();
+                .map(hw -> new HomeworkDtoDetailResponse(
+                        hw.getId(),
+                        hw.getLesson().getId(),
+                        hw.getLesson().getDateUtc().withZoneSameInstant(zoneId),
+                        hw.getStatus(),
+                        hw.getGrade(),
+                        hw.getLesson().getGroup() != null ? hw.getLesson().getGroup().getName() : null,
+                        hw.getContent()
+                )).collect(Collectors.toList());
 
         return HomeworkDtoListResponse.of(dtoList);
     }
+
 
     @Override
     public HomeworkDtoSubmitResponse submitHomework(Long studentId, HomeworkDtoSubmitRequest request) {
