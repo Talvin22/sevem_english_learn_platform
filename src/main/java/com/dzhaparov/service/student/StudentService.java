@@ -16,7 +16,7 @@ public interface StudentService {
 
     LessonDtoListResponse getMyLessons(Long studentId);
 
-    HomeworkDtoListResponse getMyHomeworks(Long studentId, ZoneId zoneId);
+    HomeworkDtoListResponse getMyHomeworks(Long studentId);
 
     HomeworkDtoSubmitResponse submitHomework(Long studentId, HomeworkDtoSubmitRequest request);
 

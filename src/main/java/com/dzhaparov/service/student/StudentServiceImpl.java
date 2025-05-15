@@ -66,19 +66,11 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public HomeworkDtoListResponse getMyHomeworks(Long studentId, ZoneId zoneId) {
+    public HomeworkDtoListResponse getMyHomeworks(Long studentId) {
         var homeworks = homeworkRepository.findByStudentId(studentId);
         var dtoList = homeworks.stream()
-                .map(hw -> new HomeworkDtoDetailResponse(
-                        hw.getId(),
-                        hw.getLesson().getId(),
-                        hw.getLesson().getDateUtc().withZoneSameInstant(zoneId),
-                        hw.getStatus(),
-                        hw.getGrade(),
-                        hw.getLesson().getGroup() != null ? hw.getLesson().getGroup().getName() : null,
-                        hw.getContent()
-                )).collect(Collectors.toList());
-
+                .map(HomeworkDtoDetailResponse::from)
+                .toList();
         return HomeworkDtoListResponse.of(dtoList);
     }
 
