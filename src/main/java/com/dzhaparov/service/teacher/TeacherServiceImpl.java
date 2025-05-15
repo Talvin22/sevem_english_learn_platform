@@ -7,6 +7,7 @@ import com.dzhaparov.dto.homework.request.HomeworkDtoGradeRequest;
 import com.dzhaparov.dto.homework.response.HomeworkDtoDetailResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoGradeResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoListResponse;
+import com.dzhaparov.dto.homework.response.HomeworkGroupSummaryListResponse;
 import com.dzhaparov.dto.lesson.response.LessonDtoDetailResponse;
 import com.dzhaparov.dto.lesson.response.LessonDtoListResponse;
 import com.dzhaparov.dto.user.response.UserProfileDtoResponse;
@@ -18,6 +19,7 @@ import com.dzhaparov.repository.homework.HomeworkRepository;
 import com.dzhaparov.repository.lesson.LessonParticipantRepository;
 import com.dzhaparov.repository.lesson.LessonRepository;
 import com.dzhaparov.repository.user.UserRepository;
+import com.dzhaparov.service.homework.HomeworkService;
 import com.dzhaparov.util.AuthHelper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -38,13 +40,15 @@ public class TeacherServiceImpl implements TeacherService {
     private final GroupRepository groupRepository;
     private final LessonParticipantRepository lessonParticipantRepository;
     private final AuthHelper authHelper;
+    private final HomeworkService homeworkService;
 
     public TeacherServiceImpl(UserRepository userRepository,
                               LessonRepository lessonRepository,
                               HomeworkRepository homeworkRepository,
                               GroupRepository groupRepository,
                               LessonParticipantRepository lessonParticipantRepository,
-                              AuthHelper authHelper
+                              AuthHelper authHelper,
+                              HomeworkService homeworkService
     ) {
         this.userRepository = userRepository;
         this.lessonRepository = lessonRepository;
@@ -52,6 +56,7 @@ public class TeacherServiceImpl implements TeacherService {
         this.groupRepository = groupRepository;
         this.lessonParticipantRepository = lessonParticipantRepository;
         this.authHelper = authHelper;
+        this.homeworkService = homeworkService;
     }
 
     @Override
@@ -223,5 +228,8 @@ public class TeacherServiceImpl implements TeacherService {
         var student = userRepository.findById(studentId).orElseThrow();
         student.setTeacher(null);
         userRepository.save(student);
+    }
+    public HomeworkGroupSummaryListResponse getGroupedHomeworksToCheck(Long teacherId) {
+        return homeworkService.getGroupedHomeworksToCheck(teacherId);
     }
 }
