@@ -12,12 +12,15 @@ function showHomeworkDetails(id) {
             document.getElementById("homework-grade").textContent = data.grade ?? "–";
             document.getElementById("homework-content").textContent = data.content || "–";
 
+            // Show submit button only if homework is NOT_SUBMITTED
             const submitBtn = document.getElementById("submitHomeworkBtn");
-            if (data.status === "NOT_SUBMITTED") {
-                submitBtn.style.display = "inline-block";
-                submitBtn.onclick = () => submitHomework(id);
-            } else {
-                submitBtn.style.display = "none";
+            if (submitBtn) {
+                if (data.status === "NOT_SUBMITTED") {
+                    submitBtn.style.display = "inline-block";
+                    submitBtn.onclick = () => submitHomework(id);
+                } else {
+                    submitBtn.style.display = "none";
+                }
             }
 
             document.getElementById("homeworkModal").style.display = "block";
@@ -150,6 +153,9 @@ function saveHomeworkChanges(homeworkId) {
 // ============ UTILS ============
 
 function formatDate(dateStr) {
+    if (!dateStr) return "-";
     const date = new Date(dateStr);
-    return `${String(date.getDate()).padStart(2, "0")}.${String(date.getMonth() + 1).padStart(2, "0")} ${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+    if (isNaN(date.getTime())) return "-";
+    const pad = n => n.toString().padStart(2, "0");
+    return `${pad(date.getDate())}.${pad(date.getMonth() + 1)} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }

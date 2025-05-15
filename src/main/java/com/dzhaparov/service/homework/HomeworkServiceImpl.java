@@ -120,7 +120,7 @@ public class HomeworkServiceImpl implements HomeworkService {
                 .map(HomeworkDtoResponse::from)
                 .collect(Collectors.toList());
     }
-    public HomeworkDtoResponse getHomeworkById(Long id, User user) {
+    public HomeworkDtoDetailResponse getHomeworkById(Long id, User user) {
         Homework hw = homeworkRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Homework not found"));
 
@@ -132,7 +132,7 @@ public class HomeworkServiceImpl implements HomeworkService {
             throw new SecurityException("Access denied: You are not the teacher");
         }
 
-        return HomeworkDtoResponse.from(hw);
+        return HomeworkDtoDetailResponse.from(hw);
     }
 
     @Override

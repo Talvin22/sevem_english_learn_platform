@@ -122,6 +122,8 @@
     <p><strong>Status:</strong> <span id="homework-status" class="badge"></span></p>
     <p><strong>Grade:</strong> <span id="homework-grade"></span></p>
     <p><strong>Content:</strong> <span id="homework-content"></span></p>
+
+    <button id="submitHomeworkBtn" class="btn" style="display: none; margin-top: 10px;">📩 Submit</button>
 </div>
 <div id="homeworkOverlay" class="modal-overlay" onclick="closeHomeworkModal()"></div>
 
@@ -129,12 +131,10 @@
 <div id="homeworkGroupModal" class="modal">
     <button onclick="closeHomeworkGroupModal()" class="close-btn">✖</button>
     <h2>Lesson Homeworks</h2>
-
     <div id="homeworkGroupScrollContainer" style="max-height: 70vh; overflow-y: auto; margin-top: 10px;">
         <div id="homeworkGroupList"></div>
     </div>
 </div>
-
 <div id="homeworkGroupOverlay" class="modal-overlay" onclick="closeHomeworkGroupModal()"></div>
 
 <!-- Scripts -->

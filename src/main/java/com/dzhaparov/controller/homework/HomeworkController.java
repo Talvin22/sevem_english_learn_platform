@@ -2,6 +2,7 @@ package com.dzhaparov.controller.homework;
 
 import com.dzhaparov.dto.homework.request.CreateHomeworkRequest;
 import com.dzhaparov.dto.homework.request.HomeworkDtoGradeRequest;
+import com.dzhaparov.dto.homework.response.HomeworkDtoDetailResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoGradeResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoListResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoResponse;
@@ -36,7 +37,7 @@ public class HomeworkController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<HomeworkDtoResponse> getHomeworkById(@PathVariable Long id) {
+    public ResponseEntity<HomeworkDtoDetailResponse> getHomeworkById(@PathVariable Long id) {
         var user = authHelper.getCurrentUser();
         return ResponseEntity.ok(homeworkService.getHomeworkById(id, user));
     }
