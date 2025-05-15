@@ -129,8 +129,12 @@
 <div id="homeworkGroupModal" class="modal">
     <button onclick="closeHomeworkGroupModal()" class="close-btn">✖</button>
     <h2>Lesson Homeworks</h2>
-    <div id="homeworkGroupList" style="margin-top: 10px;"></div>
+
+    <div id="homeworkGroupScrollContainer" style="max-height: 70vh; overflow-y: auto; margin-top: 10px;">
+        <div id="homeworkGroupList"></div>
+    </div>
 </div>
+
 <div id="homeworkGroupOverlay" class="modal-overlay" onclick="closeHomeworkGroupModal()"></div>
 
 <!-- Scripts -->

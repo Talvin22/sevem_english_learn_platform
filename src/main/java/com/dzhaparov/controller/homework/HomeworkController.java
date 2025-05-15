@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/homeworks")
@@ -47,5 +48,11 @@ public class HomeworkController {
     public ResponseEntity<HomeworkDtoGradeResponse> updateHomework(@RequestBody HomeworkDtoGradeRequest request) {
         HomeworkDtoGradeResponse response = teacherService.updateHomeworkAsTeacher(request, authHelper.getCurrentUser().getId());
         return ResponseEntity.ok(response);
+    }
+    @PostMapping("/submit")
+    public ResponseEntity<?> submitHomework(@RequestBody Map<String, Long> payload) {
+        Long homeworkId = payload.get("homeworkId");
+        homeworkService.submitHomework(homeworkId, authHelper.getCurrentUser().getId());
+        return ResponseEntity.ok().build();
     }
 }

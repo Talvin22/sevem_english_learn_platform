@@ -189,4 +189,15 @@ public class HomeworkServiceImpl implements HomeworkService {
 
         return HomeworkDtoResponse.from(homework);
     }
+    public void submitHomework(Long homeworkId, Long studentId) {
+        Homework homework = homeworkRepository.findById(homeworkId)
+                .orElseThrow(() -> new RuntimeException("Homework not found"));
+
+        if (!homework.getStudent().getId().equals(studentId)) {
+            throw new AccessDeniedException("You cannot submit this homework");
+        }
+
+        homework.setStatus(HomeworkStatus.SUBMITTED);
+        homeworkRepository.save(homework);
+    }
 }

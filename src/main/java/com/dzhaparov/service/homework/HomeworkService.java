@@ -23,5 +23,6 @@ public interface HomeworkService {
 
     HomeworkDtoListResponse getHomeworksByLessonId(Long lessonId);
     HomeworkDtoResponse updateHomework(HomeworkDtoGradeRequest request);
+    void submitHomework(Long homeworkId, Long studentId);
 
 }
