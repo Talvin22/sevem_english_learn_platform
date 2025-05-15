@@ -1,6 +1,7 @@
 package com.dzhaparov.service.homework;
 
 import com.dzhaparov.dto.homework.request.CreateHomeworkRequest;
+import com.dzhaparov.dto.homework.request.HomeworkDtoGradeRequest;
 import com.dzhaparov.dto.homework.response.HomeworkDtoListResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoResponse;
 import com.dzhaparov.dto.homework.response.HomeworkGroupSummaryListResponse;
@@ -19,4 +20,5 @@ public interface HomeworkService {
 
     HomeworkGroupSummaryListResponse getGroupedHomeworksToCheck(Long teacherId);
     HomeworkDtoListResponse getHomeworksByLessonId(Long lessonId);
+    HomeworkDtoResponse gradeHomework(Long homeworkId, HomeworkDtoGradeRequest request);
 }
