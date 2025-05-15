@@ -1,6 +1,7 @@
 package com.dzhaparov.controller.homework;
 
 import com.dzhaparov.dto.homework.request.CreateHomeworkRequest;
+import com.dzhaparov.dto.homework.request.HomeworkDtoGradeRequest;
 import com.dzhaparov.dto.homework.response.HomeworkDtoListResponse;
 import com.dzhaparov.dto.homework.response.HomeworkDtoResponse;
 import com.dzhaparov.service.homework.HomeworkService;
@@ -37,5 +38,13 @@ public class HomeworkController {
     @GetMapping("/by-lesson/{lessonId}")
     public ResponseEntity<HomeworkDtoListResponse> getHomeworksByLesson(@PathVariable Long lessonId) {
         return ResponseEntity.ok(homeworkService.getHomeworksByLessonId(lessonId));
+    }
+    @PostMapping("/{id}/grade")
+    public ResponseEntity<HomeworkDtoResponse> gradeHomework(
+            @PathVariable Long id,
+            @RequestBody HomeworkDtoGradeRequest request
+    ) {
+        HomeworkDtoResponse updated = homeworkService.gradeHomework(id, request);
+        return ResponseEntity.ok(updated);
     }
 }
