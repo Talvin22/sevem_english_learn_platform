@@ -8,6 +8,7 @@ import com.dzhaparov.entity.homework.Homework;
 import com.dzhaparov.entity.homework.HomeworkStatus;
 import com.dzhaparov.entity.lesson.Lesson;
 import com.dzhaparov.entity.lesson.LessonParticipant;
+import com.dzhaparov.entity.role.Role;
 import com.dzhaparov.entity.user.User;
 import com.dzhaparov.repository.group.GroupRepository;
 import com.dzhaparov.repository.homework.HomeworkRepository;
@@ -113,5 +114,19 @@ public class HomeworkServiceImpl implements HomeworkService {
                 .filter(hw -> hw.getStatus() != HomeworkStatus.NOT_SUBMITTED)
                 .map(HomeworkDtoResponse::from)
                 .collect(Collectors.toList());
+    }
+    public HomeworkDtoResponse getHomeworkById(Long id, User user) {
+        Homework hw = homeworkRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Homework not found"));
+
+        if (user.getRole() == Role.STUDENT && !hw.getStudent().getId().equals(user.getId())) {
+            throw new SecurityException("Access denied: Not your homework");
+        }
+
+        if (user.getRole() == Role.TEACHER && !hw.getLesson().getTeacher().getId().equals(user.getId())) {
+            throw new SecurityException("Access denied: You are not the teacher");
+        }
+
+        return HomeworkDtoResponse.from(hw);
     }
 }
