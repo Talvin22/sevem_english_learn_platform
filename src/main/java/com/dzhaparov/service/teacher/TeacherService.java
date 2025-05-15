@@ -22,7 +22,7 @@ public interface TeacherService {
 
     LessonDtoListResponse getMyLessons(Long teacherId);
 
-    HomeworkDtoListResponse getHomeworksToCheck(Long teacherId, ZoneId zoneId);
+    HomeworkDtoListResponse getHomeworksToCheck(Long teacherId);
 
     HomeworkDtoGradeResponse gradeHomework(HomeworkDtoGradeRequest request);
 

@@ -105,19 +105,11 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public HomeworkDtoListResponse getHomeworksToCheck(Long teacherId, ZoneId zoneId) {
+    public HomeworkDtoListResponse getHomeworksToCheck(Long teacherId) {
         var homeworks = homeworkRepository.findByLessonTeacherId(teacherId);
         var dtoList = homeworks.stream()
-                .map(hw -> new HomeworkDtoDetailResponse(
-                        hw.getId(),
-                        hw.getLesson().getId(),
-                        hw.getLesson().getDateUtc().withZoneSameInstant(zoneId),
-                        hw.getStatus(),
-                        hw.getGrade(),
-                        hw.getLesson().getGroup() != null ? hw.getLesson().getGroup().getName() : null,
-                        hw.getContent()
-                )).collect(Collectors.toList());
-
+                .map(HomeworkDtoDetailResponse::from)
+                .toList();
         return HomeworkDtoListResponse.of(dtoList);
     }
 
