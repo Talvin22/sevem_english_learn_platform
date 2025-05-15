@@ -13,7 +13,8 @@ public record HomeworkDtoDetailResponse(
         String groupName,
         HomeworkStatus status,
         Integer grade,
-        String content
+        String content,
+        String studentName
 ) {
     public static HomeworkDtoDetailResponse from(Homework hw) {
         return new HomeworkDtoDetailResponse(
@@ -23,7 +24,8 @@ public record HomeworkDtoDetailResponse(
                 hw.getLesson().getGroup() != null ? hw.getLesson().getGroup().getName() : null,
                 hw.getStatus(),
                 hw.getGrade(),
-                hw.getContent()
+                hw.getContent(),
+                hw.getStudent() != null ? hw.getStudent().getFirst_name() + " " + hw.getStudent().getLast_name() : "-"
         );
     }
 }
