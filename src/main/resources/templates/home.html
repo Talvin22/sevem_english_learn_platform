@@ -96,8 +96,19 @@
 
 <div id="modalOverlay" class="modal-overlay" onclick="closeModal()"></div>
 
+<div id="homeworkModal" class="modal">
+    <button onclick="closeHomeworkModal()" class="close-btn">✖</button>
+    <h2>Homework Details</h2>
+    <p><strong>Lesson Date:</strong> <span id="homework-lesson-date"></span></p>
+    <p><strong>Group:</strong> <span id="homework-group"></span></p>
+    <p><strong>Status:</strong> <span id="homework-status" class="badge"></span></p>
+    <p><strong>Grade:</strong> <span id="homework-grade"></span></p>
+    <p><strong>Content:</strong> <span id="homework-content"></span></p>
+</div>
+<div id="homeworkOverlay" class="modal-overlay" onclick="closeHomeworkModal()"></div>
 <!-- Scripts -->
 <script th:src="@{/lesson-modal.js}"></script>
 <script th:src="@{/weekly-lessons.js}"></script>
+<script th:src="@{/homework-modal.js}"></script>
 </body>
 </html>
