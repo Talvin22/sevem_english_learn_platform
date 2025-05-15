@@ -68,13 +68,8 @@ public class StudentServiceImpl implements StudentService {
     public HomeworkDtoListResponse getMyHomeworks(Long studentId) {
         var homeworks = homeworkRepository.findByStudentId(studentId);
         var dtoList = homeworks.stream()
-                .map(hw -> new HomeworkDtoDetailResponse(
-                        hw.getId(),
-                        hw.getLesson().getId(),
-                        hw.getLesson().getDateUtc().toLocalDateTime(),
-                        hw.getStatus(),
-                        hw.getGrade()
-                )).collect(Collectors.toList());
+                .map(HomeworkDtoDetailResponse::from)
+                .toList();
 
         return HomeworkDtoListResponse.of(dtoList);
     }

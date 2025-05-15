@@ -37,13 +37,31 @@
     <div class="card">
         <h2>Homeworks</h2>
         <div th:if="${homePageData.homeworks != null and homePageData.homeworks.homeworks.size() > 0}">
-            <div th:each="homework : ${homePageData.homeworks.homeworks}" class="card-content">
-                <span th:text="'Lesson ID: ' + ${homework.lessonId}"></span> /
-                <span th:text="${homework.status}"
-                      th:class="'badge badge-' + ${homework.status.name().toLowerCase()}"></span>
+            <div th:each="homework : ${homePageData.homeworks.homeworks}"
+                 class="card-content"
+                 th:onclick="'showHomeworkDetails(' + ${homework.id} + ')'"
+                 style="cursor: pointer; display: flex; flex-direction: column; gap: 4px;">
+
+                <div>
+                    <strong>Group:</strong>
+                    <span th:text="${homework.groupName != null ? homework.groupName : '–'}"></span>
+                </div>
+
+                <div>
+                    <strong>Lesson Date:</strong>
+                    <span th:text="${homework.lessonDate}"></span>
+                </div>
+
+                <div>
+                    <strong>Status:</strong>
+                    <span th:text="${homework.status}"
+                          th:class="'badge badge-' + ${homework.status.name().toLowerCase()}"></span>
+                </div>
             </div>
         </div>
-        <p th:if="${homePageData.homeworks == null or homePageData.homeworks.homeworks.size() == 0}">No homeworks found.</p>
+        <p th:if="${homePageData.homeworks == null or homePageData.homeworks.homeworks.size() == 0}">
+            No homeworks found.
+        </p>
     </div>
 </div>
 
@@ -85,7 +103,6 @@
     <h3>Homeworks</h3>
     <div id="modal-homeworks" style="margin-top: 10px;"></div>
 
-
     <button id="createHomeworkBtn" class="btn" style="display: none; margin-top: 10px;">+ Add Homework</button>
 
     <div id="modal-buttons" style="display: flex; gap: 10px; margin-top: 10px;">
@@ -96,6 +113,7 @@
 
 <div id="modalOverlay" class="modal-overlay" onclick="closeModal()"></div>
 
+<!-- HOMEWORK MODAL -->
 <div id="homeworkModal" class="modal">
     <button onclick="closeHomeworkModal()" class="close-btn">✖</button>
     <h2>Homework Details</h2>
@@ -106,6 +124,7 @@
     <p><strong>Content:</strong> <span id="homework-content"></span></p>
 </div>
 <div id="homeworkOverlay" class="modal-overlay" onclick="closeHomeworkModal()"></div>
+
 <!-- Scripts -->
 <script th:src="@{/lesson-modal.js}"></script>
 <script th:src="@{/weekly-lessons.js}"></script>
