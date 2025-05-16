@@ -2,59 +2,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const role = document.body.getAttribute("data-role");
 
     if (role === "TEACHER") {
-        const createBtn = document.getElementById("create-group-btn");
-        if (createBtn) {
-            createBtn.onclick = showCreateGroupPrompt;
-        }
         loadTeacherStudents();
         loadTeacherGroups();
-    }
-
-    if (role === "STUDENT") {
-        loadStudentGroups();
+        document.getElementById("create-group-btn").onclick = showCreateGroupPrompt;
+    } else if (role === "STUDENT") {
+        loadStudentGroup();
     }
 });
 
 // ===== TEACHER =====
-
-function loadTeacherStudents() {
-    fetch("/api/teacher/students")
-        .then(res => res.json())
-        .then(students => {
-            const container = document.getElementById("teacher-students-container");
-            if (!container) return;
-            container.innerHTML = "";
-
-            if (students.length === 0) {
-                container.innerHTML = "<p>You don't have any students yet.</p>";
-                return;
-            }
-
-            students.forEach(student => {
-                const div = document.createElement("div");
-                div.className = "card-content";
-                div.innerHTML = `
-                    <strong>${student.firstName} ${student.lastName}</strong><br>
-                    <small>${student.email}</small>
-                    <button class="delete-btn" style="float:right;" onclick="unassignStudent(${student.id})">✖</button>
-                `;
-                container.appendChild(div);
-            });
-        })
-        .catch(err => {
-            const container = document.getElementById("teacher-students-container");
-            if (container) {
-                container.innerHTML = "<p style='color: red;'>Error loading students.</p>";
-            }
-        });
-}
 
 function loadTeacherGroups() {
     fetch("/api/groups/teacher")
         .then(res => res.json())
         .then(groups => {
             const container = document.getElementById("teacher-groups-container");
-            if (!container) return;
             container.innerHTML = "";
 
             if (groups.length === 0) {
@@ -93,10 +55,9 @@ function loadTeacherGroups() {
             });
         })
         .catch(err => {
-            const container = document.getElementById("teacher-groups-container");
-            if (container) {
-                container.innerHTML = `<p style="color: red;">Error loading groups: ${err.message}</p>`;
-            }
+            console.error("Failed to load teacher groups:", err);
+            document.getElementById("teacher-groups-container").innerHTML =
+                `<p style="color: red;">Error loading groups: ${err.message}</p>`;
         });
 }
 
@@ -113,19 +74,9 @@ function showCreateGroupPrompt() {
     }
 }
 
-function unassignStudent(studentId) {
-    if (confirm("Are you sure you want to unassign this student?")) {
-        fetch(`/api/teacher/unassign-student?studentId=${studentId}`, {
-            method: "DELETE"
-        })
-            .then(() => loadTeacherStudents())
-            .catch(err => alert("Failed to unassign student: " + err.message));
-    }
-}
-
 // ===== STUDENT =====
 
-function loadStudentGroups() {
+function loadStudentGroup() {
     fetch("/api/student/groups")
         .then(res => {
             if (!res.ok) throw new Error("Network error");
@@ -133,7 +84,6 @@ function loadStudentGroups() {
         })
         .then(groups => {
             const container = document.getElementById("student-group-container");
-            if (!container) return;
             container.innerHTML = "";
 
             if (!groups || groups.length === 0) {
@@ -153,9 +103,96 @@ function loadStudentGroups() {
             });
         })
         .catch(err => {
-            const container = document.getElementById("student-group-container");
-            if (container) {
-                container.innerHTML = "<p>Error loading group info.</p>";
+            console.error("❌ Failed to load student groups:", err);
+            document.getElementById("student-group-container").innerHTML =
+                "<p>Error loading group info.</p>";
+        });
+}
+function loadTeacherStudents() {
+    fetch("/api/teacher/students")
+        .then(res => res.json())
+        .then(students => {
+            const container = document.getElementById("teacher-students-container");
+            container.innerHTML = "";
+
+            if (students.length === 0) {
+                container.innerHTML = "<p>You don't have any students yet.</p>";
+                return;
             }
+
+            students.forEach(student => {
+                const div = document.createElement("div");
+                div.className = "card-content";
+                div.innerHTML = `
+                    <strong>${student.firstName} ${student.lastName}</strong><br>
+                    <small>${student.email}</small>
+                    <button class="delete-btn" style="float: right;" onclick="unassignStudent(${student.id})">✖</button>
+                `;
+                container.appendChild(div);
+            });
+        })
+        .catch(err => {
+            console.error("Failed to load students:", err);
+            document.getElementById("teacher-students-container").innerHTML =
+                "<p style='color: red;'>Error loading students.</p>";
+        });
+}
+function showAssignStudentModal() {
+    fetch("/api/teacher/unassigned-students")
+        .then(res => res.json())
+        .then(students => {
+            const container = document.getElementById("assign-student-container");
+            container.innerHTML = "";
+
+            if (students.length === 0) {
+                container.innerHTML = "<p>No available students.</p>";
+                return;
+            }
+
+            const select = document.createElement("select");
+            students.forEach(s => {
+                const option = document.createElement("option");
+                option.value = s.id;
+                option.textContent = `${s.firstName} ${s.lastName}`;
+                select.appendChild(option);
+            });
+
+            const btn = document.createElement("button");
+            btn.textContent = "Assign";
+            btn.className = "btn";
+            btn.onclick = () => {
+                fetch(`/api/teacher/assign-student?studentId=${select.value}`, {
+                    method: "POST"
+                })
+                    .then(() => {
+                        closeAssignStudentModal();
+                        loadTeacherStudents();
+                    })
+                    .catch(err => {
+                        alert("Failed to assign student: " + err.message);
+                    });
+            };
+
+            container.appendChild(select);
+            container.appendChild(btn);
+
+            document.getElementById("assignStudentModal").style.display = "block";
+            document.getElementById("assignStudentModalOverlay").style.display = "block";
+        });
+}
+
+function closeAssignStudentModal() {
+    document.getElementById("assignStudentModal").style.display = "none";
+    document.getElementById("assignStudentModalOverlay").style.display = "none";
+}
+function unassignStudent(studentId) {
+    if (!confirm("Unassign this student?")) return;
+
+    fetch(`/api/teacher/unassign-student?studentId=${studentId}`, {
+        method: "DELETE"
+    })
+        .then(() => loadTeacherStudents())
+        .catch(err => {
+            alert("Failed to unassign student: " + err.message);
         });
 }
