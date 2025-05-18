@@ -45,15 +45,29 @@ public class HomeworkController {
     public ResponseEntity<HomeworkDtoListResponse> getHomeworksByLesson(@PathVariable Long lessonId) {
         return ResponseEntity.ok(homeworkService.getHomeworksByLessonId(lessonId));
     }
-    @PostMapping("/grade")
-    public ResponseEntity<HomeworkDtoGradeResponse> updateHomework(@RequestBody HomeworkDtoGradeRequest request) {
-        HomeworkDtoGradeResponse response = teacherService.updateHomeworkAsTeacher(request, authHelper.getCurrentUser().getId());
-        return ResponseEntity.ok(response);
-    }
+//    @PostMapping("/grade")
+//    public ResponseEntity<HomeworkDtoGradeResponse> updateHomework(@RequestBody HomeworkDtoGradeRequest request) {
+//        HomeworkDtoGradeResponse response = teacherService.updateHomeworkAsTeacher(request, authHelper.getCurrentUser().getId());
+//        return ResponseEntity.ok(response);
+//    }
     @PostMapping("/submit")
     public ResponseEntity<?> submitHomework(@RequestBody Map<String, Long> payload) {
         Long homeworkId = payload.get("homeworkId");
         homeworkService.submitHomework(homeworkId, authHelper.getCurrentUser().getId());
         return ResponseEntity.ok().build();
+    }
+    @PostMapping("/{id}/grade")
+    public ResponseEntity<HomeworkDtoGradeResponse> updateHomework(
+            @PathVariable Long id,
+            @RequestBody HomeworkDtoGradeRequest request) {
+
+        if (!id.equals(request.homeworkId())) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        HomeworkDtoGradeResponse response = teacherService.updateHomeworkAsTeacher(
+                request, authHelper.getCurrentUser().getId());
+
+        return ResponseEntity.ok(response);
     }
 }
