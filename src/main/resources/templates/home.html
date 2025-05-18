@@ -55,9 +55,25 @@
                  th:classappend="${grouped.checkedHomeworks < grouped.totalHomeworks} ? ' review-pending' : ''"
                  th:onclick="'openHomeworkGroupModal(' + ${grouped.lessonId} + ')'"
                  style="cursor: pointer; display: flex; flex-direction: column; gap: 4px;">
-                <div><strong>Group:</strong> <span th:text="${grouped.groupName ?: '–'}"></span></div>
-                <div><strong>Lesson Date:</strong> <span th:text="${#temporals.format(grouped.lessonDate, 'dd.MM HH:mm')}"></span></div>
-                <div><strong>Homeworks:</strong> <span th:text="${grouped.checkedHomeworks + ' / ' + grouped.totalHomeworks}"></span></div>
+
+                <div>
+                    <strong>Group:</strong>
+                    <span th:if="${grouped.groupName != null}" th:text="${grouped.groupName}"></span>
+                    <span th:if="${grouped.groupName == null}">
+                <i th:text="'Student: ' + ${grouped.studentName}" style="color: gray;"></i>
+            </span>
+                </div>
+
+                <div>
+                    <strong>Lesson Date:</strong>
+                    <span th:text="${#temporals.format(grouped.lessonDate, 'dd.MM HH:mm')}"></span>
+                </div>
+
+                <div>
+                    <strong>Homeworks:</strong>
+                    <span th:text="${grouped.checkedHomeworks + ' / ' + grouped.totalHomeworks}"></span>
+                </div>
+
                 <span th:if="${grouped.checkedHomeworks < grouped.totalHomeworks}" class="badge badge-orange">Need Review</span>
             </div>
         </div>
