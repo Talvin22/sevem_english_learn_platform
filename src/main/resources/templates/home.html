@@ -52,6 +52,7 @@
         <div th:if="${userRole == 'TEACHER' and homePageData.groupedHomeworks?.homeworks?.size() > 0}">
             <div th:each="grouped : ${homePageData.groupedHomeworks.homeworks}"
                  class="card-content"
+                 th:classappend="${grouped.checkedHomeworks < grouped.totalHomeworks} ? ' review-pending' : ''"
                  th:onclick="'openHomeworkGroupModal(' + ${grouped.lessonId} + ')'"
                  style="cursor: pointer; display: flex; flex-direction: column; gap: 4px;">
                 <div><strong>Group:</strong> <span th:text="${grouped.groupName ?: '–'}"></span></div>
@@ -114,7 +115,7 @@
 <div id="modalOverlay" class="modal-overlay" onclick="closeModal()"></div>
 
 <!-- HOMEWORK MODAL -->
-<div id="homeworkModal" class="modal">
+<div id="homeworkModal" class="modal homework-modal">
     <button onclick="closeHomeworkModal()" class="close-btn">✖</button>
     <h2>Homework Details</h2>
     <p><strong>Lesson Date:</strong> <span id="homework-lesson-date"></span></p>
@@ -128,7 +129,7 @@
 <div id="homeworkOverlay" class="modal-overlay" onclick="closeHomeworkModal()"></div>
 
 <!-- GROUP HOMEWORK MODAL -->
-<div id="homeworkGroupModal" class="modal">
+<div id="homeworkGroupModal" class="modal homework-modal">
     <button onclick="closeHomeworkGroupModal()" class="close-btn">✖</button>
     <h2>Lesson Homeworks</h2>
     <div id="homeworkGroupScrollContainer" style="max-height: 70vh; overflow-y: auto; margin-top: 10px;">
