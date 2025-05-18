@@ -47,7 +47,7 @@ function submitHomework(homeworkId) {
     })
         .then(res => {
             if (!res.ok) throw new Error("Failed to submit homework");
-            return res.json();
+            return res.text();
         })
         .then(() => {
             alert("Homework submitted!");
