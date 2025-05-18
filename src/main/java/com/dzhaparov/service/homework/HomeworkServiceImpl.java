@@ -155,7 +155,9 @@ public class HomeworkServiceImpl implements HomeworkService {
                             sample.getLesson().getDateUtc().toLocalDateTime(),
                             sample.getGroup() != null ? sample.getGroup().getName() : null,
                             hwList.size(),
-                            (int) hwList.stream().filter(hw -> hw.getStatus().equals(HomeworkStatus.CHECKED)).count()
+                            (int) hwList.stream()
+                                    .filter(hw -> hw.getStatus() != HomeworkStatus.NOT_SUBMITTED)
+                                    .count()
                     );
                 })
                 .collect(Collectors.toList());
