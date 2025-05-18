@@ -141,13 +141,13 @@ function showAssignStudentModal() {
     fetch("/api/teacher/unassigned-students")
         .then(res => res.json())
         .then(students => {
-            const container = document.getElementById("assign-student-container");
-            container.innerHTML = "";
-
             if (students.length === 0) {
-                container.innerHTML = "<p>No available students.</p>";
+                alert("No students available to assign at the moment.");
                 return;
             }
+
+            const container = document.getElementById("assign-student-container");
+            container.innerHTML = "";
 
             const select = document.createElement("select");
             students.forEach(s => {
