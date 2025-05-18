@@ -142,25 +142,36 @@ public class HomeworkServiceImpl implements HomeworkService {
         Map<String, List<Homework>> grouped = homeworks.stream()
                 .collect(Collectors.groupingBy(hw -> {
                     Long lessonId = hw.getLesson().getId();
-                    String groupName = hw.getGroup() != null ? hw.getGroup().getName() : "–";
-                    return lessonId + "|" + groupName;
+                    String groupKey = hw.getGroup() != null ? hw.getGroup().getName() : "–";
+                    return lessonId + "|" + groupKey;
                 }));
 
         List<HomeworkGroupSummaryDto> summaryList = grouped.entrySet().stream()
                 .map(entry -> {
                     List<Homework> hwList = entry.getValue();
                     Homework sample = hwList.get(0);
+
+                    String groupName = sample.getGroup() != null ? sample.getGroup().getName() : null;
+
+                    String studentName = (groupName == null && sample.getStudent() != null)
+                            ? sample.getStudent().getFirst_name() + " " + sample.getStudent().getLast_name()
+                            : null;
+
+                    int total = hwList.size();
+                    int checked = (int) hwList.stream()
+                            .filter(hw -> hw.getStatus() != HomeworkStatus.NOT_SUBMITTED)
+                            .count();
+
                     return new HomeworkGroupSummaryDto(
                             sample.getLesson().getId(),
+                            studentName,
                             sample.getLesson().getDateUtc().toLocalDateTime(),
-                            sample.getGroup() != null ? sample.getGroup().getName() : null,
-                            hwList.size(),
-                            (int) hwList.stream()
-                                    .filter(hw -> hw.getStatus() != HomeworkStatus.NOT_SUBMITTED)
-                                    .count()
+                            groupName,
+                            total,
+                            checked
                     );
                 })
-                .collect(Collectors.toList());
+                .toList();
 
         return HomeworkGroupSummaryListResponse.of(summaryList);
     }
